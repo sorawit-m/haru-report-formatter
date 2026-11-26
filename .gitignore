@@ -1,0 +1,6 @@
+﻿# ไฟล์ลูกค้าและไฟล์สำรอง — ห้ามขึ้น git
+scripts/v2/broken/
+*.bak*
+~$*
+_haru/
+node_modules/

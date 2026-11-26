@@ -1,0 +1,160 @@
+{
+    "_help":  "ไฟล์ตั้งค่า แก้ค่าทางขวาได้ทุกบรรทัด (true = เปิด, false = ปิด) ขนาดหน่วยเป็น pt",
+    "font_replace":  {
+                         "TH Sarabun New":  "TH SarabunPSK"
+                     },
+    "heading_font":  "TH SarabunPSK",
+    "code_fonts":  "Consol|Courier|Mono",
+    "body_align":  "thaiDistribute",
+    "table_cell_align":  "thaiDistribute",
+    "thai_distribute_min_cell_twips":  2300,
+    "thai_distribute_max_latin_cell":  0.1,
+    "thai_distribute_max_latin_body":  0.3,
+    "stretch_fallback_align":  "thaiDistribute",
+    "balance_column_widths":  false,
+    "widen_tables_to_text":  true,
+    "dense_table_min_cols":  7,
+    "dense_table_font_pt":  14,
+    "dense_table_margin_bleed_twips":  0,
+    "toc_font_pt":  16,
+    "join_soft_breaks_in_cells":  true,
+    "join_soft_breaks_in_body":  true,
+    "merge_broken_paragraphs_in_cells":  true,
+    "merge_broken_paragraphs_in_body":  false,
+    "tag_thai_text":  true,
+    "_align_help":  "thaiDistribute = กระจายแบบไทย (เนื้อหา, bullet, รายการเลข, ข้อความในตาราง) / ใส่ค่าอื่น เช่น keep = คงตามต้นฉบับ",
+    "no_italic":  true,
+    "keep_red_text":  true,
+    "thin_border_to_black":  true,
+    "keep_border_colors":  [
+                               "D0D7DE"
+                           ],
+    "table_border_pt":  0.5,
+    "table_cell_padding_pt":  5.4,
+    "equalize_row_width":  true,
+    "keep_whole_table_max_rows":  8,
+    "keep_whole_table_max_chars":  2000,
+    "keep_header_plus_rows":  2,
+    "figure_intro_max_chars":  900,
+    "chapter_new_page":  true,
+    "front_headings":  [
+                           "สารบัญ",
+                           "สารบัญรูปภาพ",
+                           "สารบัญตาราง"
+                       ],
+    "table_caption_label":  "ตารางที่",
+    "add_page_numbers_if_missing":  true,
+    "page_number_align":  "right",
+    "page_number_font_size":  16,
+    "remove_duplicate_paragraphs":  true,
+    "remove_stray_line_breaks":  true,
+    "remove_empty_bullets":  true,
+    "fix_cover_bullet_dot":  true,
+    "max_empty_lines":  1,
+    "standard":  {
+                     "_help":  "มาตรฐานไฟล์ทุกเล่ม (ผู้ใช้ตกลง 25-11-2026, อิงรูปแบบรายงานฉบับสมบูรณ์ราชการ): A4, ขอบ ซ้าย 2.54 (เข้าเล่ม) ขวา 1.6 บน 2.54 ล่าง 2.54 ซม., TH SarabunPSK 16, ชื่อบท 20 หนา, ระยะบรรทัด 1.0, ย่อหน้า 0.75 ซม., ตารางเต็มถึงขอบขวา",
+                     "page_margins_cm":  {
+                                             "top":  2.54,
+                                             "bottom":  2.54,
+                                             "left":  2.54,
+                                             "right":  1.6,
+                                             "header":  0.96,
+                                             "footer":  1.25
+                                         },
+                     "landscape_margins_cm":  {
+                                                  "top":  2.54,
+                                                  "bottom":  2.54,
+                                                  "left":  2.54,
+                                                  "right":  1.6,
+                                                  "header":  0.96,
+                                                  "footer":  1.25
+                                              },
+                     "defaults":  {
+                                      "size":  16,
+                                      "after":  0,
+                                      "line":  1
+                                  },
+                     "styles":  {
+                                    "Normal":  {
+                                                   "size":  16,
+                                                   "align":  "thaiDistribute",
+                                                   "first_line_cm":  0.75,
+                                                   "before":  0,
+                                                   "after":  0,
+                                                   "line":  1,
+                                                   "italic":  false
+                                               },
+                                    "heading 1|หัวข้อ 1":  {
+                                                               "size":  20,
+                                                               "bold":  true,
+                                                               "color":  "0F4761",
+                                                               "align":  "center",
+                                                               "before":  18,
+                                                               "after":  4,
+                                                               "italic":  false
+                                                           },
+                                    "heading 2|หัวข้อ 2":  {
+                                                               "size":  16,
+                                                               "bold":  true,
+                                                               "color":  "000000",
+                                                               "align":  "left",
+                                                               "before":  8,
+                                                               "after":  4,
+                                                               "italic":  false
+                                                           },
+                                    "heading 3|หัวข้อ 3":  {
+                                                               "size":  16,
+                                                               "bold":  false,
+                                                               "color":  "000000",
+                                                               "align":  "left",
+                                                               "before":  0,
+                                                               "after":  0,
+                                                               "italic":  false
+                                                           },
+                                    "heading 4|หัวข้อ 4":  {
+                                                               "size":  16,
+                                                               "bold":  false,
+                                                               "color":  "000000",
+                                                               "align":  "left",
+                                                               "before":  4,
+                                                               "after":  2,
+                                                               "italic":  false
+                                                           },
+                                    "TOC Heading":  {
+                                                        "size":  20,
+                                                        "bold":  true,
+                                                        "color":  "0F4761",
+                                                        "align":  "center",
+                                                        "before":  0,
+                                                        "after":  6,
+                                                        "italic":  false
+                                                    },
+                                    "toc 1":  {
+                                                  "size":  16,
+                                                  "bold":  true,
+                                                  "align":  "left",
+                                                  "before":  6,
+                                                  "after":  0,
+                                                  "italic":  false
+                                              },
+                                    "toc 2|toc 3|toc 4":  {
+                                                              "size":  16,
+                                                              "bold":  false,
+                                                              "align":  "left",
+                                                              "before":  0,
+                                                              "after":  0,
+                                                              "italic":  false
+                                                          },
+                                    "table of figures|caption":  {
+                                                                     "size":  16,
+                                                                     "bold":  false,
+                                                                     "color":  "000000",
+                                                                     "align":  "left",
+                                                                     "before":  0,
+                                                                     "after":  0,
+                                                                     "italic":  false
+                                                                 }
+                                }
+                 },
+    "dense_table_right_edge_min_cm":  1
+}

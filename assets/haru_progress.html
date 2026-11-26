@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ฮารุ · ห้องจัดเล่ม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F1EA; --paper-2:#EBE6DB; --card:#FFFDF8; --line:#DDD6C8; --line-2:#CFC6B4;
+  --ink:#1A2130; --ink-2:#4A5366; --mute:#8A8F9C;
+  --navy:#22385C; --navy-2:#3A5A8C;
+  --haru:#D9577E; --haru-soft:#F7DCE5;
+  --ok:#2E8A57; --ok-soft:#D8EFE1;
+  --warn:#C47F12; --warn-soft:#F8E8C8;
+  --fix:#2F6FB5; --fix-soft:#D9E7F7;
+  --read:#9C7BD0; --read-soft:#EAE1F7;
+  --shadow:0 1px 0 #0000000a, 0 8px 24px -12px #1a213033;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#12151C; --paper-2:#181C25; --card:#1C212B; --line:#2B3240; --line-2:#3A4253;
+    --ink:#ECE8DF; --ink-2:#B7BCC8; --mute:#7D8494;
+    --navy:#9DB8E6; --navy-2:#7C9CD3;
+    --haru:#F07FA0; --haru-soft:#3B2430;
+    --ok:#5CC08A; --ok-soft:#1E3529; --warn:#E3A84A; --warn-soft:#3A2F1C;
+    --fix:#6FA6E6; --fix-soft:#1D2D42; --read:#B9A0E6; --read-soft:#2B2540;
+    --shadow:0 1px 0 #ffffff08, 0 10px 30px -14px #000a;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12151C; --paper-2:#181C25; --card:#1C212B; --line:#2B3240; --line-2:#3A4253;
+  --ink:#ECE8DF; --ink-2:#B7BCC8; --mute:#7D8494;
+  --navy:#9DB8E6; --navy-2:#7C9CD3; --haru:#F07FA0; --haru-soft:#3B2430;
+  --ok:#5CC08A; --ok-soft:#1E3529; --warn:#E3A84A; --warn-soft:#3A2F1C;
+  --fix:#6FA6E6; --fix-soft:#1D2D42; --read:#B9A0E6; --read-soft:#2B2540;
+  --shadow:0 1px 0 #ffffff08, 0 10px 30px -14px #000a;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans Thai','TH SarabunPSK','Leelawadee UI',sans-serif;font-size:15px;line-height:1.55;
+  background-image:radial-gradient(circle at 1px 1px,var(--line) 1px,transparent 0);background-size:22px 22px;background-attachment:fixed}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-feature-settings:"tnum"}
+button{font:inherit;color:inherit}
+
+/* ───────── top bar ───────── */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1320px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:22px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand svg{flex:none}
+.brand b{font-size:22px;font-weight:700;letter-spacing:.01em}
+.brand small{display:block;color:var(--mute);font-size:12.5px;margin-top:-3px}
+.book{flex:1;min-width:0;padding-left:22px;border-left:1px solid var(--line)}
+.book .t{font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.book .m{display:flex;gap:8px;flex-wrap:wrap;margin-top:3px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:2px 10px;border-radius:99px;background:var(--paper-2);color:var(--ink-2);border:1px solid var(--line)}
+.chip.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--haru);animation:blink 1.2s infinite}
+.chip.done{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.chip.done::before{content:"✓";font-weight:700}
+@keyframes blink{50%{opacity:.25}}
+.clock{text-align:right}
+.clock .v{font-size:22px;font-weight:500}
+.clock .l{font-size:12px;color:var(--mute)}
+.ring{width:58px;height:58px;flex:none;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .n{position:absolute;inset:0;display:grid;place-items:center;font-size:14px;font-weight:600}
+
+/* ───────── layout ───────── */
+.wrap{max-width:1320px;margin:0 auto;padding:22px 24px 40px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card>h3{margin:0;padding:14px 18px 0;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--mute);text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.card>h3 .count{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:500}
+.pad{padding:14px 18px 18px}
+
+/* ───────── phase rail ───────── */
+.rail{display:grid;grid-template-columns:repeat(5,1fr);padding:22px 18px 18px;position:relative}
+.ph{position:relative;text-align:center;padding:0 6px}
+.ph::before{content:"";position:absolute;top:17px;left:-50%;right:50%;height:2px;background:var(--line)}
+.ph:first-child::before{display:none}
+.ph.done::before,.ph.active::before{background:var(--navy)}
+.dot{position:relative;z-index:1;width:36px;height:36px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;background:var(--card);border:2px solid var(--line-2);color:var(--mute);font-weight:600;font-size:14px;transition:all .4s}
+.ph.active .dot{border-color:var(--haru);color:var(--haru);box-shadow:0 0 0 6px var(--haru-soft)}
+.ph.active .dot::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--haru);opacity:.5;animation:ping 1.6s ease-out infinite}
+@keyframes ping{from{transform:scale(.8);opacity:.6}to{transform:scale(1.35);opacity:0}}
+.ph.done .dot{background:var(--navy);border-color:var(--navy);color:var(--card)}
+.ph .nm{font-weight:600;font-size:14.5px}
+.ph .sb{font-size:12.5px;color:var(--mute);min-height:20px}
+.ph.active .sb{color:var(--haru)}
+
+/* ───────── agents ───────── */
+.agents{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:14px 18px 18px}
+.ag{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--paper);transition:border-color .3s,box-shadow .3s,transform .3s;position:relative;overflow:hidden}
+.ag.on{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 18%,transparent);transform:translateY(-1px)}
+.ag .hd{display:flex;align-items:center;gap:10px}
+.av{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-weight:700;font-size:17px;color:#fff;background:var(--c);flex:none;position:relative}
+.ag.on .av::after{content:"";position:absolute;right:-3px;bottom:-3px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid var(--paper)}
+.ag .who b{display:block;font-size:15px}
+.ag .who span{font-size:12px;color:var(--mute)}
+.ag .st{margin-left:auto;font-size:11.5px;padding:2px 8px;border-radius:99px;background:var(--paper-2);color:var(--mute);white-space:nowrap}
+.ag.on .st{background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c)}
+.ag .task{margin-top:10px;font-size:13.5px;color:var(--ink-2);min-height:42px}
+.ag .task .caret{display:inline-block;width:7px;height:14px;background:var(--c);vertical-align:-2px;margin-left:2px;animation:blink .9s infinite}
+.lanes{margin-top:8px;display:grid;gap:6px}
+.lane{display:grid;grid-template-columns:72px 1fr 44px;gap:8px;align-items:center;font-size:12px;color:var(--mute)}
+.bar{height:6px;border-radius:9px;background:var(--paper-2);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--c,var(--navy));border-radius:9px;transition:width .5s}
+.ag .foot{margin-top:10px}
+
+/* ───────── conversation ───────── */
+.feed{height:430px;overflow:auto;padding:6px 18px 18px;scroll-behavior:smooth;display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;gap:10px;max-width:86%;animation:rise .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.msg .av{width:30px;height:30px;border-radius:9px;font-size:13px}
+.msg .bb{background:var(--paper);border:1px solid var(--line);border-radius:4px 12px 12px 12px;padding:8px 12px}
+.msg .meta{font-size:11.5px;color:var(--mute);margin-bottom:2px;display:flex;gap:8px;align-items:center}
+.msg .tx{font-size:14px}
+.msg.r{align-self:flex-end;flex-direction:row-reverse}
+.msg.r .bb{border-radius:12px 4px 12px 12px;background:color-mix(in srgb,var(--fix) 8%,var(--card))}
+.msg.sys{align-self:center;max-width:100%}
+.msg.sys .bb{background:transparent;border:1px dashed var(--line-2);border-radius:99px;padding:3px 14px;font-size:12.5px;color:var(--ink-2)}
+.pg{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;padding:0 7px;border-radius:6px;background:var(--navy);color:var(--card);margin-right:4px;cursor:pointer;line-height:19px}
+.tag{font-size:11px;padding:0 7px;border-radius:6px;line-height:18px}
+.tag.issue{background:var(--warn-soft);color:var(--warn)} .tag.fixed{background:var(--fix-soft);color:var(--fix)} .tag.ok{background:var(--ok-soft);color:var(--ok)}
+.typing{display:inline-flex;gap:3px}.typing i{width:5px;height:5px;border-radius:50%;background:var(--mute);animation:ty 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes ty{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-3px);opacity:1}}
+
+/* ───────── right column ───────── */
+.pages{display:grid;grid-template-columns:repeat(auto-fill,minmax(22px,1fr));gap:5px;padding:12px 18px 6px}
+.pc{aspect-ratio:.72;border-radius:3px;background:var(--paper-2);border:1px solid var(--line);position:relative;transition:background .35s,border-color .35s,transform .2s;cursor:default}
+.pc:hover{transform:scale(1.25);z-index:2}
+.pc[data-s="reading"]{background:var(--read-soft);border-color:var(--read);animation:blink 1s infinite}
+.pc[data-s="ok"]{background:color-mix(in srgb,var(--ok) 30%,var(--card));border-color:color-mix(in srgb,var(--ok) 60%,transparent)}
+.pc[data-s="issue"]{background:var(--warn);border-color:var(--warn)}
+.pc[data-s="fixed"]{background:var(--fix);border-color:var(--fix)}
+.pc[data-s="pass"]{background:var(--ok);border-color:var(--ok)}
+.pc.flash{animation:flash .8s}
+@keyframes flash{30%{transform:scale(1.5);box-shadow:0 0 0 4px var(--haru-soft)}}
+.legend{display:flex;flex-wrap:wrap;gap:10px 14px;padding:6px 18px 16px;font-size:12px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:13px;border-radius:2px;display:inline-block;border:1px solid var(--line)}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--paper);font-size:12px;padding:4px 9px;border-radius:7px;opacity:0;transition:opacity .15s;z-index:50;max-width:260px}
+.steps{list-style:none;margin:0;padding:6px 18px 16px;max-height:420px;overflow:auto;position:relative}
+.steps li{display:grid;grid-template-columns:22px 1fr auto;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px;align-items:start}
+.steps li:last-child{border-bottom:0}
+.steps .ic{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;margin-top:2px;border:1.5px solid var(--line-2);color:var(--mute)}
+.steps li.done .ic{background:var(--ok);border-color:var(--ok);color:#fff}
+.steps li.run .ic{border-color:var(--haru);border-top-color:transparent;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.steps li.wait{color:var(--mute)}
+.steps .d{display:block;font-size:12px;color:var(--mute)}
+.steps .tm{font-size:11.5px;color:var(--mute)}
+
+/* ───────── summary ───────── */
+.summary{display:none;margin-bottom:20px;position:relative;overflow:hidden}
+.summary.show{display:block;animation:rise .7s cubic-bezier(.2,.8,.2,1)}
+.sum-hd{display:flex;gap:24px;align-items:center;padding:24px 26px 6px;position:relative}
+.sum-hd h2{margin:0;font-size:26px;font-weight:700;letter-spacing:-.01em}
+.sum-hd p{margin:4px 0 0;color:var(--ink-2)}
+.stamp{margin-left:auto;flex:none;width:120px;height:120px;border-radius:50%;border:4px double var(--haru);color:var(--haru);display:grid;place-items:center;text-align:center;transform:rotate(-12deg) scale(2.4);opacity:0;font-weight:700;line-height:1.05}
+.summary.show .stamp{animation:stamp .55s .5s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes stamp{to{transform:rotate(-12deg) scale(1);opacity:.92}}
+.stamp b{font-size:34px;display:block}.stamp small{font-size:11px;letter-spacing:.08em}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:16px 26px}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat .v{font-size:28px;font-weight:600;line-height:1.1}
+.stat .l{font-size:12.5px;color:var(--mute)}
+.stat.h .v{color:var(--haru)}
+.cols{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;padding:4px 26px 24px}
+.cols h4{margin:10px 0 8px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.chg{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.chg details{border-bottom:1px solid var(--line)}
+.chg details:last-child{border-bottom:0}
+.chg summary{list-style:none;display:grid;grid-template-columns:1fr auto 18px;gap:10px;padding:10px 14px;cursor:pointer;align-items:center}
+.chg summary::-webkit-details-marker{display:none}
+.chg summary:hover{background:var(--paper)}
+.chg summary .c{font-weight:600}
+.chg summary .ar{transition:transform .2s;color:var(--mute)}
+.chg details[open] summary .ar{transform:rotate(90deg)}
+.chg .ex{padding:2px 14px 12px;display:grid;gap:6px}
+.chg .ex div{font-size:13px;color:var(--ink-2);display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:baseline}
+.chg .ex s{color:var(--mute)}
+.chg .ex em{font-style:normal;color:var(--ok);font-weight:500}
+.mini{height:4px;border-radius:9px;background:var(--paper-2);margin-top:5px;overflow:hidden}.mini i{display:block;height:100%;background:var(--navy)}
+.checks{display:grid;gap:8px}
+.ck{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:10px 12px;border-radius:10px;background:var(--warn-soft);font-size:13.5px}
+.ck.info{background:var(--paper)}
+.files{display:grid;gap:8px;margin-top:6px}
+.file{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:13.5px;background:var(--paper)}
+.file .ext{font-size:11px;font-weight:700;padding:3px 6px;border-radius:5px;color:#fff;background:var(--navy)}
+.file .ext.pdf{background:#C8463D}.file .ext.txt{background:var(--mute)}
+.file span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ───────── demo bar ───────── */
+.demo{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:6px;background:var(--ink);color:var(--paper);padding:6px 8px 6px 14px;border-radius:99px;box-shadow:0 12px 30px -10px #000a;font-size:13px}
+.demo .lbl{opacity:.7;margin-right:6px}
+.demo button{background:transparent;border:0;color:var(--paper);padding:6px 12px;border-radius:99px;cursor:pointer}
+.demo button:hover{background:#ffffff1f}
+.demo button.on{background:var(--haru);color:#fff}
+.demo button:focus-visible,.chg summary:focus-visible{outline:2px solid var(--haru);outline-offset:2px}
+footer{text-align:center;color:var(--mute);font-size:13px;padding:10px 0 80px}
+footer b{color:var(--haru);font-weight:600}
+
+@media (max-width:1080px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}.cols{grid-template-columns:1fr}}
+@media (max-width:640px){
+  .top-in{padding:10px 16px;gap:12px;flex-wrap:wrap}.book{border-left:0;padding-left:0;order:3;flex-basis:100%}.clock{margin-left:auto}
+  .wrap{padding:14px 16px 40px}.rail{grid-template-columns:repeat(5,1fr);padding:18px 6px 12px}.ph .nm{font-size:12px}.ph .sb{display:none}
+  .agents{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr;padding:14px 16px}.cols,.sum-hd{padding-left:16px;padding-right:16px}
+  .stamp{width:86px;height:86px}.stamp b{font-size:24px}.sum-hd h2{font-size:21px}
+  .demo{left:16px;right:16px;transform:none;justify-content:center;flex-wrap:wrap;border-radius:16px}.demo .lbl{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.stamp{opacity:.92;transform:rotate(-12deg)}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand">
+    <svg width="38" height="38" viewBox="0 0 40 40" aria-hidden="true">
+      <g transform="translate(20 20)" fill="var(--haru)">
+        <path id="pt" d="M0-3C-5-7-6-14 0-17C6-14 5-7 0-3Z"/>
+        <use href="#pt" transform="rotate(72)"/><use href="#pt" transform="rotate(144)"/><use href="#pt" transform="rotate(216)"/><use href="#pt" transform="rotate(288)"/>
+        <circle r="3" fill="var(--card)"/>
+      </g>
+    </svg>
+    <div><b>ฮารุ</b><small>ห้องจัดเล่มรายงาน</small></div>
+  </div>
+  <div class="book"><div class="t" id="bookTitle">—</div><div class="m" id="bookMeta"></div></div>
+  <div class="clock"><div class="v mono" id="clock">00:00</div><div class="l">เวลาที่ใช้</div></div>
+  <div class="ring"><svg width="58" height="58"><circle cx="29" cy="29" r="24" fill="none" stroke="var(--line)" stroke-width="5"/><circle id="ringArc" cx="29" cy="29" r="24" fill="none" stroke="var(--haru)" stroke-width="5" stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="150.8" style="transition:stroke-dashoffset .6s"/></svg><div class="n mono" id="ringN">0%</div></div>
+</div></header>
+
+<main class="wrap">
+  <section class="card summary" id="summary" aria-live="polite"></section>
+
+  <section class="card" style="margin-bottom:20px"><div class="rail" id="rail"></div></section>
+
+  <div class="grid">
+    <div style="display:grid;gap:20px;min-width:0">
+      <section class="card"><h3>ทีมเอเจนต์ <span class="count" id="agentCount"></span></h3><div class="agents" id="agents"></div></section>
+      <section class="card"><h3>บทสนทนาระหว่างเอเจนต์ <span class="count mono" id="feedCount"></span></h3><div class="feed" id="feed"></div></section>
+    </div>
+    <div style="display:grid;gap:20px;min-width:0">
+      <section class="card"><h3>แผนที่หน้าเล่ม <span class="count mono" id="pageCount"></span></h3><div class="pages" id="pages"></div>
+        <div class="legend"><span><i style="background:var(--paper-2)"></i>ยังไม่อ่าน</span><span><i style="background:var(--read-soft);border-color:var(--read)"></i>กำลังอ่าน</span><span><i style="background:color-mix(in srgb,var(--ok) 30%,var(--card))"></i>อ่านแล้ว ไม่มีปัญหา</span><span><i style="background:var(--warn)"></i>พบปัญหา</span><span><i style="background:var(--fix)"></i>แก้แล้ว รอตรวจซ้ำ</span><span><i style="background:var(--ok)"></i>ตรวจซ้ำผ่าน</span></div>
+      </section>
+      <section class="card"><h3>ขั้นตอนจัดเล่ม <span class="count mono" id="stepCount"></span></h3><ul class="steps" id="steps"></ul></section>
+    </div>
+  </div>
+  <footer>Report Formatter · <b>Trained by Haru</b></footer>
+</main>
+<div class="tip" id="tip"></div>
+<div class="demo" id="demo" hidden>
+  <span class="lbl">โหมดตัวอย่าง</span>
+  <button id="bPlay" aria-label="หยุดชั่วคราว">❚❚</button>
+  <button data-sp="1" class="on">1×</button><button data-sp="2">2×</button><button data-sp="4">4×</button>
+  <button id="bSkip">ข้ามไปผลสรุป</button><button id="bReset">เริ่มใหม่</button>
+</div>
+
+<script>
+/* ═════════ state & render — ใช้ได้ทั้งโหมดจริง (haru_state.js) และโหมดตัวอย่าง ═════════ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const AG = {
+  prep:  {name:'ฮารุ',       role:'จัดเล่มอัตโนมัติ', glyph:'ฮ', c:'var(--haru)'},
+  rev:   {name:'ผู้ตรวจ',     role:'อ่าน PDF ทุกหน้าแบบซูม', glyph:'ต', c:'var(--read)'},
+  fix:   {name:'ผู้แก้',      role:'แก้ในไฟล์ Word', glyph:'แ', c:'var(--fix)'},
+  sum:   {name:'ผู้สรุป',     role:'เขียนรายงานผล', glyph:'ส', c:'var(--ok)'},
+  sys:   {name:'ระบบ', glyph:'•', c:'var(--mute)'}
+};
+let S = null, feedShown = 0;
+
+function init(st){
+  S = st;
+  $('#bookTitle').textContent = st.title;
+  $('#pages').innerHTML = Array.from({length: st.pages.total}, (_, i) => `<div class="pc" data-n="${i+1}" data-s="none"></div>`).join('');
+  $('#feed').innerHTML = ''; feedShown = 0; $('#summary').className = 'card summary'; $('#summary').innerHTML = '';
+  render();
+}
+function pct(){
+  const st = S.steps, rv = S.phases;
+  const w = rv.reduce((a, p) => a + (p.status === 'done' ? 1 : p.status === 'active' ? (p.frac || 0) : 0), 0);
+  return Math.round(100 * w / rv.length);
+}
+function render(){
+  if (!S) return;
+  // header
+  $('#bookMeta').innerHTML = `<span class="chip">${esc(S.kind)}</span><span class="chip mono">${S.pages.total} หน้า</span>` +
+    (S.round ? `<span class="chip">รอบตรวจที่ ${S.round}</span>` : '') +
+    (S.status === 'done' ? `<span class="chip done">เสร็จแล้ว</span>` : `<span class="chip live">กำลังทำงาน</span>`);
+  const p = S.status === 'done' ? 100 : pct();
+  $('#ringArc').style.strokeDashoffset = 150.8 * (1 - p / 100); $('#ringN').textContent = p + '%';
+  // phases
+  $('#rail').innerHTML = S.phases.map((ph, i) => `<div class="ph ${ph.status}"><div class="dot">${ph.status === 'done' ? '✓' : i + 1}</div><div class="nm">${esc(ph.name)}</div><div class="sb">${esc(ph.sub || '')}</div></div>`).join('');
+  // agents
+  const ids = ['prep', 'rev', 'fix', 'sum'];
+  $('#agentCount').textContent = `${ids.filter(k => S.agents[k]?.on).length} ตัวกำลังทำงาน`;
+  $('#agents').style.gridTemplateColumns = '';
+  $('#agents').innerHTML = ids.map(k => {
+    const a = AG[k], s = S.agents[k] || {};
+    const lanes = k === 'rev' && s.lanes ? `<div class="lanes">${s.lanes.map(l => `<div class="lane"><span>${esc(l.name)}</span><div class="bar"><i style="width:${l.p}%"></i></div><span class="mono" style="text-align:right">${l.at ? 'น.' + l.at : l.p === 100 ? '✓' : '—'}</span></div>`).join('')}</div>` : '';
+    const bar = k !== 'rev' ? `<div class="foot"><div class="bar"><i style="width:${s.p || 0}%"></i></div></div>` : '';
+    return `<div class="ag ${s.on ? 'on' : ''}" style="--c:${a.c}"><div class="hd"><div class="av">${a.glyph}</div><div class="who"><b>${a.name}</b><span>${a.role}</span></div><span class="st">${esc(s.state || 'รอคิว')}</span></div>
+      <div class="task">${esc(s.task || '—')}${s.on ? '<span class="caret"></span>' : ''}</div>${lanes}${bar}</div>`;
+  }).join('');
+  // feed (append only)
+  const fd = $('#feed');
+  while (feedShown < S.feed.length) {
+    const m = S.feed[feedShown++]; const a = AG[m.from] || AG.sys;
+    const side = m.from === 'fix' ? 'r' : m.from === 'sys' ? 'sys' : '';
+    const pages = (m.pages || []).map(n => `<span class="pg mono" data-go="${n}">หน้า ${n}</span>`).join('');
+    const tag = m.tag ? `<span class="tag ${m.tag}">${{issue:'พบปัญหา', fixed:'แก้แล้ว', ok:'ผ่าน'}[m.tag]}</span>` : '';
+    const el = document.createElement('div'); el.className = 'msg ' + side;
+    el.innerHTML = side === 'sys' ? `<div class="bb">${esc(m.text)}</div>` :
+      `<div class="av" style="--c:${a.c}">${a.glyph}</div><div class="bb"><div class="meta"><b style="color:${a.c}">${a.name}${m.to ? ' → ' + AG[m.to].name : ''}</b>${tag}<span class="mono">${m.t || ''}</span></div><div class="tx">${pages}${esc(m.text)}</div></div>`;
+    fd.appendChild(el);
+  }
+  const typing = fd.querySelector('.msg.typing-row'); if (typing) typing.remove();
+  if (S.typing) { const a = AG[S.typing]; const el = document.createElement('div'); el.className = 'msg typing-row ' + (S.typing === 'fix' ? 'r' : ''); el.innerHTML = `<div class="av" style="--c:${a.c}">${a.glyph}</div><div class="bb"><span class="typing"><i></i><i></i><i></i></span></div>`; fd.appendChild(el); }
+  fd.scrollTop = fd.scrollHeight;
+  $('#feedCount').textContent = S.feed.length + ' ข้อความ';
+  // pages
+  const cells = $('#pages').children; let nOk = 0;
+  for (let i = 0; i < cells.length; i++) { const s = S.pages.map[i + 1] || 'none'; if (cells[i].dataset.s !== s) cells[i].dataset.s = s; if (s === 'ok' || s === 'pass') nOk++; }
+  $('#pageCount').textContent = `ผ่าน ${nOk}/${S.pages.total}`;
+  // steps
+  const done = S.steps.filter(s => s.status === 'done').length;
+  $('#stepCount').textContent = `${done}/${S.steps.length}`;
+  $('#steps').innerHTML = S.steps.map(s => `<li class="${s.status}"><span class="ic">${s.status === 'done' ? '✓' : ''}</span><span>${esc(s.name)}${s.detail ? `<span class="d">${esc(s.detail)}</span>` : ''}</span><span class="tm mono">${s.t || ''}</span></li>`).join('');
+  const ul = $('#steps'), run = ul.querySelector('li.run'); if (run) ul.scrollTop = Math.max(0, run.offsetTop - ul.clientHeight + run.offsetHeight + 12); // เลื่อนเฉพาะในรายการ ไม่เลื่อนทั้งหน้า
+  // summary
+  if (S.summary && !$('#summary').classList.contains('show')) renderSummary(S.summary);
+}
+function renderSummary(sm){
+  const max = Math.max(...sm.changes.map(c => c.count));
+  $('#summary').innerHTML = `
+    <div class="sum-hd"><div><h2>${esc(sm.headline)}</h2><p>${esc(sm.sub)}</p></div><div class="stamp"><div><b>${esc(sm.verdict)}</b><small>TRAINED BY HARU</small></div></div></div>
+    <div class="stats">${sm.stats.map((s, i) => `<div class="stat ${i === 1 ? 'h' : ''}"><div class="v mono">${esc(s.v)}</div><div class="l">${esc(s.l)}</div></div>`).join('')}</div>
+    <div class="cols">
+      <div><h4>แก้อะไรไปบ้าง <span class="chip">กดเพื่อดูตัวอย่างพร้อมเลขหน้า</span></h4><div class="chg">${sm.changes.map((c, i) => `
+        <details ${i === 0 ? 'open' : ''}><summary><span><span class="c">${esc(c.label)}</span><div class="mini"><i style="width:${100 * c.count / max}%"></i></div></span><span class="mono">${c.count.toLocaleString()}</span><span class="ar">›</span></summary>
+        <div class="ex">${c.ex.map(e => `<div><span class="pg mono" data-go="${e.p}">หน้า ${e.p}</span><span><s>${esc(e.b)}</s> → <em>${esc(e.a)}</em></span></div>`).join('')}</div></details>`).join('')}</div></div>
+      <div><h4>จุดที่ควรเปิดดูด้วยตา</h4><div class="checks">${sm.checks.map(c => `<div class="ck ${c.info ? 'info' : ''}"><span class="pg mono" data-go="${c.p}">หน้า ${c.p}</span><span>${esc(c.t)}</span></div>`).join('')}</div>
+        <h4 style="margin-top:18px">ไฟล์ผลลัพธ์</h4><div class="files">${sm.files.map(f => `<div class="file"><span class="ext ${f.ext}">${f.ext.toUpperCase()}</span><span>${esc(f.name)}</span></div>`).join('')}</div></div>
+    </div>`;
+  $('#summary').classList.add('show');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+// tooltip + จุดเลขหน้า → กระพริบในแผนที่
+document.addEventListener('mouseover', e => { const c = e.target.closest('.pc'); const t = $('#tip'); if (!c) { t.style.opacity = 0; return; }
+  const lab = {none:'ยังไม่อ่าน', reading:'กำลังอ่าน', ok:'ไม่มีปัญหา', issue:'พบปัญหา', fixed:'แก้แล้ว รอตรวจซ้ำ', pass:'ตรวจซ้ำผ่าน'}[c.dataset.s];
+  const note = S?.pages.notes?.[c.dataset.n]; t.innerHTML = `<b>หน้า ${c.dataset.n}</b> · ${lab}${note ? '<br>' + esc(note) : ''}`; const r = c.getBoundingClientRect(); t.style.left = Math.min(innerWidth - 270, r.left) + 'px'; t.style.top = (r.bottom + 6) + 'px'; t.style.opacity = 1; });
+document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (!g) return; const c = $(`.pc[data-n="${g.dataset.go}"]`); if (!c) return; c.scrollIntoView({block:'center', behavior:'smooth'}); c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); });
+
+/* ═════════ เวลา ═════════ */
+let t0 = performance.now(), tStop = null, simMs = 0;
+setInterval(() => { if (!S) return; const ms = S.realStart ? Date.now() - S.realStart : simMs; const s = Math.floor(ms / 1000); $('#clock').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 250);
+const clk = () => { const s = Math.floor(simMs / 1000); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+
+/* ═════════ โหมดจริง: สคริปต์ auto.ps1 เขียน haru_state.js ข้างไฟล์นี้ → window.HARU.update(state) ═════════ */
+window.HARU = { update(st){ if (!S || S.title !== st.title || S.pages.total !== st.pages.total) init(st); else { S = st; render(); } } };
+let realSeen = false;
+function poll(){ const sc = document.createElement('script'); sc.src = 'haru_state.js?' + Date.now(); sc.onload = () => { realSeen = true; sc.remove(); }; sc.onerror = () => sc.remove(); document.body.appendChild(sc); }
+const wantDemo = location.hash === '#demo' || location.protocol.startsWith('http');
+if (!wantDemo) { poll(); setInterval(() => { if (realSeen && S?.status !== 'done') poll(); }, 1500); }
+setTimeout(() => { if (!realSeen) startDemo(); }, wantDemo ? 0 : 900);
+
+/* ═════════ โหมดตัวอย่าง ═════════ */
+let speed = 1, paused = false, runId = 0, skipping = false;
+const sleep = ms => new Promise(res => { let left = ms; const step = () => { if (skipping) return res(); if (!paused) { left -= 50 * speed; simMs += 50 * speed; } left <= 0 ? res() : setTimeout(step, 50); }; setTimeout(step, 50); });
+
+function freshState(){
+  return {
+    title: 'ตัวอย่าง_รายงานผลการทดสอบระบบ v2.docx', kind: 'รายงานผลการทดสอบ', status: 'running', round: 0,
+    phases: [{name:'จัดเล่มอัตโนมัติ', status:'active', sub:'กำลังเริ่ม'}, {name:'ตรวจรอบ 1', status:''}, {name:'แก้ไข', status:''}, {name:'ตรวจซ้ำ', status:''}, {name:'สรุปผล', status:''}],
+    agents: {prep:{}, rev:{lanes:[{name:'ก · 1–24', p:0}, {name:'ข · 25–48', p:0}, {name:'ค · 49–72', p:0}, {name:'ง · 73–95', p:0}]}, fix:{}, sum:{}},
+    feed: [], typing: null, pages: {total: 95, map: {}, notes: {}},
+    steps: [
+      ['ตรวจชนิดเล่มและหัวกระดาษ', 'พบ: รายงานผลการทดสอบ · หัวกระดาษของเล่ม'], ['สำรองต้นฉบับ', 'เก็บไว้ที่ สำรองต้นฉบับ\\'],
+      ['รวมข้อความที่ขาดเป็นท่อน', '427 ย่อหน้า'], ['ฟอนต์เดียว TH SarabunPSK', 'แทน Arial / Calibri 212 จุด'], ['ขนาดเนื้อหา 16 pt ทั้งในและนอกตาราง', ''],
+      ['ปรับความกว้างตารางให้เท่ากันไม่ล้นขอบ', '64 ตาราง'], ['ตัดคำไทย + ชิดซ้าย-ขวา', 'ไม่ตัดกลางคำ · thaiDistribute'], ['หัวตารางตัวหนาและซ้ำทุกหน้า', ''],
+      ['หัวข้อไม่ค้างท้ายหน้า · ลบช่องว่าง', ''], ['ขยายรูปให้อ่านได้', 'สูงสุด 80% ของหน้า'], ['เลขหน้าชิดขวา 16 pt', ''], ['ส่งออก PDF + ตรวจอัตโนมัติ', '']
+    ].map(([name, detail]) => ({name, detail, status:'wait'})),
+    summary: null
+  };
+}
+const ISSUES = [
+  {p:12, lane:0, txt:'หัวข้อ 2.3 ค้างอยู่ท้ายหน้า ตารางไปเริ่มหน้า 13', fix:'ผูกหัวข้อ 2.3 ไว้กับแถวแรกของตาราง ตอนนี้ขึ้นหน้า 13 ด้วยกัน'},
+  {p:21, lane:0, txt:'คำว่า "ถูก|ต้อง" ถูกตัดคนละบรรทัดในเซลล์ผลที่คาดหวัง', fix:'รวม "ถูกต้อง" เป็นคำเดียว จุดตัดคำเหลือเฉพาะระหว่างคำ'},
+  {p:30, lane:1, txt:'ตาราง TC-014 ล้นขอบขวา 0.4 ซม.', fix:'ย่อคอลัมน์ Input Data ให้พอดีขอบ กว้างเท่าตารางอื่นในบท'},
+  {p:41, lane:1, txt:'ข้อความในเซลล์ลอยกลาง ไม่ชิดบน', fix:'ตั้งชิดบนทุกเซลล์ของตารางนี้ และลบย่อหน้าว่างหัวเซลล์'},
+  {p:58, lane:2, txt:'มีช่องว่างครึ่งบรรทัดด้านบนหน้า (ย่อหน้าว่างหลังตาราง)', fix:'ลบย่อหน้าว่างหลังตาราง หน้า 58 เริ่มชิดบนแล้ว'},
+  {p:66, lane:2, txt:'คำบรรยาย "รูปที่10" ไม่เว้นวรรค', fix:'แก้เป็น "รูปที่ 10" และตรวจทั้งเล่มเพิ่มอีก 6 จุด'},
+  {p:79, lane:3, txt:'ตารางข้ามหน้าแต่ไม่มีหัวตารางซ้ำ', fix:'ตั้งหัวตารางซ้ำ ตอนนี้หน้า 80 มีหัวตาราง'},
+  {p:88, lane:3, txt:'ภาพหน้าจอเล็ก ตัวหนังสือในภาพอ่านไม่ออก', fix:'ขยายภาพเป็น 80% ของความสูงหน้า ย้ายลงหน้า 89 ใต้หัวตาราง'}
+];
+const LANES = [[1, 24], [25, 48], [49, 72], [73, 95]];
+
+async function demo(id){
+  const st = freshState(); init(st); simMs = 0;
+  const S = st; // ใช้สถานะของรอบนี้เท่านั้น — กดเริ่มใหม่แล้วรอบเก่าจะไม่ไปแตะรอบใหม่
+  const live = () => id === runId;
+  const say = async (from, to, text, extra = {}) => { if (!live()) return; if (from !== 'sys') { S.typing = from; render(); await sleep(650); if (!live()) return; } S.typing = null; S.feed.push({from, to, text, t: clk(), ...extra}); render(); };
+  const ag = (k, o) => { if (!live()) return; Object.assign(S.agents[k], o); render(); };
+
+  // ── เฟส 1 จัดเล่ม
+  ag('prep', {on:true, state:'กำลังทำ', task:'เปิดไฟล์ Word และตรวจชนิดเล่ม', p:0});
+  await say('sys', null, 'เริ่มงาน · รับไฟล์ 95 หน้า · Trained by Haru');
+  for (let i = 0; i < S.steps.length; i++) {
+    if (!live()) return; const s = S.steps[i]; s.status = 'run'; S.phases[0].sub = s.name; S.phases[0].frac = i / S.steps.length;
+    ag('prep', {task: s.name + (s.detail ? ' — ' + s.detail : ''), p: Math.round(100 * i / S.steps.length)});
+    await sleep(i === S.steps.length - 1 ? 1400 : 700 + (i % 3) * 200); s.status = 'done'; s.t = clk(); render();
+  }
+  ag('prep', {on:false, state:'เสร็จ', task:'จัดเล่มครบ 12 ขั้นตอน ส่ง PDF ให้ผู้ตรวจ', p:100});
+  await say('prep', 'rev', 'จัดเล่มเสร็จแล้ว ส่ง PDF 95 หน้า ช่วยอ่านทุกหน้าแบบซูม แบ่งเป็น 4 ช่วง');
+  S.phases[0].status = 'done'; S.phases[0].sub = '12/12 ขั้นตอน'; S.phases[1].status = 'active'; S.round = 1;
+
+  // ── เฟส 2 ตรวจรอบ 1 (4 ช่วงพร้อมกัน)
+  ag('rev', {on:true, state:'อ่าน 4 ช่วงพร้อมกัน', task:'เรนเดอร์หน้า PDF เป็นภาพแล้วซูมอ่านทีละหน้า'});
+  const pos = LANES.map(l => l[0]); let found = 0;
+  while (live() && pos.some((p, i) => p <= LANES[i][1])) {
+    for (let i = 0; i < 4; i++) {
+      const p = pos[i]; if (p > LANES[i][1]) continue;
+      if (S.pages.map[p - 1] === 'reading') S.pages.map[p - 1] = 'ok';
+      const iss = ISSUES.find(x => x.p === p - 1); if (iss) { S.pages.map[p - 1] = 'issue'; }
+      S.pages.map[p] = 'reading'; const ln = S.agents.rev.lanes[i]; ln.at = p; ln.p = Math.round(100 * (p - LANES[i][0] + 1) / (LANES[i][1] - LANES[i][0] + 1)); pos[i]++;
+    }
+    S.phases[1].frac = pos.reduce((a, p, i) => a + (p - LANES[i][0]) / (LANES[i][1] - LANES[i][0] + 1), 0) / 4;
+    S.phases[1].sub = `อ่านแล้ว ${Object.values(S.pages.map).filter(v => v !== 'reading').length}/95 หน้า`;
+    render(); await sleep(260);
+    for (const iss of ISSUES) if (S.pages.map[iss.p] && !iss.said && S.agents.rev.lanes[iss.lane].at > iss.p) {
+      iss.said = true; found++; S.pages.map[iss.p] = 'issue'; S.pages.notes[iss.p] = iss.txt;
+      ag('rev', {task:`พบปัญหาหน้า ${iss.p}: ${iss.txt}`}); await say('rev', 'fix', iss.txt, {pages:[iss.p], tag:'issue'});
+    }
+  }
+  for (let i = 1; i <= 95; i++) if (S.pages.map[i] === 'reading' || !S.pages.map[i]) S.pages.map[i] = 'ok';
+  S.agents.rev.lanes.forEach(l => { l.p = 100; l.at = null; });
+  ag('rev', {on:false, state:'ส่งรายการแล้ว', task:`อ่านครบ 95 หน้า พบ ${found} จุด ส่งให้ผู้แก้`});
+  await say('rev', 'fix', `สรุปรอบ 1: พบ ${found} จุด ที่เหลือ 87 หน้าเรียบร้อย ส่งรายการพร้อมเลขหน้าให้แล้ว`);
+  S.phases[1].status = 'done'; S.phases[1].sub = `พบ ${found} จุด`; S.phases[2].status = 'active';
+
+  // ── เฟส 3 แก้
+  ag('fix', {on:true, state:'กำลังแก้', task:'เปิดไฟล์ Word', p:0});
+  await say('fix', 'rev', `รับแล้ว ${found} จุด จะแก้ทีละจุดในไฟล์ Word แล้วส่ง PDF ใหม่ให้ตรวจ`);
+  for (let k = 0; k < ISSUES.length; k++) {
+    if (!live()) return; const iss = ISSUES[k];
+    ag('fix', {task:`หน้า ${iss.p}: ${iss.fix}`, p: Math.round(100 * k / ISSUES.length)}); S.phases[2].frac = k / ISSUES.length; S.phases[2].sub = `แก้แล้ว ${k}/${found}`;
+    await sleep(700); S.pages.map[iss.p] = 'fixed'; S.pages.notes[iss.p] = 'แก้แล้ว: ' + iss.fix;
+    await say('fix', 'rev', iss.fix, {pages:[iss.p], tag:'fixed'});
+  }
+  ag('fix', {task:'ส่งออก PDF ใหม่ และเทียบกับรอบก่อนว่าไม่มีอะไรถอยกลับ', p:95}); await sleep(1200);
+  ag('fix', {on:false, state:'เสร็จ', task:`แก้ครบ ${found} จุด ไม่มีจุดเดิมกลับมา`, p:100});
+  S.phases[2].status = 'done'; S.phases[2].sub = `แก้ ${found}/${found}`; S.phases[3].status = 'active'; S.round = 2;
+
+  // ── เฟส 4 ตรวจซ้ำ
+  ag('rev', {on:true, state:'ตรวจซ้ำ', task:'อ่านซ้ำเฉพาะหน้าที่แก้ และหน้าก่อน/หลังที่อาจเลื่อน'});
+  await say('rev', 'fix', 'ตรวจซ้ำหน้าที่แก้ และหน้าข้างเคียงที่อาจเลื่อน');
+  for (let k = 0; k < ISSUES.length; k++) {
+    if (!live()) return; const iss = ISSUES[k]; S.pages.map[iss.p] = 'reading'; render(); await sleep(450);
+    S.pages.map[iss.p] = 'pass'; S.pages.notes[iss.p] = 'ตรวจซ้ำผ่าน — ' + iss.fix; S.phases[3].frac = (k + 1) / ISSUES.length; S.phases[3].sub = `ผ่าน ${k + 1}/${found}`; render();
+  }
+  await say('rev', 'fix', `ผ่านทั้ง ${found} จุด หน้าข้างเคียงไม่เลื่อน ไม่พบปัญหาใหม่`, {tag:'ok'});
+  for (let i = 1; i <= 95; i++) if (S.pages.map[i] === 'ok') S.pages.map[i] = 'pass';
+  ag('rev', {on:false, state:'ผ่าน', task:'เล่มนี้ผ่านแล้ว ไม่ต้องวนรอบ 3'});
+  S.phases[3].status = 'done'; S.phases[4].status = 'active'; S.phases[4].sub = 'กำลังเขียน';
+
+  // ── เฟส 5 สรุป
+  ag('sum', {on:true, state:'กำลังเขียน', task:'รวบรวมสิ่งที่เปลี่ยนจากต้นฉบับ พร้อมเลขหน้า', p:30}); await sleep(1100);
+  ag('sum', {task:'เขียน "สรุปการปรับ" และ "จุดที่ควรเช็ค"', p:75}); await sleep(1000);
+  await say('sum', null, 'สรุปผลพร้อมแล้ว เปิดดูได้ด้านบนสุด');
+  ag('sum', {on:false, state:'เสร็จ', task:'ส่งสรุปแล้ว', p:100});
+  finish();
+}
+function finish(){
+  S.phases.forEach(p => { p.status = 'done'; }); ['12/12 ขั้นตอน', 'พบ 8 จุด', 'แก้ 8/8', 'ผ่าน 8/8', 'พร้อมส่ง'].forEach((t, i) => S.phases[i].sub = t);
+  S.round = 2; S.agents.rev.lanes.forEach(l => { l.p = 100; l.at = null; }); S.status = 'done'; S.typing = null;
+  S.steps.forEach(s => { if (s.status !== 'done') { s.status = 'done'; s.t = s.t || clk(); } });
+  for (let i = 1; i <= 95; i++) S.pages.map[i] = 'pass';
+  S.summary = {
+    headline: 'จัดเล่มเสร็จแล้ว พร้อมส่ง', sub: 'เนื้อหาเหมือนต้นฉบับทุกคำ จัดใหม่ให้ระเบียบ อ่านง่าย ไม่มีช่องว่าง หัวข้อขึ้นหน้าใหม่พอดี', verdict: 'ผ่าน',
+    stats: [{v:'95', l:'หน้า (เท่าเดิม)'}, {v:'8', l:'จุดที่ผู้ตรวจพบและแก้แล้ว'}, {v:'2', l:'รอบตรวจ-แก้'}, {v:'543', l:'จุดที่จัดอัตโนมัติ'}, {v:'0', l:'คำในเนื้อหาที่หายไป'}],
+    changes: [
+      {label:'รวมข้อความที่ขาดเป็นท่อนให้ต่อกัน', count:427, ex:[{p:18, b:'แสดงข้อมูลและ / เนื้อหาตามที่กำหนด', a:'แสดงข้อมูลและเนื้อหาตามที่กำหนด'}, {p:44, b:'ผลที่คาดหวัง (ขึ้นบรรทัดใหม่กลางประโยค)', a:'ต่อเป็นย่อหน้าเดียว ชิดซ้าย-ขวา'}]},
+      {label:'เอาการบีบ/ถ่างตัวอักษรที่ตั้งเองออก', count:54, ex:[{p:23, b:'ตัวอักษรถ่าง 1.5 pt', a:'ระยะปกติ'}]},
+      {label:'จัดข้อความเป็นชิดซ้าย-ขวา (ไทย)', count:37, ex:[{p:9, b:'ชิดซ้าย', a:'ชิดซ้าย-ขวา'}, {p:52, b:'ตามสไตล์', a:'ชิดซ้าย-ขวา'}]},
+      {label:'ข้อความที่ถูกแก้ (คำบรรยาย / คำสะกด)', count:16, ex:[{p:66, b:'รูปที่10', a:'รูปที่ 10'}, {p:35, b:'InPut Data', a:'Input Data'}]},
+      {label:'จุดที่ผู้ตรวจพบและผู้แก้แก้แล้ว', count:8, ex:ISSUES.map(i => ({p:i.p, b:i.txt, a:i.fix}))},
+      {label:'หัวตารางเป็นตัวหนา', count:1, ex:[{p:7, b:'Test ID (ปกติ)', a:'Test ID (ตัวหนา)'}]}
+    ],
+    checks: [{p:30, t:'ตาราง TC-014 ย่อคอลัมน์ Input Data — อ่านง่ายอยู่ไหม'}, {p:89, t:'ภาพขยายเป็น 80% ย้ายลงหน้าใหม่ — ถ้าไม่ชอบ กลับขนาดเดิมได้'}, {p:58, t:'หน้าว่างครึ่งหน้าหลังตาราง เป็นท้ายบท (ตั้งใจ)', info:true}],
+    files: [{ext:'docx', name:'ตัวอย่าง_รายงานผลการทดสอบระบบ v2 (จัดเล่ม).docx'}, {ext:'pdf', name:'ตัวอย่าง_รายงานผลการทดสอบระบบ v2 (จัดเล่ม).pdf'}, {ext:'txt', name:'… (จัดเล่ม) - สรุปการปรับ.txt'}]
+  };
+  Object.values(S.agents).forEach(a => a.on = false);
+  render();
+}
+function startDemo(){
+  $('#demo').hidden = false; runId++; skipping = false; paused = false; $('#bPlay').textContent = '❚❚';
+  ISSUES.forEach(i => i.said = false); demo(runId);
+}
+$('#bPlay').onclick = () => { paused = !paused; $('#bPlay').textContent = paused ? '▶' : '❚❚'; $('#bPlay').setAttribute('aria-label', paused ? 'เล่นต่อ' : 'หยุดชั่วคราว'); };
+document.querySelectorAll('[data-sp]').forEach(b => b.onclick = () => { speed = +b.dataset.sp; document.querySelectorAll('[data-sp]').forEach(x => x.classList.toggle('on', x === b)); });
+$('#bSkip').onclick = () => { if (S?.status === 'done') return; skipping = true; runId++; setTimeout(() => { skipping = false; ISSUES.forEach(i => { if (!S.feed.some(f => f.pages?.[0] === i.p)) S.feed.push({from:'rev', to:'fix', text:i.txt, pages:[i.p], tag:'issue', t:clk()}); }); finish(); }, 80); };
+$('#bReset').onclick = () => { skipping = true; setTimeout(() => startDemo(), 80); };
+</script>
+</body>
+</html>

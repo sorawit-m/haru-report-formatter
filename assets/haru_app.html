@@ -1,0 +1,1483 @@
+<title>ฮารุ ห้องจัดเล่ม</title>
+<script type="application/json" id="claude-artifacts-manifest">{"permissions": ["full-access", "notifications"]}</script>
+<script>(function(){var t='dark';try{t=localStorage.getItem('haru-theme')||'dark'}catch(e){}if(t!=='auto')document.documentElement.dataset.theme=t})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Itim&display=swap" rel="stylesheet">
+<style>
+/* Layout: แถบบน → แท็บ (ภาพรวม ก่อน · ห้องทำงาน ท้าย) + ขั้นตอนย่อ → [เนื้อหาแท็บ | แชทกับทีม (ทุกแท็บ)] */
+:root{
+  --bg:#EEF1F6; --bg-2:#E4E9F1; --panel:#FFFFFF; --panel-2:#F7F9FC; --line:#DAE0EA; --line-2:#C5CEDB;
+  --ink:#152033; --ink-2:#47536A; --mute:#7E889A;
+  --accent:#D9537F; --accent-soft:#FBE3EB; --navy:#21406E;
+  --ok:#2E8A57; --ok-soft:#DCF1E5; --warn:#C47A0C; --warn-soft:#FAEBCF; --fix:#2F6FB5; --fix-soft:#DDE9F8; --read:#8E6CC7; --read-soft:#ECE5F8;
+  --c1:#21406E; --c2:#D9537F; --c3:#2F6FB5; --c4:#2E8A57; --c5:#C47A0C; --c6:#8E6CC7; --c7:#5F7389;
+  --scene-a:#E9EEF5; --scene-b:#D6DEEA; --shadow:0 1px 0 #0000000a,0 12px 32px -16px #15203340;
+  --f-ui:'IBM Plex Sans Thai','Leelawadee UI',Tahoma,sans-serif; --f-num:'IBM Plex Mono',ui-monospace,Consolas,monospace; --r:16px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E121A; --bg-2:#151B26; --panel:#161D29; --panel-2:#1B2330; --line:#273145; --line-2:#36425A;
+  --ink:#EEF1F7; --ink-2:#B7BFCD; --mute:#808A9C; --accent:#F07AA0; --accent-soft:#3A2230; --navy:#9DB8E6;
+  --ok:#5CC08A; --ok-soft:#1B3328; --warn:#E5A84B; --warn-soft:#3A2E1A; --fix:#71A7E6; --fix-soft:#1B2B40; --read:#B79DE6; --read-soft:#2A2440;
+  --c1:#9DB8E6; --c2:#F07AA0; --c3:#71A7E6; --c4:#5CC08A; --c5:#E5A84B; --c6:#B79DE6; --c7:#8FA3BA;
+  --scene-a:#1A2030; --scene-b:#111622; --shadow:0 1px 0 #ffffff08,0 14px 36px -18px #000d; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0E121A; --bg-2:#151B26; --panel:#161D29; --panel-2:#1B2330; --line:#273145; --line-2:#36425A;
+  --ink:#EEF1F7; --ink-2:#B7BFCD; --mute:#808A9C; --accent:#F07AA0; --accent-soft:#3A2230; --navy:#9DB8E6;
+  --ok:#5CC08A; --ok-soft:#1B3328; --warn:#E5A84B; --warn-soft:#3A2E1A; --fix:#71A7E6; --fix-soft:#1B2B40; --read:#B79DE6; --read-soft:#2A2440;
+  --c1:#9DB8E6; --c2:#F07AA0; --c3:#71A7E6; --c4:#5CC08A; --c5:#E5A84B; --c6:#B79DE6; --c7:#8FA3BA;
+  --scene-a:#1A2030; --scene-b:#111622; --shadow:0 1px 0 #ffffff08,0 14px 36px -18px #000d; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-ui);margin:0}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+*{scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:10px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-button{display:none;height:0;width:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.grow{flex:1}
+
+/* ── แถบบน ── */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:41;background:var(--bg)}
+.top-in{max-width:1560px;margin:0 auto;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:9px;flex:none}
+.brand b{font-size:20px;font-weight:700}.brand small{display:block;color:var(--mute);font-size:11.5px;margin-top:-4px}
+.jobs-btn{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:6px 12px;cursor:pointer;min-width:0;flex:0 1 460px}
+.jobs-btn .t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.jobs-btn .k{font-size:12px;color:var(--mute);white-space:nowrap}
+.meta{display:flex;gap:6px;flex:none}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:2px 9px;border-radius:99px;background:var(--bg-2);color:var(--ink-2);border:1px solid var(--line);white-space:nowrap}
+.chip.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);animation:blink 1.2s infinite}
+.chip.done{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+@keyframes blink{50%{opacity:.25}}
+.clock{flex:none;text-align:right}.clock .v{font-size:19px;font-weight:500;line-height:1.2}.clock .l{font-size:11px;color:var(--mute)}
+.ring{width:48px;height:48px;position:relative;flex:none}.ring svg{transform:rotate(-90deg);display:block}
+.ring .n{position:absolute;inset:0;display:grid;place-items:center;font-size:11.5px;font-weight:600}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:11px;padding:7px 14px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.btn:hover{border-color:var(--line-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{padding:4px 10px;font-size:13px;border-radius:9px}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.sharing{border-color:var(--c4);color:var(--c4)}
+.btn.sharing .dot{width:8px;height:8px;border-radius:50%;background:var(--c4);animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.25}}
+.chip.viewing{background:color-mix(in srgb,var(--c4) 16%,transparent);color:var(--c4)}
+.share-list{margin:0 0 6px;padding:0;list-style:none;display:grid;gap:8px}
+.share-list li{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;color:var(--ink-2);font-size:14px}
+.share-list li b{width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font:600 12px var(--f-num)}
+.share-link{display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--bg-2);margin:6px 0 2px;font-size:13px;overflow-wrap:anywhere}
+.share-link span{flex:1;min-width:0}
+.btn.danger{border-color:var(--c5);color:var(--c5)}
+.menu{position:absolute;z-index:60;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 24px 60px -20px #0006;padding:6px;width:min(440px,calc(100vw - 32px));max-height:60vh;overflow:auto}
+.menu button{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:9px 10px;border-radius:10px;cursor:pointer}
+.menu button:hover,.menu button.on{background:var(--bg-2)}
+.menu .d{width:8px;height:8px;border-radius:50%;background:var(--mute)}.menu .d.running{background:var(--accent)}.menu .d.done{background:var(--ok)}.menu .d.stale{background:var(--warn)}
+.menu .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}.menu .w{font-size:12px;color:var(--mute)}
+.menu .sep{font-size:11.5px;color:var(--mute);padding:8px 10px 4px}
+
+/* ── โครงหน้า ── */
+.wrap{max-width:1560px;margin:0 auto;padding-block:14px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.banner{display:flex;align-items:center;gap:14px;padding:10px 16px;border-radius:14px;background:var(--accent-soft);margin-bottom:12px;flex-wrap:wrap}
+.banner p{margin:0;flex:1;min-width:240px}.banner b{color:var(--accent)}
+.shell{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
+.bar{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.tabs{display:inline-flex;flex-wrap:wrap;background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
+.tabs button{border:0;background:transparent;padding:6px 14px;border-radius:9px;cursor:pointer;color:var(--ink-2);font-weight:500;position:relative;display:inline-flex;align-items:center;gap:6px}
+.tabs button.on{background:var(--panel);color:var(--ink);box-shadow:0 1px 4px #0002;font-weight:600}
+.tabs .cnt{min-width:20px;padding:0 6px;border-radius:99px;font:600 11px/18px var(--f-num);background:var(--line);color:var(--ink-2);text-align:center}
+.tabs .cnt.warn{background:var(--warn);color:#fff}.tabs .cnt.ok{background:var(--ok-soft);color:var(--ok)}
+.tabs .pip{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--accent);animation:blink 1s infinite}
+.rail{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;color:var(--mute)}
+.ph{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.ph i{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:10.5px;font-weight:600;background:var(--bg-2);color:var(--mute);border:1px solid var(--line)}
+.ph.active{color:var(--ink);font-weight:600}.ph.active i{background:var(--accent);color:#fff;border-color:var(--accent);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 50%,transparent)}100%{box-shadow:0 0 0 7px transparent}}
+.ph.done{color:var(--ink-2)}.ph.done i{background:var(--navy);color:var(--panel);border-color:var(--navy)}
+.ph .s{color:var(--accent);font-weight:500}
+.ph-sep{width:12px;height:1.5px;background:var(--line-2)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);min-width:0}
+.card-hd{display:flex;align-items:center;gap:10px;padding:14px 18px 6px;flex-wrap:wrap}
+.card-hd h3{margin:0;font-size:15.5px;font-weight:600}.card-hd .sub{font-size:12.5px;color:var(--mute)}
+.lnk{border:0;background:none;color:var(--accent);cursor:pointer;font-size:13px;font-weight:500;padding:2px 4px;border-radius:6px}
+.empty{padding:28px 20px;text-align:center;color:var(--ink-2)}.empty b{display:block;font-size:16px;color:var(--ink);margin-bottom:2px}
+
+/* ── ภาพรวม ── */
+.ov{display:grid;gap:14px}
+.hero{display:flex;gap:20px;align-items:center;padding:22px 24px}
+.hero h2{margin:0;font-size:25px;line-height:1.3;text-wrap:balance}.hero p{margin:6px 0 0;color:var(--ink-2);max-width:64ch}
+.hero .bar2{height:9px;border-radius:9px;background:var(--bg-2);overflow:hidden;margin-top:14px;max-width:560px}.hero .bar2 i{display:block;height:100%;background:var(--accent);transition:width .6s}
+.stamp{flex:none;width:112px;height:112px;border-radius:50%;border:4px double var(--accent);color:var(--accent);display:grid;place-items:center;text-align:center;transform:rotate(-12deg);font-weight:700;line-height:1.1;padding:8px}
+.stamp b{font-size:24px;display:block}.stamp small{font-size:9px;letter-spacing:.08em}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;box-shadow:var(--shadow)}
+.kpi:hover{border-color:var(--line-2)}
+.kpi .k{font-size:12.5px;color:var(--mute)}.kpi .v{font-size:28px;font-weight:600;line-height:1.15}.kpi .d{font-size:12.5px;color:var(--ink-2)}
+.kpi.warn .v{color:var(--warn)}.kpi.good .v{color:var(--ok)}.kpi.fix .v{color:var(--fix)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.seg{display:inline-flex;background:var(--bg-2);border-radius:99px;padding:3px;margin-left:auto}
+.seg button{border:0;background:transparent;padding:3px 12px;border-radius:99px;cursor:pointer;font-size:12.5px;color:var(--ink-2)}
+.seg button.on{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px #0002;font-weight:600}
+.seg button:disabled{opacity:.4;cursor:default}
+.chart{display:flex;gap:18px;align-items:center;padding:8px 18px 18px;flex-wrap:wrap}
+.chart svg{flex:none}
+.lg{display:grid;gap:6px;flex:1;min-width:180px}
+.lg div{display:grid;grid-template-columns:12px 1fr auto auto;gap:8px;align-items:center;font-size:13px}
+.lg i{width:12px;height:12px;border-radius:3px}.lg .p{color:var(--mute);font-family:var(--f-num);font-size:12px;min-width:46px;text-align:right}
+.bars{display:grid;gap:10px;padding:8px 18px 18px;width:100%}
+.bars div{display:grid;grid-template-columns:minmax(0,170px) 1fr auto;gap:10px;align-items:center;font-size:13px}
+.bars span.l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bars .tr{height:14px;border-radius:6px;background:var(--bg-2);overflow:hidden}.bars .tr i{display:block;height:100%;border-radius:6px}
+.bars .p{font-family:var(--f-num);font-size:12px;color:var(--ink-2);min-width:90px;text-align:right}
+table.tb{width:100%;border-collapse:collapse;font-size:13.5px}
+.tb th{text-align:left;font-size:12px;font-weight:600;color:var(--mute);padding:6px 10px;border-bottom:1px solid var(--line)}
+.tb td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tb tr:last-child td{border-bottom:0}
+.tb .r{text-align:right;font-family:var(--f-num)}
+.tbw{padding:0 8px 10px;overflow-x:auto}
+.pill{font-size:11.5px;padding:1px 9px;border-radius:99px;white-space:nowrap;display:inline-block}
+.pill.issue{background:var(--warn-soft);color:var(--warn)}.pill.fixed{background:var(--fix-soft);color:var(--fix)}.pill.pass{background:var(--ok-soft);color:var(--ok)}
+.pg{display:inline-flex;align-items:center;font:600 11.5px/20px var(--f-num);padding:0 8px;border-radius:6px;background:var(--navy);color:var(--panel);cursor:pointer;border:0;white-space:nowrap}
+.files{display:grid;gap:8px;padding:4px 18px 18px}
+.file{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:13.5px;background:var(--panel-2)}
+.file .ext{font:700 10.5px var(--f-num);padding:3px 6px;border-radius:5px;color:#fff;background:var(--navy)}
+.file .ext.pdf{background:#C8463D}.file .ext.txt{background:var(--mute)}
+.file .n{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── แท็บย่อย ── */
+.panel-hd{display:flex;align-items:flex-end;gap:12px;padding:18px 20px 6px;flex-wrap:wrap}
+.panel-hd h2{margin:0;font-size:20px}.panel-hd p{margin:2px 0 0;color:var(--ink-2);font-size:14px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;padding:6px 20px 10px}
+.fchip{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:3px 12px;font-size:12.5px;cursor:pointer;color:var(--ink-2)}
+.fchip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}.fchip .n{font-family:var(--f-num);opacity:.7;margin-left:4px}
+.rows{padding:0 12px 12px}
+.rowi{display:grid;grid-template-columns:78px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 8px;border-bottom:1px solid var(--line)}
+.rowi:last-child{border-bottom:0}.rowi .why{font-size:14px}.rowi .fx{display:block;font-size:12.5px;color:var(--ok)}
+.more{display:block;margin:8px auto 4px}
+.chg{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel-2);margin:0 8px 8px}
+.chg details{border-bottom:1px solid var(--line)}.chg details:last-child{border-bottom:0}
+.chg summary{list-style:none;display:grid;grid-template-columns:1fr auto 16px;gap:10px;padding:10px 14px;cursor:pointer;align-items:center}
+.chg summary::-webkit-details-marker{display:none}.chg summary .c{font-weight:600}.chg summary .ar{transition:transform .2s;color:var(--mute)}.chg details[open] summary .ar{transform:rotate(90deg)}
+.chg .ex{padding:2px 14px 12px;display:grid;gap:6px}
+.chg .ex div{font-size:13px;color:var(--ink-2);display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:baseline}
+.chg .ex s{color:var(--mute)}.chg .ex em{font-style:normal;color:var(--ok);font-weight:500}
+.mini{height:4px;border-radius:9px;background:var(--bg-2);margin-top:5px;overflow:hidden}.mini i{display:block;height:100%;background:var(--navy)}
+.pmap{padding:6px 18px 6px}.pmap canvas{display:block;width:100%;cursor:zoom-in}
+.pages{display:grid;grid-template-columns:repeat(auto-fill,minmax(20px,1fr));gap:4px}
+.pc{aspect-ratio:.72;border-radius:3px;background:var(--bg-2);border:1px solid var(--line);cursor:zoom-in;padding:0;transition:transform .2s}
+.pc:hover{transform:scale(1.25)}
+.pc[data-s="reading"]{background:var(--read-soft);border-color:var(--read);animation:blink 1s infinite}
+.pc[data-s="ok"]{background:color-mix(in srgb,var(--ok) 28%,var(--panel));border-color:color-mix(in srgb,var(--ok) 50%,transparent)}
+.pc[data-s="issue"]{background:var(--warn);border-color:var(--warn)}.pc[data-s="fixed"]{background:var(--fix);border-color:var(--fix)}.pc[data-s="pass"]{background:var(--ok);border-color:var(--ok)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;padding:6px 18px 14px;font-size:12px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:10px;height:13px;border-radius:2px;display:inline-block;border:1px solid var(--line)}
+.steps{list-style:none;margin:0;padding:4px 18px 14px}
+.steps li{display:grid;grid-template-columns:20px 1fr auto;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.steps li:last-child{border-bottom:0}
+.steps .ic{width:17px;height:17px;border-radius:50%;display:grid;place-items:center;font-size:10px;margin-top:2px;border:1.5px solid var(--line-2)}
+.steps li.done .ic{background:var(--ok);border-color:var(--ok);color:#fff}
+.steps li.run .ic{border-color:var(--accent);border-top-color:transparent;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.steps .d{display:block;font-size:11.5px;color:var(--mute);overflow-wrap:anywhere}.steps .tm{font-size:11px;color:var(--mute)}
+
+/* ── ห้องทำงาน ── */
+.stage{position:relative;margin:0 12px 12px;border-radius:12px;overflow:hidden;background:radial-gradient(120% 90% at 50% 30%,var(--scene-a),var(--scene-b));aspect-ratio:16/9;min-height:320px}
+.stage canvas{display:block;width:100%;height:100%}
+.ovl{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.ovl .tag{position:absolute;transform:translate(-50%,-100%);font-size:11px;font-weight:600;color:#fff;padding:1px 7px;border-radius:7px;white-space:nowrap;opacity:0;transition:opacity .25s}
+.ovl .tag.show{opacity:.95}
+.ovl .bub{position:absolute;transform:translate(-50%,-100%) scale(.7);transform-origin:50% 100%;opacity:0;background:#FFFDF9;color:#152033;border:1.5px solid #152033;border-radius:12px;padding:4px 10px;font-size:12.5px;line-height:1.35;max-width:230px;width:max-content;text-align:center;transition:opacity .2s,transform .25s cubic-bezier(.3,1.6,.5,1);box-shadow:0 4px 12px -4px #0004}
+.ovl .bub::after{content:"";position:absolute;left:50%;bottom:-6px;width:9px;height:9px;background:inherit;border-right:1.5px solid #152033;border-bottom:1.5px solid #152033;transform:translateX(-50%) rotate(45deg)}
+.ovl .bub.show{opacity:1;transform:translate(-50%,-100%) scale(1)}
+.ovl .bub.alert{background:#FFF3D6;border-color:#B8720C}.ovl .bub.alert::after{border-color:#B8720C}
+.ovl .dchip{position:absolute;transform:translate(-50%,-100%);font:600 10.5px/17px var(--f-num);padding:0 6px;border-radius:6px;background:#152033DD;color:#fff;opacity:0;transition:opacity .25s}
+.ovl .dchip.show{opacity:1}
+.ovl .env{position:absolute;transform:translate(-50%,-140%);font:700 12px/20px var(--f-num);padding:0 9px;border-radius:99px;color:#fff;white-space:nowrap;box-shadow:0 4px 14px -4px #0008;border:2px solid #fff}
+.cams{position:absolute;left:10px;bottom:10px;display:flex;gap:4px;flex-wrap:wrap;pointer-events:auto}
+.cams button{border:0;background:#152033B8;color:#fff;font-size:12px;padding:4px 10px;border-radius:99px;cursor:pointer;backdrop-filter:blur(6px)}
+.cams button.on{background:var(--accent)}
+.stage .err{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;color:var(--ink-2)}
+.agents{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:0 12px 12px}
+.ag{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel-2);min-width:0}
+.ag.on{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 18%,transparent)}
+.ag .hd{display:flex;align-items:center;gap:8px}
+.av{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:700;font-size:14px;color:#fff;flex:none;position:relative}
+.ag.on .av::after{content:"";position:absolute;right:-3px;bottom:-3px;width:9px;height:9px;border-radius:50%;background:var(--ok);border:2px solid var(--panel)}
+.ag b{font-size:14px;display:block}.ag .who span{font-size:11.5px;color:var(--mute)}
+.ag .st{margin-left:auto;font-size:11px;padding:1px 8px;border-radius:99px;background:var(--bg-2);color:var(--mute);white-space:nowrap}
+.ag.on .st{background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c)}
+.ag .task{margin-top:6px;font-size:12.5px;color:var(--ink-2);min-height:38px;overflow-wrap:anywhere}
+.mbar{height:5px;border-radius:9px;background:var(--bg-2);overflow:hidden;margin-top:6px}.mbar i{display:block;height:100%;border-radius:9px;transition:width .5s}
+
+/* ── แชท (ทุกแท็บ) ── */
+.chat{display:flex;flex-direction:column;height:calc(100vh - 120px);min-height:520px;position:sticky;top:84px}
+.feed{flex:1;overflow:auto;padding:8px 14px 12px;display:flex;flex-direction:column;gap:9px}
+.msg{display:flex;gap:8px;max-width:94%;animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.msg .av{width:28px;height:28px;border-radius:8px;font-size:12px}
+.msg .bb{background:var(--panel-2);border:1px solid var(--line);border-radius:4px 12px 12px 12px;padding:7px 11px;min-width:0}
+.msg .meta{font-size:11px;color:var(--mute);margin-bottom:1px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.msg .tx{font-size:13.5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.me{align-self:flex-end;flex-direction:row-reverse}.msg.me .bb{background:var(--accent);border-color:var(--accent);color:#fff;border-radius:12px 4px 12px 12px}.msg.me .meta{color:#ffffffc0}
+.msg.fixr{align-self:flex-end;flex-direction:row-reverse}.msg.fixr .bb{border-radius:12px 4px 12px 12px;background:color-mix(in srgb,var(--fix) 9%,var(--panel))}
+.msg.sys{align-self:center;max-width:100%}.msg.sys .bb{background:transparent;border:1px dashed var(--line-2);border-radius:99px;padding:2px 12px;font-size:12px;color:var(--ink-2)}
+.msg .chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.tag{font-size:10.5px;padding:0 7px;border-radius:6px;line-height:17px}
+.tag.issue{background:var(--warn-soft);color:var(--warn)}.tag.fixed{background:var(--fix-soft);color:var(--fix)}.tag.ok{background:var(--ok-soft);color:var(--ok)}
+.typing{display:inline-flex;gap:3px}.typing i{width:5px;height:5px;border-radius:50%;background:var(--mute);animation:ty 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes ty{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-3px);opacity:1}}
+.tray{margin:0 12px 8px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));background:color-mix(in srgb,var(--accent-soft) 55%,var(--panel));border-radius:12px;padding:8px 10px;display:grid;gap:6px}
+.tray .h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.tray .items{display:flex;gap:4px;flex-wrap:wrap}
+.tray .it{display:inline-flex;align-items:center;gap:4px;font-size:12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:1px 4px 1px 8px}
+.tray .it button{border:0;background:none;cursor:pointer;color:var(--mute);padding:0 4px}
+.compose{border-top:1px solid var(--line);padding:10px 12px 12px;display:grid;gap:6px}
+.compose .row{display:flex;gap:6px;align-items:flex-end}
+.compose textarea{flex:1;resize:none;border:1px solid var(--line);background:var(--panel-2);border-radius:12px;padding:9px 12px;font:inherit;font-size:14px;color:var(--ink);min-height:42px;max-height:140px}
+.compose textarea:focus{outline:none;border-color:var(--accent)}
+.ibtn{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2);display:grid;place-items:center;cursor:pointer;flex:none}
+.ibtn.send{background:var(--accent);border-color:var(--accent);color:#fff}.ibtn:disabled{opacity:.45;cursor:default}
+.compose .hint{font-size:11.5px;color:var(--mute)}
+
+/* ── หน้าต่าง ── */
+.modal{position:fixed;inset:0;z-index:80;background:color-mix(in srgb,#0A0D14 72%,transparent);backdrop-filter:blur(5px);display:grid;place-items:center;padding:20px}
+.mcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;width:min(520px,100%);padding:20px 22px;box-shadow:0 30px 80px -20px #000c;animation:rise .3s}
+.mcard h2{margin:0 0 4px;font-size:20px}.mcard p{margin:0 0 14px;color:var(--ink-2)}
+.mcard .fname{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--bg-2);margin-bottom:12px;overflow-wrap:anywhere}
+.mcard label{display:flex;gap:10px;align-items:flex-start;padding:6px 0;cursor:pointer}.mcard label small{display:block;color:var(--mute)}
+.mcard .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.lb-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;width:min(1080px,100%);max-height:calc(100vh - 40px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px -20px #000c}
+.lb-hd{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.lb-hd b{font-size:18px}
+.x{border:0;background:var(--bg-2);width:34px;height:34px;border-radius:10px;cursor:pointer}
+.lb-main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 320px}
+.lb-body{min-height:0;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;background:var(--bg-2);padding:14px 2px;overflow:auto}
+.shot{position:relative;margin:auto;width:fit-content;max-width:100%}
+.shot img{display:block;max-width:100%;max-height:calc(100vh - 230px);border-radius:3px;background:#fff;box-shadow:0 10px 30px -8px #0005}
+.shot.annot{cursor:crosshair}.shot.annot img{outline:3px solid var(--accent);outline-offset:2px}
+.pin{position:absolute;transform:translate(-50%,-100%);width:28px;height:34px;pointer-events:auto;cursor:pointer}
+.pin span{position:absolute;inset:0 0 6px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--accent);box-shadow:0 4px 10px -2px #0007;border:2px solid #fff}
+.pin b{position:absolute;inset:3px 0 0;text-align:center;color:#fff;font:700 12px/20px var(--f-num)}
+.nav{border:0;background:transparent;font-size:28px;color:var(--ink-2);cursor:pointer;height:60px;border-radius:10px}.nav:disabled{opacity:.2;cursor:default}
+.lb-side{border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.lb-note{padding:14px 16px;font-size:14px;display:grid;gap:8px;border-bottom:1px solid var(--line)}
+.lb-note .k{display:block;color:var(--mute);font-size:12px}
+.req{flex:1;min-height:0;overflow:auto;padding:12px 16px;display:grid;gap:8px;align-content:start}
+.req h4{margin:0;font-size:14px;display:flex;align-items:center;gap:8px}
+.req .hint{font-size:12.5px;color:var(--ink-2);background:var(--accent-soft);border-radius:10px;padding:8px 10px}
+.req .pi{display:grid;grid-template-columns:24px 1fr 24px;gap:6px;align-items:start}
+.req .pi b{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font:700 11px var(--f-num);margin-top:6px}
+.req textarea,.req input{width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:9px;padding:6px 9px;font:inherit;font-size:13.5px;color:var(--ink);resize:vertical;min-height:36px}
+.req .pi button{border:0;background:none;color:var(--mute);cursor:pointer;margin-top:6px}
+.req-acts{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.drop{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 22%,#0A0D14CC);color:#fff;font-size:22px;font-weight:600;pointer-events:none}
+.drop div{border:3px dashed #fff;border-radius:24px;padding:48px 64px;text-align:center}.drop small{display:block;font-size:14px;font-weight:400;opacity:.85;margin-top:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:95;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;box-shadow:0 12px 30px -10px #000a;display:flex;gap:12px;align-items:center;font-size:14px;animation:rise .3s}
+.toast button{border:0;background:var(--accent);color:#fff;border-radius:8px;padding:4px 10px;cursor:pointer}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;padding:4px 9px;border-radius:7px;opacity:0;transition:opacity .15s;z-index:96;max-width:260px}
+footer{text-align:center;color:var(--mute);font-size:12.5px;padding:18px 0 4px}footer b{color:var(--accent);font-weight:600}
+
+@media (max-width:1280px){.shell{grid-template-columns:1fr}.chat{position:static;height:560px}.lb-main{grid-template-columns:1fr}.lb-side{border-left:0;border-top:1px solid var(--line);max-height:42vh}}
+@media (max-width:1100px){.meta{display:none}.two{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.agents{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:720px){.clock{display:none}.brand small{display:none}.hero{flex-direction:column;align-items:flex-start}.stamp{width:84px;height:84px}.stamp b{font-size:18px}.agents{grid-template-columns:1fr}.stage{aspect-ratio:4/3}.rowi{grid-template-columns:70px 1fr}.rowi .pill,.rowi .btn{grid-column:2}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="top"><div class="top-in">
+  <div class="brand">
+    <svg width="32" height="32" viewBox="0 0 40 40" aria-hidden="true"><g transform="translate(20 20)" fill="var(--accent)"><path id="pt" d="M0-3C-5-7-6-14 0-17C6-14 5-7 0-3Z"/><use href="#pt" transform="rotate(72)"/><use href="#pt" transform="rotate(144)"/><use href="#pt" transform="rotate(216)"/><use href="#pt" transform="rotate(288)"/><circle r="3" fill="var(--panel)"/></g></svg>
+    <div><b>ฮารุ</b><small>ห้องจัดเล่มรายงาน</small></div>
+  </div>
+  <button class="jobs-btn" id="jobsBtn" aria-haspopup="true" aria-expanded="false"><span class="t" id="bookTitle">ยังไม่มีงาน</span><span class="k" id="bookKind"></span><span aria-hidden="true">▾</span></button>
+  <span class="meta" id="bookMeta"></span>
+  <span class="grow"></span>
+  <button class="btn" id="themeBtn" aria-label="เปลี่ยนสีหน้าจอ"><svg id="themeIco" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"></svg><span id="themeLbl"></span></button>
+  <button class="btn" id="shareBtn" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span>แชร์ดูสด</span></button>
+  <button class="btn primary" id="newBtn"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>งานใหม่</button>
+  <div class="clock"><div class="v num" id="clock">00:00</div><div class="l">เวลาที่ใช้</div></div>
+  <div class="ring"><svg width="48" height="48"><circle cx="24" cy="24" r="19" fill="none" stroke="var(--line)" stroke-width="5"/><circle id="ringArc" cx="24" cy="24" r="19" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4" style="transition:stroke-dashoffset .6s"/></svg><div class="n num" id="ringN">0%</div></div>
+</div></header>
+<div class="menu" id="jobsMenu" hidden role="menu"></div>
+
+<main class="wrap">
+  <div class="banner" id="banner" hidden><p id="bannerText"></p><button class="btn primary" id="bannerBtn" hidden></button></div>
+  <div class="bar">
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="over" class="on" aria-selected="true">ภาพรวม<span class="pip" id="sumPip" hidden></span></button>
+      <button role="tab" data-tab="check" aria-selected="false">ควรเปิดดู<span class="cnt" id="cCheck">0</span></button>
+      <button role="tab" data-tab="change" aria-selected="false">แก้อะไรไป<span class="cnt" id="cChange">0</span></button>
+      <button role="tab" data-tab="pages" aria-selected="false">ทุกหน้า</button>
+      <button role="tab" data-tab="steps" aria-selected="false">ขั้นตอน</button>
+      <button role="tab" data-tab="room" aria-selected="false">ห้องทำงาน</button>
+    </div>
+    <div class="rail" id="rail" aria-label="ความคืบหน้า"></div>
+  </div>
+  <div class="shell">
+    <div id="main">
+      <section id="p-over" class="ov"></section>
+      <section id="p-check" hidden><div class="card">
+        <div class="panel-hd"><div><h2>หน้าที่ควรเปิดดู</h2><p>ผู้ตรวจเจอจุดผิดปกติในหน้าเหล่านี้ กดเลขหน้าเพื่อดูภาพก่อน/หลังแก้ และแจ้งแก้เพิ่มได้บนภาพ</p></div><span class="grow"></span><button class="btn" id="loopBtn" hidden>ให้ทีมแก้อีกรอบ</button></div>
+        <div class="filters" id="chkFilters"></div><div class="rows" id="chkList"></div></div></section>
+      <section id="p-change" hidden><div class="card">
+        <div class="panel-hd"><div><h2>แก้อะไรไปบ้าง</h2><p>เทียบกับต้นฉบับ แก้แค่รูปแบบ เนื้อหาและคำเหมือนเดิม กดหัวข้อเพื่อดูตัวอย่างพร้อมเลขหน้า</p></div></div>
+        <div id="chgList"></div></div></section>
+      <section id="p-pages" hidden><div class="card">
+        <div class="panel-hd"><div><h2>ทุกหน้าในเล่ม</h2><p>สีบอกสถานะของแต่ละหน้า กดหน้าไหนก็ได้เพื่อดูภาพ</p></div><span class="grow"></span><span class="chip num" id="pageCount"></span><label class="fchip" style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" id="onlyFlag"> เฉพาะหน้าที่ควรดู</label></div>
+        <div class="pmap" id="pmap"></div>
+        <div class="legend" id="legend"></div></div></section>
+      <section id="p-steps" hidden><div class="card"><div class="panel-hd"><div><h2>ขั้นตอนที่ฮารุทำ</h2><p>เรียงตามลำดับจริง พร้อมผลของแต่ละขั้น</p></div><span class="grow"></span><span class="chip num" id="stepCount"></span></div><ul class="steps" id="steps"></ul></div></section>
+      <section id="p-room" hidden><div class="card">
+        <div class="card-hd"><h3>ห้องทำงานของทีมฮารุ</h3><span class="sub" id="agentCount"></span></div>
+        <div class="stage" id="stage"><canvas id="cv"></canvas><div class="ovl" id="ovl"></div><div class="cams" id="cams"></div></div>
+        <div class="agents" id="agents"></div></div></section>
+    </div>
+    <aside class="card chat" aria-label="แชทกับทีมฮารุ">
+      <div class="card-hd"><h3>แชทกับทีมฮารุ</h3><span class="grow"></span><span class="chip">Claude Opus</span></div>
+      <div class="feed" id="feed" aria-live="polite"></div>
+      <div class="tray" id="tray" hidden></div>
+      <div class="compose">
+        <div class="row">
+          <button class="ibtn" id="attachBtn" aria-label="แนบไฟล์ .docx เพื่อเริ่มงานใหม่"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 11.5l-8.6 8.6a5 5 0 01-7.1-7.1l8.6-8.6a3.3 3.3 0 014.7 4.7l-8.6 8.6a1.7 1.7 0 01-2.4-2.4l7.9-7.9"/></svg></button>
+          <textarea id="chatIn" rows="1" placeholder="สั่งงานได้เลย เช่น หน้า 30 ตารางแคบไป ขยายหน่อย"></textarea>
+          <button class="ibtn send" id="sendBtn" aria-label="ส่ง"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.4 20.4l17.4-7.5a1 1 0 000-1.8L3.4 3.6a1 1 0 00-1.4 1.1L4 11l9 1-9 1-2 6.3a1 1 0 001.4 1.1z"/></svg></button>
+        </div>
+        <div class="hint" id="chatHint">Enter ส่ง · Shift+Enter ขึ้นบรรทัดใหม่ · ลากไฟล์ .docx มาวางเพื่อเริ่มงานใหม่</div>
+      </div>
+    </aside>
+  </div>
+  <footer>Report Formatter · <b>Trained by Haru</b></footer>
+</main>
+
+<input type="file" id="fileIn" accept=".docx" hidden>
+<div class="modal" id="newModal" hidden role="dialog" aria-modal="true" aria-labelledby="nmTitle"><div class="mcard">
+  <h2 id="nmTitle">เริ่มจัดเล่มใหม่</h2><p>ฮารุจัดทั้งเล่มให้ เนื้อหาเหมือนเดิมทุกคำ แล้วทีมตรวจกับแก้ไปพร้อมกันจนไม่เจอปัญหา</p>
+  <div class="fname"><span class="chip">DOCX</span><span id="nmName"></span></div>
+  <label><input type="checkbox" id="nmIntro"><span>เอาบทนำออก<small>ติ๊กเฉพาะเล่มที่ต้องการเอาบทนำออก</small></span></label>
+  <div class="acts"><button class="btn" id="nmCancel">ยกเลิก</button><button class="btn primary" id="nmGo">เริ่มจัดเล่ม</button></div>
+</div></div>
+<div class="modal" id="shareModal" hidden role="dialog" aria-modal="true" aria-labelledby="smTitle"><div class="mcard">
+  <h2 id="smTitle">แชร์งานนี้ให้เพื่อนดูสด</h2><p id="smText"></p>
+  <ul class="share-list" id="smList"></ul>
+  <div class="share-link"><span>ลิงก์แอป: <b id="smUrl"></b></span><button class="btn sm" id="smCopy">คัดลอก</button></div>
+  <div class="acts"><button class="btn" id="smCancel">ยกเลิก</button><button class="btn primary" id="smGo">เริ่มแชร์</button></div>
+</div></div>
+<div class="modal" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lbTitle"><div class="lb-card">
+  <div class="lb-hd"><b id="lbTitle">หน้า</b><span class="pill" id="lbState"></span><span class="grow"></span><div class="seg" id="lbTabs"><button data-v="before">ก่อนแก้</button><button data-v="after">หลังแก้</button></div><button class="btn sm" id="annotBtn">✎ แจ้งแก้บนภาพ</button><button class="x" id="lbClose" aria-label="ปิด">✕</button></div>
+  <div class="lb-main">
+    <div class="lb-body"><button class="nav" id="lbPrev" aria-label="หน้าที่ต้องเช็คก่อนหน้า">‹</button><div class="shot" id="shot"><img id="lbImg" alt=""></div><button class="nav" id="lbNext" aria-label="หน้าที่ต้องเช็คถัดไป">›</button></div>
+    <div class="lb-side">
+      <div class="lb-note" id="lbNote"></div>
+      <div class="req" id="req"></div>
+      <div class="req-acts"><button class="btn primary" id="reqSend">ส่งให้ผู้แก้เลย</button><button class="btn" id="reqQueue">เก็บไว้ ส่งพร้อมกัน</button></div>
+    </div>
+  </div>
+</div></div>
+<div class="drop" id="drop" hidden><div>วางไฟล์ .docx ที่นี่<small>ฮารุจะเริ่มจัดเล่มให้ทันที</small></div></div>
+<div class="tip" id="tip"></div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js"}}</script>
+
+<script type="module">
+import * as THREE from 'three';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleepMs = ms => new Promise(r => setTimeout(r, ms));
+const hhmm = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+const AG = {
+  prep:{name:'ฮารุ', role:'หัวหน้า · จัดเล่ม', g:'ฮ', c:'#D9537F'}, rev:{name:'ผู้ตรวจ ×4', role:'อ่านทุกหน้าแบบภาพ', g:'ต', c:'#8E6CC7'},
+  fix:{name:'ผู้แก้', role:'แก้ใน Word (Opus)', g:'แ', c:'#2F6FB5'}, sum:{name:'ผู้สรุป', role:'เขียนผลสรุป', g:'ส', c:'#2E8A57'},
+  me:{name:'คุณ', g:'คุ', c:'#D9537F'}, guest:{name:'เพื่อน', g:'พ', c:'#C27A1A'}, sys:{name:'ระบบ', g:'•', c:'#7E889A'}
+};
+
+/* ═══════════════════════ ห้องทำงาน 3D ═══════════════════════
+   ห้องโมเดลจิ๋ว: ตัวละครสัดส่วนคนจริง (ข้อศอก/เข่างอได้) ซองจดหมายบินพร้อมป้ายเลขหน้า กล้องเลือกมุมตามคนที่กำลังทำงานจริง */
+const Scene = (() => {
+  const cv = $('#cv'), stageEl = $('#stage'), ovl = $('#ovl');
+  let R, scene, cam, sun, hemi, fill, dark = false, ok = false;
+  const clock = new THREE.Clock();
+  const M = {}; const mat = (c, o = {}) => { const k = c + JSON.stringify(o); return M[k] || (M[k] = new THREE.MeshStandardMaterial({color:c, roughness:.75, metalness:0, ...o})); };
+  const mesh = (geo, m, x = 0, y = 0, z = 0, p) => { const e = new THREE.Mesh(geo, m); e.position.set(x, y, z); e.castShadow = e.receiveShadow = true; (p || scene).add(e); return e; };
+  const box = (w, h, d, m, x, y, z, p) => mesh(new THREE.BoxGeometry(w, h, d), m, x, y, z, p);
+  const rbox = (w, h, d, r, m, x, y, z, p) => { const s = new THREE.Shape(); const a = w / 2 - r, b = d / 2 - r; s.moveTo(-a, -d / 2); s.lineTo(a, -d / 2); s.quadraticCurveTo(w / 2, -d / 2, w / 2, -b); s.lineTo(w / 2, b); s.quadraticCurveTo(w / 2, d / 2, a, d / 2); s.lineTo(-a, d / 2); s.quadraticCurveTo(-w / 2, d / 2, -w / 2, b); s.lineTo(-w / 2, -b); s.quadraticCurveTo(-w / 2, -d / 2, -a, -d / 2); const g = new THREE.ExtrudeGeometry(s, {depth:h, bevelEnabled:true, bevelThickness:.008, bevelSize:.008, bevelSegments:2}); g.rotateX(-Math.PI / 2); g.translate(0, -h / 2, 0); return mesh(g, m, x, y, z, p); };
+  const cyl = (rt, rb, h, m, x, y, z, p, seg = 18) => mesh(new THREE.CylinderGeometry(rt, rb, h, seg), m, x, y, z, p);
+  const canvasTex = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); draw(g, w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; t.userData = {c, g, draw}; return t; };
+  const CZ = 0.45;
+  const D = {
+    haru:{x:-4.0, z:-0.55, tag:'ฮารุ · หัวหน้า', c:'#D9537F', big:1},
+    r0:{x:-1.1, z:-2.4, tag:'ผู้ตรวจ ก', c:'#8E6CC7'}, r1:{x:0.9, z:-2.4, tag:'ผู้ตรวจ ข', c:'#8E6CC7'},
+    r2:{x:2.9, z:-2.4, tag:'ผู้ตรวจ ค', c:'#8E6CC7'}, r3:{x:4.9, z:-2.4, tag:'ผู้ตรวจ ง', c:'#8E6CC7'},
+    fix:{x:3.5, z:2.5, tag:'ผู้แก้', c:'#2F6FB5'}, sum:{x:-0.9, z:2.6, tag:'ผู้สรุป', c:'#2E8A57'}
+  };
+  const SPOT = {printer:{x:-3.0, z:-3.65}};
+  const LOOK = {
+    haru:{top:'#E8789A', top2:'#FFFFFF', pants:'#2B3447', hair:'#2E2129', skin:'#F2D0B2', style:'bun', shoe:'#5B2F45'},
+    r0:{top:'#7D61B9', top2:'#E9E2F7', pants:'#3A3F4F', hair:'#1F1E22', skin:'#E6BC96', style:'short', glasses:1, shoe:'#2A2A2E'},
+    r1:{top:'#9273CC', top2:'#F2ECFA', pants:'#4A4F60', hair:'#6E4428', skin:'#EFC9A6', style:'long', glasses:1, shoe:'#4A2E20'},
+    r2:{top:'#6F55AA', top2:'#E2DAF3', pants:'#2E3443', hair:'#3A3550', skin:'#F3D3B6', style:'bob', glasses:1, shoe:'#22252E'},
+    r3:{top:'#8A6BC4', top2:'#EFE8FA', pants:'#40465A', hair:'#94502C', skin:'#DDAE88', style:'short', glasses:1, shoe:'#2E2622'},
+    fix:{top:'#2F6FB5', top2:'#DCE8F7', pants:'#262C3A', hair:'#1B1F27', skin:'#E8BD98', style:'short', phones:1, shoe:'#1B1F27'},
+    sum:{top:'#2E8A57', top2:'#DDF1E5', pants:'#3B4050', hair:'#4E321E', skin:'#F2D0B2', style:'pony', shoe:'#3B2A1E'}
+  };
+  const C = {}; const extras = []; let epoch = 0;
+
+  // ── ตัวละคร: สัดส่วนคนจริงแบบมีสไตล์ (สูงราว 1.65 ม.) ──
+  function makeChar(o){
+    const root = new THREE.Group(), hips = new THREE.Group(); hips.position.y = .88; root.add(hips);
+    const add = (geo, m, x, y, z, p) => { const e = new THREE.Mesh(geo, m); e.position.set(x, y, z); e.castShadow = true; e.receiveShadow = true; p.add(e); return e; };
+    const skin = mat(o.skin, {roughness:.62}), top = mat(o.top, {roughness:.8}), top2 = mat(o.top2, {roughness:.85}), pants = mat(o.pants, {roughness:.85}), hairM = mat(o.hair, {roughness:.55}), shoeM = mat(o.shoe, {roughness:.45});
+    // ขา: ต้นขา → เข่า → แข้ง → รองเท้า
+    const leg = x => { const th = new THREE.Group(); th.position.set(x, 0, 0); hips.add(th); add(new THREE.CapsuleGeometry(.068, .3, 6, 14), pants, 0, -.2, 0, th);
+      const kn = new THREE.Group(); kn.position.y = -.41; th.add(kn); add(new THREE.CapsuleGeometry(.056, .3, 6, 14), pants, 0, -.19, 0, kn);
+      const sh = add(new THREE.CapsuleGeometry(.055, .12, 4, 12), shoeM, 0, -.4, .05, kn); sh.rotation.x = Math.PI / 2; sh.scale.set(1, 1, .8); return {th, kn}; };
+    const L = leg(-.095), Rr = leg(.095);
+    add(new THREE.CapsuleGeometry(.15, .08, 6, 16), pants, 0, .02, 0, hips).scale.set(1.18, 1, .82);   // สะโพก
+    const chest = new THREE.Group(); chest.position.y = .1; hips.add(chest);
+    const torso = add(new THREE.CylinderGeometry(.17, .145, .46, 24), top, 0, .24, 0, chest); torso.scale.z = .72;
+    add(new THREE.SphereGeometry(.17, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), top, 0, .465, 0, chest).scale.set(1, .38, .72);   // ไหล่
+    add(new THREE.CylinderGeometry(.06, .07, .05, 16), top2, 0, .5, 0, chest);   // ปกคอ
+    for (let i = 0; i < 3; i++) add(new THREE.SphereGeometry(.009, 8, 6), mat('#FFFFFF', {roughness:.3}), 0, .4 - i * .1, .125, chest);   // กระดุม
+    const badge = new THREE.Group(); badge.position.set(.07, .33, .128); chest.add(badge); add(new THREE.BoxGeometry(.055, .075, .006), mat('#FFFFFF', {roughness:.4}), 0, 0, 0, badge); add(new THREE.BoxGeometry(.045, .016, .007), mat(o.top), 0, .022, .001, badge);
+    // คอ + หัว
+    add(new THREE.CylinderGeometry(.048, .052, .1, 14), skin, 0, .56, 0, chest);
+    const head = new THREE.Group(); head.position.set(0, .71, .005); chest.add(head);
+    const hd = add(new THREE.SphereGeometry(.118, 28, 22), skin, 0, 0, 0, head); hd.scale.set(1, 1.14, 1.04);
+    add(new THREE.SphereGeometry(.07, 18, 12), skin, 0, -.07, .035, head).scale.set(1.05, .8, .9);   // คาง/แก้ม
+    [-1, 1].forEach(s => add(new THREE.SphereGeometry(.028, 10, 8), skin, s * .116, -.005, 0, head).scale.set(.55, 1, .9));   // หู
+    const nose = add(new THREE.SphereGeometry(.017, 10, 8), mat(o.skin, {roughness:.5}), 0, -.02, .118, head); nose.scale.set(.9, 1.2, 1);
+    const eyes = new THREE.Group(); head.add(eyes);
+    [-1, 1].forEach(s => { add(new THREE.SphereGeometry(.021, 14, 10), mat('#FFFFFF', {roughness:.25}), s * .045, .018, .1, eyes).scale.set(1.15, .8, .6); add(new THREE.SphereGeometry(.013, 12, 8), mat('#2B1E16', {roughness:.2}), s * .045, .017, .111, eyes); add(new THREE.SphereGeometry(.004, 6, 4), mat('#FFFFFF'), s * .045 + .004, .022, .123, eyes); });
+    const brows = [-1, 1].map(s => { const b = add(new THREE.BoxGeometry(.04, .008, .01), hairM, s * .047, .055, .108, head); b.rotation.z = -s * .12; return b; });
+    const mouth = add(new THREE.TorusGeometry(.019, .0045, 6, 14, Math.PI), mat('#9C4A55', {roughness:.4}), 0, -.058, .108, head); mouth.rotation.z = Math.PI;
+    const blush = new THREE.MeshBasicMaterial({color:'#F09AAE', transparent:true, opacity:.35, depthWrite:false});
+    [-1, 1].forEach(s => { const b = add(new THREE.CircleGeometry(.02, 12), blush, s * .072, -.035, .1, head); b.rotation.y = s * .5; });
+    // ผม
+    const cap = add(new THREE.SphereGeometry(.128, 28, 18, 0, Math.PI * 2, 0, Math.PI * .58), hairM, 0, .022, -.008, head); cap.scale.set(1.02, 1.12, 1.08);
+    add(new THREE.SphereGeometry(.1, 18, 10, 0, Math.PI * 2, 0, Math.PI * .45), hairM, 0, .08, .05, head).rotation.x = .75;   // หน้าม้า
+    if (o.style === 'bun') { add(new THREE.SphereGeometry(.065, 18, 14), hairM, 0, .13, -.09, head); const fl = new THREE.Group(); fl.position.set(.06, .15, -.05); head.add(fl); for (let i = 0; i < 5; i++) { const p = add(new THREE.SphereGeometry(.017, 8, 6), mat('#F6A4C0'), Math.cos(i * 1.256) * .02, Math.sin(i * 1.256) * .02, 0, fl); p.scale.z = .5; } add(new THREE.SphereGeometry(.009, 6, 4), mat('#FFD54F'), 0, 0, .006, fl); }
+    if (o.style === 'long') { const b = add(new THREE.CylinderGeometry(.12, .13, .3, 20, 1, true, Math.PI * .38, Math.PI * 1.24), hairM, 0, -.12, -.01, head); b.material = mat(o.hair, {roughness:.55, side:THREE.DoubleSide}); }
+    if (o.style === 'bob') { const b = add(new THREE.CylinderGeometry(.132, .14, .15, 20, 1, true, Math.PI * .36, Math.PI * 1.28), hairM, 0, -.04, -.01, head); b.material = mat(o.hair, {roughness:.55, side:THREE.DoubleSide}); }
+    if (o.style === 'pony') { const p = add(new THREE.CapsuleGeometry(.04, .16, 6, 12), hairM, 0, -.02, -.15, head); p.rotation.x = .45; add(new THREE.TorusGeometry(.03, .008, 6, 12), mat('#2E8A57'), 0, .06, -.125, head).rotation.x = 1.2; }
+    if (o.glasses) { const gm = mat('#1C1F27', {roughness:.3, metalness:.3}); [-1, 1].forEach(s => add(new THREE.TorusGeometry(.027, .0045, 8, 20), gm, s * .045, .017, .122, head)); add(new THREE.BoxGeometry(.03, .004, .004), gm, 0, .02, .124, head); }
+    if (o.phones) { const pm = mat('#20242C', {roughness:.4}); const band = add(new THREE.TorusGeometry(.13, .012, 8, 24, Math.PI), pm, 0, .02, -.005, head); band.rotation.y = Math.PI / 2; [-1, 1].forEach(s => { const c = add(new THREE.CylinderGeometry(.038, .038, .03, 18), mat('#2F6FB5', {roughness:.4}), s * .128, -.005, 0, head); c.rotation.z = Math.PI / 2; }); }
+    // แขน: ต้นแขน → ศอก → ปลายแขน → มือ
+    const arm = s => { const sh = new THREE.Group(); sh.position.set(s * .195, .44, 0); chest.add(sh); add(new THREE.CapsuleGeometry(.05, .2, 6, 12), top, 0, -.13, 0, sh);
+      const el = new THREE.Group(); el.position.y = -.27; sh.add(el); add(new THREE.CapsuleGeometry(.042, .18, 6, 12), top2, 0, -.11, 0, el); add(new THREE.SphereGeometry(.042, 12, 10), skin, 0, -.25, .005, el).scale.set(.85, 1.1, .7); return {sh, el}; };
+    const AL = arm(-1), AR = arm(1);
+    // ของที่ถือ: แฟ้มสีเด่น + กระดาษ
+    const held = new THREE.Group(); held.position.set(0, .26, .2); chest.add(held); held.visible = false;
+    add(new THREE.BoxGeometry(.3, .4, .02), mat('#F2B84B', {roughness:.6}), 0, 0, 0, held).rotation.x = -.25;
+    add(new THREE.BoxGeometry(.27, .37, .022), mat('#FFFFFF', {roughness:.9}), 0, .005, .012, held).rotation.x = -.25;
+    const sh2 = new THREE.Mesh(new THREE.CircleGeometry(.32, 24), new THREE.MeshBasicMaterial({color:'#000', transparent:true, opacity:.2, depthWrite:false})); sh2.rotation.x = -Math.PI / 2; sh2.position.y = .012; root.add(sh2);
+    return {root, hips, chest, head, eyes, brows, mouth, L, R:Rr, AL, AR, held};
+  }
+
+  // ── โต๊ะทำงาน: จอ คีย์บอร์ด เมาส์ โคมไฟ แก้ว เอกสาร ──
+  function makeDesk(d){
+    const g = new THREE.Group(); g.position.set(d.x, 0, d.z); scene.add(g);
+    const w = d.big ? 1.8 : 1.5, topM = mat('#EAD7B5', {roughness:.55}), leg = mat('#3A3F4C', {roughness:.4, metalness:.4});
+    rbox(w, .045, .78, .03, topM, 0, .745, 0, g);
+    [[-1, 1], [1, 1]].forEach(([a]) => { box(.05, .7, .05, leg, a * (w / 2 - .08), .36, -.32, g); box(.05, .7, .05, leg, a * (w / 2 - .08), .36, .32, g); box(.05, .05, .68, leg, a * (w / 2 - .08), .05, 0, g); });
+    box(w - .2, .4, .02, mat('#D9C29C', {roughness:.7}), 0, .5, .37, g);   // แผงหน้า
+    if (d.big) { box(.42, .66, .66, mat('#C8AC80'), w / 2 - .25, .36, 0, g); [.55, .32].forEach(y => box(.3, .02, .02, mat('#8E6440'), w / 2 - .25, y, .335, g)); }
+    // ป้ายชื่อหน้าโต๊ะ
+    const nt = canvasTex(320, 64, (c, W, H) => { c.fillStyle = '#FFFAF0'; c.fillRect(0, 0, W, H); c.fillStyle = d.c; c.fillRect(0, 0, 12, H); c.fillStyle = '#22293A'; c.font = '600 32px "IBM Plex Sans Thai",sans-serif'; c.textBaseline = 'middle'; c.fillText(d.tag, 26, H / 2 + 2); });
+    const np = new THREE.Mesh(new THREE.PlaneGeometry(.7, .14), new THREE.MeshStandardMaterial({map:nt, roughness:.5})); np.position.set(-w / 2 + .5, .6, .382); g.add(np); d.nameTex = nt;
+    // จอ: หน้าจอหันหาคนนั่ง หลังจอหันหากล้อง มีไฟสีของแต่ละฝ่าย
+    const mon = new THREE.Group(); mon.position.set(-.08, .77, .12); g.add(mon);
+    cyl(.09, .11, .015, leg, 0, 0, 0, mon, 20); box(.04, .22, .03, leg, 0, .11, .02, mon);
+    rbox(.62, .03, .38, .02, mat('#2A2F3A', {roughness:.35, metalness:.3}), 0, .38, .02, mon).rotation.x = Math.PI / 2;
+    const st = canvasTex(256, 160, () => {});
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(.58, .34), new THREE.MeshBasicMaterial({map:st})); scr.position.set(0, .38, .004); scr.rotation.y = Math.PI; mon.add(scr);
+    const glow = new THREE.Mesh(new THREE.PlaneGeometry(.5, .05), new THREE.MeshStandardMaterial({color:d.c, emissive:d.c, emissiveIntensity:.6})); glow.position.set(0, .21, .038); mon.add(glow);
+    d.screen = st; d.glow = glow; d.scroll = Math.random() * 40; d.page = 0;
+    box(.44, .015, .14, mat('#E8EBF0', {roughness:.4}), -.05, .775, -.18, g); box(.4, .006, .11, mat('#C6CBD4'), -.05, .785, -.18, g);   // คีย์บอร์ด
+    const mouse = mesh(new THREE.SphereGeometry(.03, 12, 8), mat('#E8EBF0', {roughness:.35}), .27, .78, -.18, g); mouse.scale.set(1, .5, 1.5);
+    // โคมไฟตั้งโต๊ะ
+    const lp = new THREE.Group(); lp.position.set(-w / 2 + .18, .77, .15); g.add(lp);
+    cyl(.06, .07, .02, mat('#2F3646'), 0, 0, 0, lp); const a1 = cyl(.012, .012, .34, mat('#2F3646'), 0, .17, 0, lp); a1.rotation.z = -.35;
+    const shade = cyl(.03, .08, .09, mat(d.c, {roughness:.5}), .1, .34, 0, lp); shade.rotation.z = .9;
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(.028, 10, 8), new THREE.MeshStandardMaterial({color:'#FFF6E0', emissive:'#FFD9A0', emissiveIntensity:.5})); bulb.position.set(.13, .31, 0); lp.add(bulb); d.bulb = bulb;
+    const pool = new THREE.Mesh(new THREE.CircleGeometry(.32, 24), new THREE.MeshBasicMaterial({color:'#FFD9A0', transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending})); pool.rotation.x = -Math.PI / 2; pool.position.set(-w / 2 + .38, .772, -.02); g.add(pool); d.pool = pool;
+    // แก้ว + ไอ
+    const mx = w / 2 - (d.big ? .55 : .22); const mug = cyl(.04, .036, .095, mat(d.c === '#D9537F' ? '#FBE3EB' : '#FFFDF8', {roughness:.35}), mx, .82, -.12, g); const hd2 = new THREE.Mesh(new THREE.TorusGeometry(.025, .007, 6, 12), mug.material); hd2.position.set(.043, 0, 0); mug.add(hd2);
+    d.steam = [0, 1, 2].map(i => { const s = new THREE.Mesh(new THREE.SphereGeometry(.025, 8, 6), new THREE.MeshBasicMaterial({color:'#FFFFFF', transparent:true, opacity:0, depthWrite:false})); s.position.set(mx, .9, -.12); s.userData.o = i / 3; s.userData.x = mx; g.add(s); return s; });
+    // กองเอกสาร (เพิ่มเมื่อมีคนส่งงานมา) + โน้ตปัญหา
+    d.papers = new THREE.Group(); d.papers.position.set(w / 2 - (d.big ? .62 : .42), .77, .12); g.add(d.papers);
+    for (let i = 0; i < 2; i++) { const p = box(.21, .01, .29, mat('#FFFFFF', {roughness:.9}), 0, i * .011, 0, d.papers); p.rotation.y = i ? .1 : -.06; }
+    d.notes = new THREE.Group(); d.notes.position.set(.3, .77, .08); g.add(d.notes);
+    // เก้าอี้สำนักงาน
+    const ch = new THREE.Group(); ch.position.set(d.x, 0, d.z - .78); scene.add(ch); const cm = mat(d.big ? '#5B2F45' : '#2F3646', {roughness:.7});
+    rbox(.5, .07, .48, .06, cm, 0, .47, 0, ch); rbox(.48, .5, .07, .05, cm, 0, .82, -.24, ch);
+    cyl(.025, .025, .36, mat('#9AA1AE', {metalness:.6, roughness:.3}), 0, .26, 0, ch);
+    for (let i = 0; i < 5; i++) { const a = i * 1.2566; const l = box(.26, .03, .04, mat('#3A4152'), Math.cos(a) * .13, .06, Math.sin(a) * .13, ch); l.rotation.y = -a; mesh(new THREE.SphereGeometry(.025, 8, 6), mat('#1E222B'), Math.cos(a) * .25, .025, Math.sin(a) * .25, ch); }
+    [-1, 1].forEach(s => box(.04, .2, .3, cm, s * .27, .6, -.02, ch));
+    d.chair = ch; d.g = g; d.w = w;
+  }
+  function drawScreen(d, t){
+    const {g, c} = d.screen.userData, W = c.width, H = c.height, col = d.c;
+    g.fillStyle = d.on ? '#0F1522' : '#1A2030'; g.fillRect(0, 0, W, H);
+    if (!d.on) { g.fillStyle = col; g.globalAlpha = .45; g.beginPath(); g.arc(W / 2, H / 2, 16, 0, 7); g.fill(); g.globalAlpha = 1; d.screen.needsUpdate = true; return; }
+    g.fillStyle = col; g.fillRect(0, 0, W, 12);
+    const pw = W * .55, px = 16, off = -(d.scroll % 80);
+    for (let k = -1; k < 3; k++) { const py = 20 + off + k * 80; g.fillStyle = '#F4F6FA'; g.fillRect(px, py, pw, 72); g.fillStyle = '#C9D0DC'; for (let l = 0; l < 8; l++) g.fillRect(px + 8, py + 8 + l * 8, (pw - 16) * (l % 3 === 2 ? .6 : .95), 3); }
+    g.fillStyle = '#ffffff18'; g.fillRect(px + pw + 12, 20, W - px - pw - 28, H - 32);
+    g.fillStyle = '#fff'; g.font = '600 20px "IBM Plex Mono",monospace'; g.fillText(d.page ? 'น.' + d.page : '···', px + pw + 20, 50);
+    g.fillStyle = col; g.fillRect(px + pw + 20, 64, (W - px - pw - 44) * ((t * .3) % 1), 6);
+    d.screen.needsUpdate = true;
+  }
+
+  // ── ห้อง ──
+  let board, cork, corkKey = null;
+  function buildRoom(){
+    // พื้นไม้
+    const floorTex = canvasTex(1024, 1024, (c, W, H) => { const rows = 14; for (let r = 0; r < rows; r++) { let x = -((r * 173) % 300); while (x < W) { const len = 260 + ((r * 41 + x * 3) % 180); const sh = 200 + ((r * 13 + Math.abs(x) * 7) % 26); c.fillStyle = `rgb(${sh},${sh - 40},${sh - 92})`; c.fillRect(x, r * H / rows, len, H / rows); c.globalAlpha = .07; c.fillStyle = '#000'; for (let k = 0; k < 6; k++) c.fillRect(x, r * H / rows + 6 + k * 11, len, 1); c.globalAlpha = 1; c.fillStyle = '#00000030'; c.fillRect(x + len - 2, r * H / rows, 2, H / rows); x += len; } c.fillStyle = '#00000038'; c.fillRect(0, (r + 1) * H / rows - 2, W, 2); } });
+    floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping; floorTex.repeat.set(1.6, 1.2);
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(12.4, .16, 9.4), new THREE.MeshStandardMaterial({map:floorTex, roughness:.62})); floor.position.y = -.08; floor.receiveShadow = true; scene.add(floor);
+    box(12.6, .12, 9.6, mat('#B48A5E', {roughness:.7}), 0, -.2, 0);   // ขอบฐานบาง สีไม้ (ไม่มีขอบดำ)
+    const sh = new THREE.Mesh(new THREE.PlaneGeometry(17, 14), new THREE.MeshBasicMaterial({map:canvasTex(256, 256, (c, W, H) => { const g = c.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, W / 2); g.addColorStop(0, 'rgba(0,0,0,.28)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(0, 0, W, H); }), transparent:true, depthWrite:false})); sh.rotation.x = -Math.PI / 2; sh.position.y = -.27; scene.add(sh);
+    // ผนัง: ครึ่งล่างบุไม้ ครึ่งบนสีครีม
+    const wallU = mat('#F3ECE1', {roughness:.9}), wallL = mat('#D8C3A2', {roughness:.75}), trim = mat('#FFFFFF', {roughness:.5});
+    const backWall = (x0, x1, y0, y1) => box(x1 - x0, y1 - y0, .16, wallU, (x0 + x1) / 2, (y0 + y1) / 2, -4.62);
+    backWall(-6.2, .4, 0, 3.4); backWall(4.2, 6.2, 0, 3.4); backWall(.4, 4.2, 0, 1.2); backWall(.4, 4.2, 2.9, 3.4);
+    box(12.4, 1.0, .05, wallL, 0, .5, -4.52); box(12.4, .05, .07, trim, 0, 1.02, -4.5);
+    box(.16, 3.4, 9.4, mat('#EFE6D8', {roughness:.9}), -6.28, 1.7, 0); box(.05, 1.0, 9.4, wallL, -6.18, .5, 0); box(.07, .05, 9.4, trim, -6.16, 1.02, 0);
+    box(12.4, .08, .1, mat('#8E6440'), 0, .04, -4.5); box(.1, .08, 9.4, mat('#8E6440'), -6.15, .04, 0);
+    // หน้าต่างบานใหญ่ + ต้นซากุระนอกหน้าต่าง
+    const fr = mat('#FFFFFF', {roughness:.4}); [[2.3, 1.2, 3.9, .08], [2.3, 2.9, 3.9, .08]].forEach(([x, y, w, h]) => box(w, h, .22, fr, x, y, -4.6)); [.38, 4.22, 2.3].forEach(x => box(.07, 1.7, .2, fr, x, 2.05, -4.6)); box(3.84, .04, .14, fr, 2.3, 2.05, -4.6);
+    box(4.0, .06, .32, mat('#FBF7F0'), 2.3, 1.17, -4.42);
+    const sky = canvasTex(512, 256, (c, W, H) => drawSky(c, W, H)); scene.userData.sky = sky;
+    const skyP = new THREE.Mesh(new THREE.PlaneGeometry(6.2, 4), new THREE.MeshBasicMaterial({map:sky})); skyP.position.set(2.3, 2.2, -6.9); scene.add(skyP);
+    const trunk = mat('#6B4A35', {roughness:.9}); cyl(.12, .2, 2.8, trunk, 1.4, 1.1, -6.4); const br = cyl(.06, .1, 1.7, trunk, 2.3, 2.3, -6.4); br.rotation.z = -.95;
+    [[1.3, 2.7, -6.3, .7], [2.2, 3.0, -6.5, .85], [3.2, 2.6, -6.3, .7], [1.8, 3.35, -6.6, .6], [3.7, 3.1, -6.7, .6], [.6, 2.4, -6.5, .5], [4.2, 2.4, -6.4, .5]].forEach(([x, y, z, r], i) => mesh(new THREE.IcosahedronGeometry(r, 2), mat(i % 2 ? '#F8B9CC' : '#F29DB8', {roughness:.9, flatShading:true}), x, y, z));
+    box(5.4, .6, .3, mat('#9CB58A'), 2.3, .95, -6.8);
+    // ไวท์บอร์ด (ผนังซ้าย) + บอร์ดไม้ก๊อก (ผนังหลังซ้าย) แสดงโน้ตปัญหาจริง
+    board = canvasTex(720, 380, () => {});
+    box(.06, 1.42, 2.5, mat('#C9CDD5', {metalness:.4, roughness:.35}), -6.17, 1.85, -1.4);
+    const bp = new THREE.Mesh(new THREE.PlaneGeometry(2.38, 1.3), new THREE.MeshStandardMaterial({map:board, roughness:.3})); bp.rotation.y = Math.PI / 2; bp.position.set(-6.13, 1.85, -1.4); scene.add(bp);
+    box(.1, .04, 2.3, mat('#AEB4BF'), -6.1, 1.12, -1.4); [['#D9537F', -2.0], ['#2F6FB5', -1.8], ['#2E8A57', -1.6]].forEach(([c, z]) => { const m = cyl(.016, .016, .13, mat(c), -6.08, 1.16, z); m.rotation.x = Math.PI / 2; });
+    cork = canvasTex(512, 320, () => {});
+    box(1.9, 1.15, .04, mat('#8E6440'), -3.4, 1.95, -4.52); const cp = new THREE.Mesh(new THREE.PlaneGeometry(1.82, 1.07), new THREE.MeshStandardMaterial({map:cork, roughness:.95})); cp.position.set(-3.4, 1.95, -4.495); scene.add(cp);
+    // นาฬิกา + โปสเตอร์
+    const ck = new THREE.Group(); ck.position.set(-1.2, 2.75, -4.52); scene.add(ck);
+    const face = cyl(.27, .27, .05, mat('#FFFDF8'), 0, 0, 0, ck, 32); face.rotation.x = Math.PI / 2; ck.add(new THREE.Mesh(new THREE.TorusGeometry(.27, .025, 8, 32), mat('#2F3646')));
+    for (let i = 0; i < 12; i++) { const tk = box(.012, .04, .01, mat('#2F3646'), Math.sin(i * Math.PI / 6) * .22, Math.cos(i * Math.PI / 6) * .22, .03, ck); tk.rotation.z = -i * Math.PI / 6; }
+    const hand = (l, w, c) => { const g = new THREE.Group(); g.position.z = .04; ck.add(g); const h = new THREE.Mesh(new THREE.BoxGeometry(w, l, .008), mat(c)); h.position.y = l / 2; g.add(h); return g; };
+    scene.userData.clk = {h:hand(.13, .022, '#1A2130'), m:hand(.2, .014, '#D9537F')};
+    const ps = canvasTex(300, 400, (c, W, H) => { c.save(); c.setTransform(1,0,0,1,0,0); c.fillStyle = '#FFFDF8'; c.fillRect(0, 0, W, H); c.fillStyle = '#F7DCE5'; c.beginPath(); c.arc(W / 2, 140, 80, 0, 7); c.fill(); c.fillStyle = '#D9537F'; c.font = '44px Itim,cursive'; c.textAlign = 'center'; c.fillText('จัดเล่มให้สวย', W / 2, 270); c.fillText('ไม่มีช่องว่าง', W / 2, 322); c.fillStyle = '#8A8F9C'; c.font = '24px Itim,cursive'; c.fillText('Trained by Haru', W / 2, 370); c.translate(W / 2, 140); c.fillStyle = '#D9537F'; for (let i = 0; i < 5; i++) { c.rotate(Math.PI * 2 / 5); c.beginPath(); c.ellipse(0, -36, 18, 32, 0, 0, 7); c.fill(); } c.restore(); }); scene.userData.poster = ps;
+    box(.82, 1.08, .03, mat('#2F3646'), 5.2, 2.2, -4.53); const pp = new THREE.Mesh(new THREE.PlaneGeometry(.74, 1.0), new THREE.MeshStandardMaterial({map:ps, roughness:.6})); pp.position.set(5.2, 2.2, -4.51); scene.add(pp);
+    // ชั้นหนังสือ = เล่มรายงานที่เคยจัด
+    const shf = new THREE.Group(); shf.position.set(-5.9, 0, 2.6); scene.add(shf); const sw = mat('#B88A5C', {roughness:.6});
+    box(.44, 2.2, 1.8, sw, 0, 1.1, 0, shf); [.36, .98, 1.6].forEach(y => box(.42, .04, 1.72, mat('#8E6440'), .02, y, 0, shf));
+    const bc = ['#D9537F', '#2F6FB5', '#2E8A57', '#C47A0C', '#8E6CC7', '#21406E', '#E6CFA6', '#5F7389'];
+    [.38, 1.0, 1.62].forEach((y, r) => { let z = -.8; let i = r * 3; while (z < .76) { const w = .07 + ((i * 7) % 4) * .016, h = .38 + ((i * 5) % 5) * .035; box(.3, h, w, mat(bc[i % bc.length], {roughness:.6}), .03, y + h / 2 + .02, z + w / 2, shf); z += w + .012; i++; } });
+    // ต้นไม้ใหญ่ (มอนสเตอร่า)
+    const plant = (x, z, s = 1) => { const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); scene.add(g); cyl(.24, .18, .46, mat('#E8E2D8', {roughness:.6}), 0, .23, 0, g); cyl(.22, .22, .02, mat('#5A4030'), 0, .45, 0, g);
+      for (let i = 0; i < 9; i++) { const a = i * .72, h = .55 + (i % 3) * .2; const st2 = cyl(.012, .012, h, mat('#3E7A4A'), Math.cos(a) * .06, .45 + h / 2, Math.sin(a) * .06, g); st2.rotation.set(Math.sin(a) * .35, 0, -Math.cos(a) * .35); const lf = mesh(new THREE.SphereGeometry(.2, 12, 8), mat(i % 2 ? '#3F8F57' : '#4FA466', {roughness:.7}), Math.cos(a) * (.2 + h * .3), .45 + h, Math.sin(a) * (.2 + h * .3), g); lf.scale.set(1, .18, .7); lf.rotation.set(Math.sin(a) * .5, a, -Math.cos(a) * .5); }
+      extras.push({t:'plant', g}); };
+    plant(-5.6, -4.0, 1.1); plant(5.7, -4.0, 1.0); plant(-5.6, 4.1, .85); plant(5.75, 4.05, .8);
+    // เครื่องพิมพ์ + ตู้
+    const pr = new THREE.Group(); pr.position.set(SPOT.printer.x, 0, SPOT.printer.z); scene.add(pr);
+    box(1.0, .72, .6, mat('#C8AC80', {roughness:.6}), 0, .36, 0, pr); box(.9, .02, .02, mat('#8E6440'), 0, .5, .31, pr);
+    rbox(.66, .3, .48, .04, mat('#ECEFF3', {roughness:.4}), 0, .87, 0, pr); box(.66, .06, .48, mat('#CDD2DA'), 0, 1.03, 0, pr); box(.44, .02, .22, mat('#4A5163'), 0, .8, .22, pr);
+    const led = new THREE.Mesh(new THREE.SphereGeometry(.017, 8, 6), new THREE.MeshBasicMaterial({color:'#5CC08A'})); led.position.set(.26, .93, .245); pr.add(led);
+    const pout = box(.3, .006, .26, mat('#FFFFFF'), 0, .815, .14, pr); pout.visible = false; scene.userData.printer = {pr, pout, led};
+    // มุมกาแฟ + ตู้น้ำ
+    const cf = new THREE.Group(); cf.position.set(5.7, 0, .6); scene.add(cf);
+    box(.6, .85, 1.3, mat('#C8AC80', {roughness:.6}), 0, .425, 0, cf); rbox(.38, .46, .32, .04, mat('#2F3646', {roughness:.35, metalness:.2}), 0, 1.08, -.25, cf); box(.26, .08, .04, mat('#7FD3C2'), .0, 1.18, -.08, cf); cyl(.04, .035, .09, mat('#FFFDF8'), .05, .9, .05, cf);
+    cyl(.17, .17, .9, mat('#E8EBF0', {roughness:.4}), 0, .45, .45, cf); cyl(.14, .14, .32, mat('#8FC6E8', {transparent:true, opacity:.65, roughness:.1}), 0, 1.06, .45, cf);
+    // พรม
+    const rugT = canvasTex(256, 256, (c, W, H) => { c.fillStyle = '#E6A3B7'; c.fillRect(0, 0, W, H); c.strokeStyle = '#FFFFFF88'; c.lineWidth = 6; c.strokeRect(14, 14, W - 28, H - 28); c.strokeStyle = '#C97C95'; c.lineWidth = 3; c.strokeRect(26, 26, W - 52, H - 52); });
+    const rug = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 2.4), new THREE.MeshStandardMaterial({map:rugT, roughness:1})); rug.rotation.x = -Math.PI / 2; rug.position.set(-4.0, .003, -.7); rug.receiveShadow = true; scene.add(rug);
+    const rug2 = new THREE.Mesh(new THREE.PlaneGeometry(9, 1.2), new THREE.MeshStandardMaterial({color:'#D9C7AE', roughness:1})); rug2.rotation.x = -Math.PI / 2; rug2.position.set(1.2, .003, CZ); rug2.receiveShadow = true; scene.add(rug2);
+    // กลีบซากุระนอกหน้าต่าง
+    const petG = new THREE.PlaneGeometry(.07, .05), petM = new THREE.MeshBasicMaterial({color:'#F7A9C2', side:THREE.DoubleSide});
+    for (let i = 0; i < 24; i++) { const p = new THREE.Mesh(petG, petM); p.position.set(.5 + Math.random() * 3.6, Math.random() * 3.2, -5.2 - Math.random() * 1.4); p.userData = {v:.12 + Math.random() * .2, s:Math.random() * 6}; scene.add(p); extras.push({t:'petal', g:p}); }
+  }
+  function drawSky(c, W, H){ const gr = c.createLinearGradient(0, 0, 0, H); if (dark) { gr.addColorStop(0, '#1C2250'); gr.addColorStop(.6, '#5B3F73'); gr.addColorStop(1, '#E58A8A'); } else { gr.addColorStop(0, '#8FCBEF'); gr.addColorStop(1, '#FBE8EF'); } c.fillStyle = gr; c.fillRect(0, 0, W, H); if (dark) { c.fillStyle = '#FFF6D8'; c.beginPath(); c.arc(W * .78, H * .22, 14, 0, 7); c.fill(); c.fillStyle = '#ffffffaa'; for (let i = 0; i < 40; i++) c.fillRect((i * 97) % W, (i * 53) % (H * .5), 1.6, 1.6); } else { c.fillStyle = '#ffffffd0'; [[90, 60, 28], [124, 54, 22], [330, 96, 24], [358, 90, 18]].forEach(([x, y, r]) => { c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); }); } }
+  function setTheme(){
+    dark = document.documentElement.dataset.theme === 'dark' || (document.documentElement.dataset.theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+    if (!ok) return;
+    hemi.intensity = dark ? .5 : 1.15; hemi.color.set(dark ? '#7C83C9' : '#EAF3FF'); hemi.groundColor.set(dark ? '#3B2A22' : '#C2A27C');
+    sun.intensity = dark ? .45 : 2.2; sun.color.set(dark ? '#FFB98A' : '#FFF3E2'); fill.intensity = dark ? 3.2 : .4;
+    R.toneMappingExposure = dark ? 1.2 : 1.0;
+    for (const d of Object.values(D)) { d.bulb.material.emissiveIntensity = dark ? 2.4 : .5; d.pool.material.opacity = dark ? .28 : .06; }
+    const sky = scene.userData.sky; drawSky(sky.userData.g, 512, 256); sky.needsUpdate = true;
+  }
+
+  // ── กล้อง: เลือกมุมตามคนที่กำลังทำงาน (ไม่จับโต๊ะว่าง) ──
+  const ANG = {
+    'ภาพรวม':{p:[6.6, 6.4, 9.6], t:[.2, .6, -.8]},
+    'ผู้ตรวจ':{p:[1.9, 2.3, 1.5], t:[1.9, 1.15, -3.0]},
+    'จอผู้ตรวจ':{p:[.2, 1.9, -4.25], t:[1.0, .95, -1.9]},
+    'ฮารุ':{p:[-1.6, 2.2, 2.3], t:[-4.0, 1.1, -1.1]},
+    'ผู้แก้':{p:[5.9, 2.2, 5.3], t:[3.5, 1.05, 1.9]},
+    'ผู้สรุป':{p:[1.5, 2.1, 5.8], t:[-.9, 1.05, 2.1]},
+    'กระดาน':{p:[-2.4, 1.9, .8], t:[-6, 1.8, -2.2]}
+  };
+  const NEED = {'ฮารุ':['haru'], 'ผู้แก้':['fix'], 'ผู้สรุป':['sum'], 'ผู้ตรวจ':['r0', 'r1', 'r2', 'r3'], 'จอผู้ตรวจ':['r0', 'r1', 'r2', 'r3']};
+  let mode = 'auto', curAng = 'ภาพรวม', angT = 3, follow = null, followUntil = 0, lastWasOverview = true;
+  const camGoal = {p:new THREE.Vector3(...ANG['ภาพรวม'].p), t:new THREE.Vector3(...ANG['ภาพรวม'].t)}, camTarget = new THREE.Vector3(...ANG['ภาพรวม'].t);
+  function camButtons(){ $('#cams').innerHTML = ['อัตโนมัติ', ...Object.keys(ANG)].map(k => `<button data-cam="${k}" class="${(mode === 'auto' ? k === 'อัตโนมัติ' : k === curAng) ? 'on' : ''}">${k}</button>`).join(''); }
+  $('#cams').addEventListener('click', e => { const b = e.target.closest('[data-cam]'); if (!b) return; const k = b.dataset.cam; if (k === 'อัตโนมัติ') { mode = 'auto'; angT = 0; } else { mode = 'manual'; follow = null; setAng(k); } camButtons(); });
+  function setAng(k){ curAng = k; camGoal.p.set(...ANG[k].p); camGoal.t.set(...ANG[k].t); }
+  const seatedAll = ids => ids.filter(id => C[id]?.mode === 'sit').length >= Math.min(3, ids.length);
+  function candidates(){
+    const out = [];
+    if (C.haru?.mode === 'sit' && C.haru.working) out.push('ฮารุ');
+    if (seatedAll(NEED['ผู้ตรวจ']) && C.r0?.working) out.push('ผู้ตรวจ', 'จอผู้ตรวจ');
+    if (C.fix?.mode === 'sit' && C.fix.working) out.push('ผู้แก้');
+    if (C.sum?.mode === 'sit' && C.sum.working) out.push('ผู้สรุป');
+    if (boardBusy) out.push('กระดาน');
+    return out;
+  }
+  let boardBusy = false;
+  function directorTick(dt, now){
+    if (mode !== 'auto') return;
+    const walker = Object.values(C).find(c => c.mode === 'walk');
+    if (walker && (!follow || follow.mode !== 'walk')) { follow = walker; followUntil = now + 30; }
+    if (follow && follow.mode === 'walk' && now < followUntil) { const p = follow.rig.root.position; camGoal.t.set(p.x, 1.0, p.z - .4); camGoal.p.set(p.x + 2.4, 3.1, p.z + 4.6); return; }
+    if (follow) { follow = null; angT = 2.5; }
+    // มุมปัจจุบันไม่มีคนแล้ว → เปลี่ยนทันที
+    if (NEED[curAng] && !NEED[curAng].some(id => C[id]?.mode === 'sit')) angT = 0;
+    angT -= dt; if (angT > 0) return;
+    const cs = candidates();
+    let next = 'ภาพรวม';
+    if (cs.length && (lastWasOverview || Math.random() < .35)) { const pool = cs.filter(c => c !== curAng); next = (pool.length ? pool : cs)[Math.floor(Math.random() * (pool.length || cs.length))]; }
+    lastWasOverview = next === 'ภาพรวม'; setAng(next); angT = next === 'ภาพรวม' ? 5 : 6.5; camButtons();
+  }
+
+  // ── การเดิน ──
+  const seatPt = d => ({x:d.x, z:d.z - .78});
+  const sidePt = d => ({x:d.x + d.w / 2 + .4, z:d.z - .78});
+  const standPt = d => d.w ? {x:d.x + d.w / 2 + .38, z:d.z - .2} : {x:d.x + .85, z:d.z + .5};
+  function place(ch, p){ ch.x = p.x; ch.z = p.z; ch.rig.root.position.set(p.x, 0, p.z); }
+  function seat(ch){ place(ch, seatPt(ch.desk)); ch.mode = 'sit'; ch.at = null; ch.rig.root.rotation.y = 0; ch.path = []; ch.rig.held.visible = false; ch.desk.chair.position.set(ch.desk.x, 0, ch.desk.z - .78); }
+  function walk(ch, pts, ep){ return new Promise(res => { ch.mode = 'walk'; ch.path = pts.slice(); ch.done = res; ch.ep = ep; ch.desk.chair.position.z = ch.desk.z - 1.0; }); }
+  const leave = ch => ch.mode === 'sit' ? [sidePt(ch.desk), {x:sidePt(ch.desk).x, z:CZ}] : [{x:ch.x, z:CZ}];
+  function goTo(ch, d, ep){ const sp = standPt(d); const same = ch.mode !== 'sit' && ch.at && ch.at.w && d.w && Math.abs(ch.at.z - d.z) < .01; const pts = same ? [{x:ch.x, z:d.z + .62}, {x:sp.x, z:d.z + .62}, sp] : [...leave(ch), {x:sp.x, z:CZ}, sp]; ch.at = d; return walk(ch, pts, ep).then(() => { ch.rig.root.rotation.y = Math.atan2(d.x - ch.x, d.z - ch.z); }); }
+  function goHome(ch, ep){ const h = ch.desk; return walk(ch, [{x:ch.x, z:CZ}, {x:sidePt(h).x, z:CZ}, sidePt(h), seatPt(h)], ep).then(() => { if (ep === epoch) seat(ch); }); }
+  function bubble(id, text, ms = 2800, alert = false){ const ch = C[id]; if (!ch) return; ch.bub.textContent = text; ch.bub.classList.toggle('alert', alert); ch.bub.classList.add('show'); clearTimeout(ch.bt); ch.bt = setTimeout(() => ch.bub.classList.remove('show'), ms); }
+  function work(id, on, chip){ const ch = C[id]; if (!ch) return; ch.working = !!on; ch.desk.on = !!on; ch.chip.textContent = chip || ''; ch.chip.classList.toggle('show', !!chip && on); const m = String(chip || '').match(/\d+/); ch.desk.page = m ? +m[0] : 0; }
+
+  // ── ซองจดหมาย: ใหญ่ สีตามเรื่อง มีป้ายเลขหน้า + ประกายตามทาง ──
+  const flying = []; const ENV = {issue:'#F2A93B', fixed:'#3D8BE0', ok:'#35A86B'};
+  function envelope(col){
+    const g = new THREE.Group();
+    const body = new THREE.Mesh(new THREE.BoxGeometry(.46, .3, .02), mat('#FFFDF7', {roughness:.6})); body.castShadow = true; g.add(body);
+    const flapG = new THREE.BufferGeometry(); flapG.setAttribute('position', new THREE.Float32BufferAttribute([-.23, .15, .012, .23, .15, .012, 0, -.02, .012], 3)); flapG.computeVertexNormals();
+    g.add(new THREE.Mesh(flapG, mat(col, {roughness:.55, side:THREE.DoubleSide})));
+    const back = new THREE.Mesh(new THREE.PlaneGeometry(.46, .3), mat(col, {roughness:.6})); back.position.z = -.011; back.rotation.y = Math.PI; g.add(back);
+    const seal = new THREE.Mesh(new THREE.CylinderGeometry(.045, .045, .012, 20), mat('#C0392B', {roughness:.4, emissive:'#5A0E0E', emissiveIntensity:.3})); seal.rotation.x = Math.PI / 2; seal.position.set(0, -.015, .02); g.add(seal);
+    const halo = new THREE.Mesh(new THREE.PlaneGeometry(.9, .7), new THREE.MeshBasicMaterial({map:haloTex(col), transparent:true, depthWrite:false, blending:THREE.AdditiveBlending})); halo.position.z = -.03; g.add(halo);
+    return g;
+  }
+  const haloC = {}; function haloTex(col){ return haloC[col] || (haloC[col] = canvasTex(128, 128, (c, W, H) => { const g = c.createRadialGradient(W / 2, H / 2, 4, W / 2, H / 2, W / 2); g.addColorStop(0, col + 'AA'); g.addColorStop(1, col + '00'); c.fillStyle = g; c.fillRect(0, 0, W, H); })); }
+  const sparks = []; const sparkG = new THREE.SphereGeometry(.03, 6, 4);
+  function sendEnv(from, to, kind, page){
+    const a = D[from], b = D[to]; if (!a || !b) return;
+    const col = ENV[kind] || ENV.issue; const g = envelope(col); scene.add(g);
+    const s = new THREE.Vector3(a.x, 1.25, a.z), e = new THREE.Vector3(b.x, 1.0, b.z), mid = s.clone().lerp(e, .5); mid.y = 2.9;
+    const lab = document.createElement('div'); lab.className = 'env'; lab.style.background = col; lab.textContent = page ? 'หน้า ' + page : {issue:'ควรเช็ค', fixed:'แก้แล้ว', ok:'ผ่าน'}[kind]; ovl.appendChild(lab);
+    flying.push({g, s, e, mid, t:0, dur:2.2, kind, b, lab, col});
+  }
+  function addNote(d, kind){ const n = d.notes.children.length; const s = box(.09, .012, .09, mat(kind === 'issue' ? '#F2B84B' : '#71A7E6'), (n % 4) * .1 - .15, Math.floor(n / 4) * .013, 0, d.notes); s.rotation.y = (Math.random() - .5) * .4; }
+  function clearOneNote(d){ const n = d.notes.children.find(c => c.material.color.getHexString() === 'f2b84b'); if (n) { n.material = mat('#71A7E6'); setTimeout(() => d.notes.remove(n), 1400); } }
+  function dropPaper(d){ const p = box(.21, .01, .29, mat('#FFFFFF', {roughness:.9}), 0, d.papers.children.length * .011, 0, d.papers); p.rotation.y = (Math.random() - .5) * .3; }
+
+  let petals = null, stamp = null, party = 0;
+  function celebrate(text){
+    if (!ok || stamp) return;
+    const tex = canvasTex(256, 256, (c, W, H) => { c.strokeStyle = '#D9537F'; c.lineWidth = 12; c.beginPath(); c.arc(W / 2, H / 2, 110, 0, 7); c.stroke(); c.lineWidth = 4; c.beginPath(); c.arc(W / 2, H / 2, 92, 0, 7); c.stroke(); c.fillStyle = '#D9537F'; c.font = '700 54px "IBM Plex Sans Thai",sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(String(text).slice(0, 7), W / 2, H / 2 - 6); c.font = '600 18px "IBM Plex Mono",monospace'; c.fillText('HARU', W / 2, H / 2 + 50); });
+    stamp = new THREE.Mesh(new THREE.PlaneGeometry(.5, .5), new THREE.MeshBasicMaterial({map:tex, transparent:true, depthWrite:false})); stamp.rotation.x = -Math.PI / 2; stamp.rotation.z = .3; stamp.position.set(D.haru.x - .35, .772, D.haru.z - .05); stamp.userData.t = 0; scene.add(stamp);
+    const n = 200, geo = new THREE.PlaneGeometry(.08, .06), m = new THREE.MeshBasicMaterial({color:'#F7A9C2', side:THREE.DoubleSide});
+    petals = new THREE.InstancedMesh(geo, m, n); petals.userData.p = Array.from({length:n}, () => ({x:(Math.random() - .5) * 11, y:3.5 + Math.random() * 4, z:(Math.random() - .5) * 8, v:.5 + Math.random() * .7, r:Math.random() * 6, w:1 + Math.random() * 2})); scene.add(petals);
+    party = 4.5; ['haru', 'r0', 'r1', 'r2', 'r3', 'fix', 'sum'].forEach((id, i) => setTimeout(() => bubble(id, id === 'haru' ? text + '! เยี่ยมมากทุกคน ✿' : ['เย้!', 'เยี่ยม!', '✿', 'สวยมาก!'][i % 4], 3400), 200 + i * 130));
+    mode = 'auto'; follow = null; setAng('ภาพรวม'); angT = 8; camButtons();
+  }
+  function deliver(id, targets, text, fromPrinter){
+    const ch = C[id];
+    return ch.q = ch.q.then(async () => {
+      const ep = epoch;
+      if (fromPrinter) { bubble(id, 'ไปหยิบ PDF ที่เพิ่งพิมพ์', 1800); await goTo(ch, {x:SPOT.printer.x, z:SPOT.printer.z}, ep); if (ep !== epoch) return; ch.reach = .8; await sleepMs(600); scene.userData.printer.pout.visible = false; }
+      ch.rig.held.visible = true;
+      for (let i = 0; i < targets.length; i++) {
+        await goTo(ch, D[targets[i]], ep); if (ep !== epoch) return;
+        if (i === 0) bubble(id, text.length > 46 ? text.slice(0, 45) + '…' : text, 3000);
+        dropPaper(D[targets[i]]); if (C[targets[i]] && targets[i] !== id) bubble(targets[i], 'รับแล้ว!', 1300);
+        ch.reach = .7; await sleepMs(targets.length > 1 ? 500 : 950); if (ep !== epoch) return;
+      }
+      ch.rig.held.visible = false; await goHome(ch, ep);
+    });
+  }
+  const rid = l => 'r' + (l || 0); const cid = (k, l) => k === 'prep' ? 'haru' : k === 'rev' ? rid(l) : k;
+  function react(m){
+    if (!ok || m.from === 'sys' || m.from === 'me') return null;
+    const me = cid(m.from, m.lane), pg = m.pages?.[0], busy = flying.length >= 5;
+    if (m.tag === 'issue') { const to = m.to ? cid(m.to) : 'fix'; bubble(me, '! ' + (m.text.length > 40 ? m.text.slice(0, 39) + '…' : m.text), 2600, true); if (busy) addNote(D[to] || D.fix, 'issue'); else sendEnv(me, to, 'issue', pg); return null; }
+    if (m.tag === 'fixed') { bubble('fix', 'แก้แล้ว หน้า ' + (pg ?? ''), 2000); clearOneNote(D.fix); if (!busy) sendEnv('fix', rid(m.lane), 'fixed', pg); return null; }
+    if (m.tag === 'ok') { if (pg) { bubble(me, `หน้า ${pg} ผ่านแล้ว ✓`, 1800); return null; } ['r0', 'r1', 'r2', 'r3'].forEach((r, i) => setTimeout(() => bubble(r, i ? 'ผ่าน ✓' : 'ผ่านทุกจุด! ✓', 2200), i * 170)); return null; }
+    if (m.act === 'walk' && C[me]) { const t = m.to === 'rev' ? ['r0', 'r1', 'r2', 'r3'] : [cid(m.to)]; if (m.from === 'prep' && m.to === 'rev') scene.userData.printer.pout.visible = true; return deliver(me, t, m.text, m.from === 'prep' && m.to === 'rev'); }
+    bubble(me, m.text.length > 46 ? m.text.slice(0, 45) + '…' : m.text, 2800); return null;
+  }
+  // ── ไวท์บอร์ด + บอร์ดโน้ต ──
+  let wbKey = '';
+  function drawBoards(st){
+    const ph = st.phases.find(p => p.status === 'active') || [...st.phases].reverse().find(p => p.status === 'done') || st.phases[0];
+    const found = st.feed.filter(f => f.tag === 'issue').length, fixed = st.feed.filter(f => f.tag === 'fixed').length;
+    const pc = st.status === 'done' ? 100 : window.pctOf(st);
+    const key = [ph.name, ph.sub, pc, found, fixed, st.round, st.status].join('|');
+    if (key !== wbKey) { wbKey = key; boardBusy = true; setTimeout(() => boardBusy = false, 4000);
+      const {g: c, c: cv2} = board.userData, W = cv2.width;
+      c.fillStyle = '#FBFBF8'; c.fillRect(0, 0, W, cv2.height); c.fillStyle = '#2B3A55'; c.font = '48px Itim,cursive'; c.fillText(st.status === 'done' ? 'เสร็จแล้ว! ✿' : 'ตอนนี้: ' + ph.name, 28, 70);
+      c.fillStyle = '#D9537F'; c.font = '32px Itim,cursive'; c.fillText(String(ph.sub || '').slice(0, 30), 28, 120);
+      c.fillStyle = '#E3E6EC'; c.fillRect(28, 150, W - 56, 20); c.fillStyle = '#D9537F'; c.fillRect(28, 150, (W - 56) * pc / 100, 20);
+      c.font = '36px Itim,cursive'; c.fillStyle = '#C47A0C'; c.fillText('เจอ ' + found, 28, 232); c.fillStyle = '#2F6FB5'; c.fillText('แก้ ' + fixed, 210, 232); c.fillStyle = '#2B3A55'; c.fillText('รอบ ' + (st.round || 0), 392, 232);
+      c.fillStyle = '#8A8F9C'; c.font = '26px Itim,cursive'; c.fillText(String(st.title || '').slice(0, 36), 28, 330); board.needsUpdate = true; }
+    const notes = Object.keys(st.pages?.map || {}).filter(k => ['issue', 'fixed', 'pass'].includes(st.pages.map[k]) && st.pages.notes?.[k]).slice(0, 24);
+    const ck = notes.map(k => k + st.pages.map[k]).join(',');
+    if (ck !== corkKey) { corkKey = ck; const {g: c, c: cv3} = cork.userData, W = cv3.width, H = cv3.height;
+      c.fillStyle = '#C8A06A'; c.fillRect(0, 0, W, H); c.globalAlpha = .18; for (let i = 0; i < 400; i++) { c.fillStyle = i % 2 ? '#7A5A30' : '#E8C894'; c.fillRect((i * 97) % W, (i * 61) % H, 3, 3); } c.globalAlpha = 1;
+      notes.forEach((k, i) => { const x = 16 + (i % 6) * 82, y = 14 + Math.floor(i / 6) * 74, s = st.pages.map[k]; c.save(); c.translate(x + 34, y + 30); c.rotate(((i * 37) % 11 - 5) * .02); c.fillStyle = s === 'issue' ? '#FFD66B' : s === 'fixed' ? '#9CC8F5' : '#A8E0B8'; c.fillRect(-34, -28, 68, 58); c.fillStyle = '#C0392B'; c.beginPath(); c.arc(0, -22, 5, 0, 7); c.fill(); c.fillStyle = '#2B3A55'; c.font = '600 18px "IBM Plex Mono",monospace'; c.textAlign = 'center'; c.fillText('น.' + k, 0, 4); c.font = '16px Itim,cursive'; c.fillText(s === 'issue' ? 'รอแก้' : s === 'fixed' ? 'แก้แล้ว' : 'ผ่าน ✓', 0, 24); c.restore(); });
+      if (!notes.length) { c.fillStyle = '#FFFDF6'; c.fillRect(150, 110, 210, 90); c.fillStyle = '#2B3A55'; c.font = '30px Itim,cursive'; c.textAlign = 'center'; c.fillText('ยังไม่มีปัญหา', 255, 166); c.textAlign = 'left'; }
+      cork.needsUpdate = true; }
+  }
+  function sync(st){
+    if (!ok) return;
+    const rv = st.agents.rev || {}, done = st.steps.filter(s => s.status === 'done').length;
+    work('haru', st.agents.prep?.on, st.agents.prep?.on ? `${done} ขั้น` : '');
+    for (let i = 0; i < 4; i++) { const l = (rv.lanes || [])[i] || {}; work('r' + i, rv.on, rv.on ? (l.at ? 'น.' + l.at : 'อ่าน') : ''); }
+    const found = st.feed.filter(f => f.tag === 'issue').length, fixed = st.feed.filter(f => f.tag === 'fixed').length;
+    work('fix', st.agents.fix?.on, st.agents.fix?.on ? (found ? `${fixed}/${found}` : 'แก้') : '');
+    work('sum', st.agents.sum?.on, st.agents.sum?.on ? '✎' : '');
+    drawBoards(st);
+  }
+  function reset(){
+    epoch++; if (!ok) return;
+    flying.splice(0).forEach(f => { scene.remove(f.g); f.lab.remove(); });
+    if (petals) { scene.remove(petals); petals = null; } if (stamp) { scene.remove(stamp); stamp = null; }
+    for (const d of Object.values(D)) { while (d.papers.children.length > 2) d.papers.remove(d.papers.children[2]); d.notes.clear(); }
+    for (const ch of Object.values(C)) { ch.q = Promise.resolve(); ch.working = false; ch.bub.classList.remove('show'); if (ch.done) { ch.done(); ch.done = null; } seat(ch); work(ch.id, false, ''); }
+    wbKey = ''; corkKey = null;
+  }
+
+  // ── อนิเมชัน ──
+  const tmp = new THREE.Vector3(), O3 = new THREE.Object3D();
+  function animate(){
+    requestAnimationFrame(animate);
+    if (!ok) return;
+    const dt = Math.min(.05, clock.getDelta()), t = clock.elapsedTime, now = performance.now() / 1000;
+    const shown = !document.hidden && !$('#p-room').hidden;
+    const W = stageEl.clientWidth, H = stageEl.clientHeight;
+    for (const ch of Object.values(C)) {
+      const r = ch.rig; let thL = 0, thR = 0, knL = 0, knR = 0, shL = .08, shR = .08, elL = -.15, elR = -.15, hy = 0, hx = 0, bob = 0, lean = 0;
+      if (ch.mode === 'walk') {
+        const p = ch.path[0];
+        if (!p || ch.ep !== epoch) { ch.mode = 'stand'; const d = ch.done; ch.done = null; d && d(); }
+        else { const dx = p.x - ch.x, dz = p.z - ch.z, dist = Math.hypot(dx, dz), step = 1.7 * dt;
+          if (dist <= step) { ch.x = p.x; ch.z = p.z; ch.path.shift(); } else { ch.x += dx / dist * step; ch.z += dz / dist * step; const a = Math.atan2(dx, dz); let da = a - r.root.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da)); r.root.rotation.y += da * Math.min(1, dt * 10); }
+          r.root.position.set(ch.x, 0, ch.z);
+          const s = Math.sin(t * 8.5); thL = s * .5; thR = -s * .5; knL = Math.max(0, -s) * .7 + .1; knR = Math.max(0, s) * .7 + .1; bob = Math.abs(Math.cos(t * 8.5)) * .03;
+          if (r.held.visible) { shL = shR = -.75; elL = elR = -.9; } else { shL = -s * .4; shR = s * .4; elL = elR = -.35; } lean = .05; }
+      }
+      if (ch.mode === 'stand') { ch.reach = Math.max(0, (ch.reach || 0) - dt); if (ch.reach > 0) { shR = -1.25; elR = -.3; } if (r.held.visible) { shL = shR = -.75; elL = elR = -.9; } hy = Math.sin(t * .8 + ch.ph) * .2; }
+      if (ch.mode === 'sit') {
+        thL = thR = -1.5; knL = knR = 1.45;
+        ch.idleT -= dt; if (ch.idleT <= 0) { ch.idle = ch.working ? (Math.random() < .14 ? 'look' : Math.random() < .1 ? 'think' : 'type') : ['sip', 'look', 'rest', 'think', 'rest', 'sip', 'look', 'rest', 'stretch'][Math.floor(Math.random() * 9)]; ch.idleT = 1.8 + Math.random() * 3; }
+        if (ch.working && (ch.idle === 'type' || !ch.idle)) { shL = shR = -.55; elL = -1.05 + Math.sin(t * 22 + ch.ph) * .08; elR = -1.05 + Math.sin(t * 22 + ch.ph + 1.6) * .08; hx = .16 + Math.sin(t * 2 + ch.ph) * .03; lean = .1; }
+        else if (ch.idle === 'sip') { shR = -.5; elR = -2.2 + Math.sin(t * 2) * .08; shL = -.4; elL = -1.0; hx = -.08; }
+        else if (ch.idle === 'stretch') { shL = shR = -2.9; elL = elR = -.2; hx = -.2; lean = -.08; }
+        else if (ch.idle === 'think') { shR = -.6; elR = -2.3; shL = -.3; elL = -1.2; hx = -.05; hy = .2; }
+        else if (ch.idle === 'look') { hy = Math.sin(t * 1.2 + ch.ph) * .7; shL = shR = -.45; elL = elR = -.9; }
+        else { shL = shR = -.35; elL = elR = -1.0; }
+        const sw = Math.sin(t * .6 + ch.ph) * (ch.working ? .03 : .1); ch.desk.chair.rotation.y = sw; r.root.rotation.y = sw;
+      }
+      if (party > 0) { bob = Math.abs(Math.sin(t * 9 + ch.ph)) * .18; shL = shR = -2.8; elL = elR = -.3; }
+      const k = Math.min(1, dt * 10);
+      r.hips.position.y = (ch.mode === 'sit' ? .5 : .88) + bob;
+      r.L.th.rotation.x += (thL - r.L.th.rotation.x) * k; r.R.th.rotation.x += (thR - r.R.th.rotation.x) * k; r.L.kn.rotation.x += (knL - r.L.kn.rotation.x) * k; r.R.kn.rotation.x += (knR - r.R.kn.rotation.x) * k;
+      r.AL.sh.rotation.x += (shL - r.AL.sh.rotation.x) * k; r.AR.sh.rotation.x += (shR - r.AR.sh.rotation.x) * k; r.AL.el.rotation.x += (elL - r.AL.el.rotation.x) * k; r.AR.el.rotation.x += (elR - r.AR.el.rotation.x) * k;
+      r.AL.sh.rotation.z = -.06; r.AR.sh.rotation.z = .06;
+      r.head.rotation.y += (hy - r.head.rotation.y) * Math.min(1, dt * 4); r.head.rotation.x += (hx - r.head.rotation.x) * Math.min(1, dt * 4); r.chest.rotation.x += (lean - r.chest.rotation.x) * k;
+      r.eyes.scale.y = (Math.sin(t * .9 + ch.ph * 3) > .985) ? .15 : 1;
+      if (shown) {
+        tmp.set(ch.x, (ch.mode === 'sit' ? 1.62 : 1.95) + bob, ch.z).project(cam);
+        const sx = (tmp.x + 1) / 2 * W, sy = (1 - tmp.y) / 2 * H, vis = tmp.z < 1 && sx > -50 && sx < W + 50;
+        ch.bub.style.left = sx + 'px'; ch.bub.style.top = (sy - 6) + 'px'; ch.bub.style.display = vis ? '' : 'none';
+        ch.tag.style.left = sx + 'px'; ch.tag.style.top = (sy + 6) + 'px'; ch.tag.classList.toggle('show', ch.mode !== 'sit' && vis);
+        tmp.set(ch.desk.x - .08, 1.32, ch.desk.z + .12).project(cam); ch.chip.style.left = ((tmp.x + 1) / 2 * W) + 'px'; ch.chip.style.top = ((1 - tmp.y) / 2 * H) + 'px'; ch.chip.style.display = tmp.z < 1 ? '' : 'none';
+      }
+    }
+    if (party > 0) party -= dt;
+    for (const d of Object.values(D)) {
+      if (d.on) d.scroll += dt * 30; if (shown && (((t * 8) | 0) % 2 === 0 || !d.lastDraw)) { drawScreen(d, t); d.lastDraw = 1; }
+      d.glow.material.emissiveIntensity = d.on ? 1.1 + Math.sin(t * 4) * .4 : .15;
+      d.steam.forEach(s => { const q = (t * .35 + s.userData.o) % 1; s.position.y = .9 + q * .35; s.position.x = s.userData.x + Math.sin(q * 6 + s.userData.o * 9) * .03; s.material.opacity = d.on ? (1 - q) * .45 : 0; s.scale.setScalar(.6 + q); });
+    }
+    // ซองจดหมายบิน
+    for (let i = flying.length - 1; i >= 0; i--) { const f = flying[i]; f.t += dt / f.dur; const u = Math.min(1, f.t), e2 = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+      const a = f.s.clone().lerp(f.mid, e2), b = f.mid.clone().lerp(f.e, e2), p = a.lerp(b, e2); f.g.position.copy(p); f.g.rotation.set(Math.sin(t * 3) * .15, t * 2.2, Math.sin(t * 4) * .12); f.g.scale.setScalar(1 + Math.sin(u * Math.PI) * .35);
+      if (Math.random() < .5) { const sp = new THREE.Mesh(sparkG, new THREE.MeshBasicMaterial({color:f.col, transparent:true, opacity:.9, depthWrite:false})); sp.position.copy(p); sp.userData.life = 1; scene.add(sp); sparks.push(sp); }
+      if (shown) { tmp.copy(p).project(cam); f.lab.style.left = ((tmp.x + 1) / 2 * W) + 'px'; f.lab.style.top = ((1 - tmp.y) / 2 * H) + 'px'; }
+      if (u >= 1) { scene.remove(f.g); f.lab.remove(); flying.splice(i, 1); if (f.kind === 'issue') addNote(f.b, 'issue'); } }
+    for (let i = sparks.length - 1; i >= 0; i--) { const s = sparks[i]; s.userData.life -= dt * 1.6; s.material.opacity = Math.max(0, s.userData.life) * .8; s.scale.setScalar(Math.max(.01, s.userData.life)); s.position.y -= dt * .15; if (s.userData.life <= 0) { scene.remove(s); s.material.dispose(); sparks.splice(i, 1); } }
+    for (const e of extras) { if (e.t === 'petal') { const u = e.g.userData; e.g.position.y -= u.v * dt; e.g.position.x += Math.sin(t + u.s) * dt * .2; e.g.rotation.set(t + u.s, t * .7, 0); if (e.g.position.y < 0) e.g.position.y = 3.3; } else if (e.t === 'plant') e.g.rotation.z = Math.sin(t * .8 + e.g.position.x) * .012; }
+    const pu = scene.userData.printer; pu.led.material.color.set(pu.pout.visible && Math.sin(t * 10) > 0 ? '#F2B84B' : '#5CC08A'); if (pu.pout.visible) pu.pout.position.z = .14 + ((t * .4) % .15);
+    const nd = new Date(), mm = nd.getMinutes() + nd.getSeconds() / 60; scene.userData.clk.m.rotation.z = -mm / 60 * Math.PI * 2; scene.userData.clk.h.rotation.z = -((nd.getHours() % 12) + mm / 60) / 12 * Math.PI * 2;
+    if (petals) { const P = petals.userData.p; P.forEach((q, i) => { q.y -= q.v * dt; q.x += Math.sin(t * q.w + q.r) * dt * .4; O3.position.set(q.x, q.y, q.z); O3.rotation.set(t * q.w + q.r, t * .8 + q.r, q.r); O3.updateMatrix(); petals.setMatrixAt(i, O3.matrix); }); petals.instanceMatrix.needsUpdate = true; if (P.every(q => q.y < -.5)) { scene.remove(petals); petals = null; } }
+    if (stamp && stamp.userData.t < 1) { stamp.userData.t = Math.min(1, stamp.userData.t + dt * 2.5); const k2 = stamp.userData.t; stamp.scale.setScalar(3 - 2 * k2); stamp.material.opacity = k2; }
+    directorTick(dt, now);
+    const lk = 1 - Math.exp(-dt * 1.7); cam.position.lerp(camGoal.p, lk); camTarget.lerp(camGoal.t, lk); cam.lookAt(camTarget);
+    if (shown) R.render(scene, cam);
+  }
+  function resize(){ if (!ok) return; const w = stageEl.clientWidth, h = stageEl.clientHeight; if (!w || !h) return; R.setSize(w, h, false); cam.aspect = w / h; cam.fov = w / h < 1.4 ? 46 : 35; cam.updateProjectionMatrix(); }
+  function init(){
+    try {
+      R = new THREE.WebGLRenderer({canvas:cv, antialias:true, alpha:true}); R.setClearColor(0x000000, 0); R.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+      R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap; R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping;
+      scene = new THREE.Scene(); cam = new THREE.PerspectiveCamera(35, 16 / 9, .1, 80); cam.position.copy(camGoal.p);
+      hemi = new THREE.HemisphereLight('#EAF3FF', '#C2A27C', 1.15); scene.add(hemi);
+      sun = new THREE.DirectionalLight('#FFF3E2', 2.2); sun.position.set(-5, 11, 7); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; sun.shadow.normalBias = .02; sun.shadow.radius = 4;
+      Object.assign(sun.shadow.camera, {left:-9, right:9, top:8, bottom:-8, near:1, far:30}); scene.add(sun);
+      fill = new THREE.PointLight('#FFD3A0', .4, 14, 1.4); fill.position.set(.5, 3.2, .2); scene.add(fill);
+      ok = true; buildRoom();
+      for (const [id, d] of Object.entries(D)) {
+        makeDesk(d); const rig = makeChar(LOOK[id]); scene.add(rig.root);
+        const tag = document.createElement('div'); tag.className = 'tag'; tag.style.background = d.c; tag.textContent = d.tag; ovl.appendChild(tag);
+        const bub = document.createElement('div'); bub.className = 'bub'; ovl.appendChild(bub);
+        const chip = document.createElement('div'); chip.className = 'dchip'; ovl.appendChild(chip);
+        C[id] = {id, rig, desk:d, x:0, z:0, mode:'sit', path:[], q:Promise.resolve(), tag, bub, chip, ph:Math.random() * 6, idle:'rest', idleT:Math.random() * 2, working:false};
+        seat(C[id]);
+      }
+      setTheme();
+      new ResizeObserver(resize).observe(stageEl); resize(); camButtons();
+      matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setTheme);
+      new MutationObserver(setTheme).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+      document.fonts?.ready.then(() => { wbKey = ''; corkKey = null; for (const d of Object.values(D)) { const t = d.nameTex; t.userData.draw(t.userData.g, t.userData.c.width, t.userData.c.height); t.needsUpdate = true; } const p = scene.userData.poster; p.userData.draw(p.userData.g, 300, 400); p.needsUpdate = true; if (window.__S) sync(window.__S); });
+      animate();
+    } catch (e) { ok = false; stageEl.insertAdjacentHTML('beforeend', `<div class="err">เปิดภาพ 3D ไม่ได้ในเครื่องนี้ (${esc(e.message)})<br>แท็บอื่นและแชทยังใช้ได้ตามปกติ</div>`); }
+  }
+  return {init, sync, react, reset, celebrate, bubble, resize};
+})();
+
+/* ═══════════════════════ สถานะ + หน้าจอ ═══════════════════════ */
+let S = null, JOB = null, seenKeys = new Set(), CHAT = {session:'', msgs:[]}, LIVE = {fix:null}, demoRun = 0, celebrated = false, curTab = 'over';
+const FILEMODE = location.protocol === 'file:';
+const keyOf = m => (m.ts || 0) + '|' + m.from + '|' + String(m.text).slice(0, 24) + '|' + (m.pages || []).join(',');
+const pctOf = st => { const w = st.phases.reduce((a, p) => a + (p.status === 'done' ? 1 : p.status === 'active' ? (p.frac || 0) : 0), 0); return Math.round(100 * w / st.phases.length); };
+window.pctOf = pctOf;
+const PLAIN = {'รวมข้อความที่ขาดเป็นท่อนให้ต่อกัน':'ต่อข้อความที่ขาดเป็นท่อน', 'การจัดข้อความ':'จัดชิดซ้าย-ขวา', 'เอาการบีบ/ถ่างตัวอักษรที่ตั้งเองออก':'แก้ตัวอักษรที่บีบ/ถ่าง', 'ข้อความที่ถูกแก้ (เลขบท / คำบรรยาย / คำสะกด)':'แก้คำ เลขบท คำบรรยายรูป', 'ขนาดตัวอักษร':'ปรับขนาดตัวอักษรให้เท่ากัน', 'เปลี่ยนฟอนต์ให้เป็นฟอนต์เดียว':'ฟอนต์เดียวทั้งเล่ม', 'ข้อความที่ถูกเอาออก (บทนำ ฯลฯ)':'ข้อความที่เอาออก (เช่นบทนำ)', 'ลบแถว Test by / Approve by':'ลบแถว Test by / Approve by', 'หัวตารางเป็นตัวหนา':'หัวตารางตัวหนา'};
+const plain = s => PLAIN[s] || s;
+const issueOf = n => S?.shots?.[n]?.issue || S?.pages?.notes?.[n] || '';
+const flagged = () => Object.keys(S?.pages?.map || {}).filter(k => ['issue', 'fixed', 'pass'].includes(S.pages.map[k]) && (S.shots?.[k] || S.pages.notes?.[k])).map(Number).sort((a, b) => a - b);
+// ตัวเลขชุดเดียวใช้ทั้งแท็บและภาพรวม จะได้ตรงกันเสมอ
+function counts(){
+  const fl = flagged(); const open = fl.filter(n => S.pages.map[n] === 'issue').length, fixed = fl.length - open;
+  const st = {none:0, reading:0, ok:0, issue:0, fixed:0, pass:0}; for (let i = 1; i <= (S.pages.total || 0); i++) st[S.pages.map[i] || 'none']++;
+  const changes = (S.summary?.changes || []).reduce((a, c) => a + (+c.count || 0), 0);
+  return {fl, open, fixed, st, changes, total:S.pages.total || 0};
+}
+function load(st, {fresh = false} = {}){
+  const switching = !S || fresh || S.title !== st.title || S.job !== st.job || S.realStart !== st.realStart;
+  S = st; window.__S = st;
+  if (switching) {
+    $('#feed').innerHTML = ''; seenKeys = new Set(); celebrated = st.status === 'done'; Scene.reset(); $('#sumPip').hidden = true; chkShown = 60; chkFilter = 'ทั้งหมด'; REQ.splice(0); drawTray(); ovKey = '';
+    for (const m of allMsgs()) { seenKeys.add(keyOf(m)); appendMsg(m); }
+  }
+  render();
+}
+const allMsgs = () => [...(S?.feed || []), ...CHAT.msgs].sort((a, b) => (a.ts || 0) - (b.ts || 0));
+function appendMsg(m){
+  const fd = $('#feed'); const a = AG[m.from] || AG.sys; const cls = m.from === 'me' ? 'me' : m.from === 'fix' ? 'fixr' : m.from === 'sys' ? 'sys' : '';
+  const typing = fd.querySelector('.typing-row'); const last = [...fd.children].filter(e => !e.classList.contains('typing-row')).pop();
+  const gk = m.tag && m.pages?.length ? `${m.from}|${m.lane || 0}|${m.tag}` : '';
+  if (gk && last?.dataset.g === gk && +last.dataset.n < 40) {
+    const n = +last.dataset.n + 1; last.dataset.n = n;
+    last.querySelector('.tx').textContent = {issue:`เจอ ${n} หน้าที่ควรเช็ค`, fixed:`แก้แล้ว ${n} หน้า`, ok:`ตรวจซ้ำผ่าน ${n} หน้า`}[m.tag];
+    last.querySelector('.chips').insertAdjacentHTML('beforeend', m.pages.map(p => `<button class="pg" data-go="${+p}" title="${esc(m.text)}">${+p}</button>`).join(''));
+    fd.scrollTop = fd.scrollHeight; return last;
+  }
+  const el = document.createElement('div'); el.className = 'msg ' + cls; if (gk) { el.dataset.g = gk; el.dataset.n = 1; }
+  const tag = m.tag ? `<span class="tag ${m.tag}">${{issue:'ควรเช็ค', fixed:'แก้แล้ว', ok:'ผ่าน'}[m.tag] || ''}</span>` : '';
+  const who = m.from === 'rev' ? 'ผู้ตรวจ ' + 'กขคง'[m.lane || 0] : m.from === 'guest' ? (SH.names[m.by] || 'เพื่อน') + ' (แจ้งมา)' : a.name;
+  if (cls === 'sys') el.innerHTML = `<div class="bb">${esc(m.text)}</div>`;
+  else el.innerHTML = `<div class="av" style="background:${a.c}">${esc(a.g)}</div><div class="bb"><div class="meta"><b style="color:${cls === 'me' ? 'inherit' : a.c}">${esc(who)}${m.to && AG[m.to] ? ' → ' + esc(AG[m.to].name) : ''}</b>${tag}<span class="num">${esc(m.t || '')}</span></div><div class="tx">${esc(m.text)}</div>${gk ? `<div class="chips">${m.pages.map(p => `<button class="pg" data-go="${+p}" title="${esc(m.text)}">หน้า ${+p}</button>`).join('')}</div>` : ''}</div>`;
+  fd.insertBefore(el, typing || null); fd.scrollTop = fd.scrollHeight; return el;
+}
+function render(){
+  if (!S) return;
+  $('#bookTitle').textContent = S.title; $('#bookKind').textContent = S.kind || '';
+  $('#bookMeta').innerHTML = `<span class="chip num">${S.pages.total || '—'} หน้า</span>` + (S.status === 'done' ? `<span class="chip done">✓ เสร็จแล้ว</span>` : S.status === 'stale' ? `<span class="chip">หยุดกลางคัน</span>` : S.status === 'idle' ? '' : `<span class="chip live">กำลังทำงาน</span>`) + (SH.view ? `<span class="chip viewing">ดูสดจากเครื่องของ ${esc(SH.names[SH.view.owner] || 'เจ้าของงาน')}</span>` : '');
+  updateShareBtn();
+  const p = S.status === 'done' ? 100 : pctOf(S); $('#ringArc').style.strokeDashoffset = 119.4 * (1 - p / 100); $('#ringN').textContent = p + '%';
+  $('#rail').innerHTML = S.phases.map((ph, i) => (i ? '<span class="ph-sep"></span>' : '') + `<span class="ph ${ph.status}"><i>${ph.status === 'done' ? '✓' : i + 1}</i>${esc(ph.name)}${ph.status === 'active' && ph.sub ? ` <span class="s">${esc(ph.sub)}</span>` : ''}</span>`).join('');
+  const agents = {...S.agents}; if (LIVE.fix) agents.fix = {...agents.fix, ...LIVE.fix};
+  const ids = ['prep', 'rev', 'fix', 'sum'];
+  $('#agentCount').textContent = `${ids.filter(k => agents[k]?.on).length} ฝ่ายกำลังทำงาน`;
+  $('#agents').innerHTML = ids.map(k => { const a = AG[k], s = agents[k] || {}; const pr = k === 'rev' ? Math.round((s.lanes || []).reduce((x, l) => x + (l.p || 0), 0) / Math.max(1, (s.lanes || []).length)) : (s.p || 0);
+    return `<div class="ag ${s.on ? 'on' : ''}" style="--c:${a.c}"><div class="hd"><div class="av" style="background:${a.c}">${a.g}</div><div class="who"><b>${a.name}</b><span>${a.role}</span></div><span class="st">${esc(s.state || 'รอคิว')}</span></div><div class="task">${esc(s.task || '—')}</div><div class="mbar"><i style="width:${pr}%;background:${a.c}"></i></div></div>`; }).join('');
+  $('#feed .typing-row')?.remove();
+  for (const m of allMsgs()) { const k = keyOf(m); if (seenKeys.has(k)) continue; seenKeys.add(k); appendMsg(m); m._walk = Scene.react(m); }
+  const ty = LIVE.typing || S.typing; if (ty) { const who = AG[ty] || AG.prep; const el = document.createElement('div'); el.className = 'msg typing-row ' + (ty === 'fix' ? 'fixr' : ''); el.innerHTML = `<div class="av" style="background:${who.c}">${who.g}</div><div class="bb"><span class="typing"><i></i><i></i><i></i></span></div>`; $('#feed').appendChild(el); $('#feed').scrollTop = 1e9; }
+  const c = counts();
+  $('#cCheck').textContent = c.open || (c.fixed ? '✓' : '0'); $('#cCheck').className = 'cnt ' + (c.open ? 'warn' : c.fixed ? 'ok' : ''); $('#cCheck').title = `ยังไม่แก้ ${c.open} · แก้แล้ว ${c.fixed}`;
+  $('#cChange').textContent = c.changes.toLocaleString();
+  renderPanel(curTab);
+  Scene.sync({...S, agents});
+  if (S.summary && S.status === 'done' && !celebrated) { celebrated = true; Scene.celebrate(S.summary.verdict || 'ผ่าน'); if (curTab !== 'over') { $('#sumPip').hidden = false; toast('เสร็จแล้ว · ดูภาพรวมได้เลย', 'ดูภาพรวม', () => tab('over')); } }
+}
+function tab(which){
+  curTab = which;
+  for (const b of $('#tabs').children) { const on = b.dataset.tab === which; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); }
+  for (const id of ['over', 'check', 'change', 'pages', 'steps', 'room']) $('#p-' + id).hidden = id !== which;
+  if (which === 'over') $('#sumPip').hidden = true;
+  if (which === 'room') requestAnimationFrame(() => Scene.resize());
+  ovKey = ''; renderPanel(which);
+}
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) tab(b.dataset.tab); });
+document.addEventListener('click', e => { const g = e.target.closest('[data-goto]'); if (g) tab(g.dataset.goto); });
+function renderPanel(w){ if (!S) return; if (w === 'over') renderOver(); else if (w === 'check') renderCheck(); else if (w === 'change') renderChange(); else if (w === 'pages') renderPages($('#pmap'), $('#onlyFlag').checked); else if (w === 'steps') renderSteps(); }
+
+/* ── กราฟ: วงกลม ↔ แท่ง ── */
+const chartMode = {status:'pie', type:'pie'};
+function chartHTML(key, items, total){
+  items = items.filter(i => i.v > 0); const sum = items.reduce((a, i) => a + i.v, 0) || 1;
+  const seg = `<div class="seg" data-chart="${key}"><button data-m="pie" class="${chartMode[key] === 'pie' ? 'on' : ''}">วงกลม</button><button data-m="bar" class="${chartMode[key] === 'bar' ? 'on' : ''}">แท่ง</button></div>`;
+  if (!items.length) return {seg, body:'<div class="empty"><b>ยังไม่มีข้อมูล</b></div>'};
+  if (chartMode[key] === 'bar') return {seg, body:`<div class="bars">${items.map(i => `<div><span class="l" title="${esc(i.l)}">${esc(i.l)}</span><span class="tr"><i style="width:${100 * i.v / Math.max(...items.map(x => x.v))}%;background:${i.c}"></i></span><span class="p">${i.v.toLocaleString()} · ${(100 * i.v / sum).toFixed(1)}%</span></div>`).join('')}</div>`};
+  const R2 = 54, CIRC = 2 * Math.PI * R2; let off = 0;
+  const arcs = items.map(i => { const len = CIRC * i.v / sum; const s = `<circle r="${R2}" cx="70" cy="70" fill="none" stroke="${i.c}" stroke-width="20" stroke-dasharray="${Math.max(0, len - 1.5)} ${CIRC}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"><title>${esc(i.l)} ${i.v}</title></circle>`; off += len; return s; }).join('');
+  return {seg, body:`<div class="chart"><svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-label="สัดส่วน"><circle r="${R2}" cx="70" cy="70" fill="none" stroke="var(--bg-2)" stroke-width="20"/>${arcs}<text x="70" y="66" text-anchor="middle" font-size="20" font-weight="600" fill="var(--ink)" font-family="IBM Plex Mono,monospace">${(total ?? sum).toLocaleString()}</text><text x="70" y="86" text-anchor="middle" font-size="11" fill="var(--mute)" font-family="IBM Plex Sans Thai,sans-serif">${key === 'status' ? 'หน้า' : 'จุด'}</text></svg>
+    <div class="lg">${items.map(i => `<div><i style="background:${i.c}"></i><span>${esc(i.l)}</span><span class="num">${i.v.toLocaleString()}</span><span class="p">${(100 * i.v / sum).toFixed(1)}%</span></div>`).join('')}</div></div>`};
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-chart] [data-m]'); if (!b) return; chartMode[b.parentElement.dataset.chart] = b.dataset.m; ovKey = ''; renderOver(); });
+
+/* ── ภาพรวม: รวมทุกแท็บไว้ในหน้าเดียว จัดเป็นส่วนๆ ── */
+let ovKey = '';
+function renderOver(){
+  const el = $('#p-over'), sm = S.summary, c = counts();
+  const mins = Math.max(1, Math.round(((S.ended || Date.now()) - (S.realStart || Date.now())) / 60000));
+  const key = JSON.stringify([S.status, c.open, c.fixed, c.st, c.changes, mins, S.closed, sm?.headline, S.steps.length, S.steps.filter(s => s.status === 'done').length, S.phases.map(p => p.sub), chartMode, !!DESK.api]);
+  if (key === ovKey) return; ovKey = key;
+  const ph = S.phases.find(p => p.status === 'active') || S.phases[0], done = S.status === 'done';
+  const css = getComputedStyle(document.documentElement), V = n => css.getPropertyValue(n).trim();
+  const stItems = [{l:'ปกติ', v:c.st.ok, c:V('--c4') + '88'}, {l:'แก้แล้ว ผ่าน', v:c.st.pass, c:V('--c4')}, {l:'แก้แล้ว รอตรวจซ้ำ', v:c.st.fixed, c:V('--c3')}, {l:'ควรเปิดดู', v:c.st.issue, c:V('--c5')}, {l:'กำลังอ่าน', v:c.st.reading, c:V('--c6')}, {l:'ยังไม่อ่าน', v:c.st.none, c:V('--line-2')}];
+  const pal = ['--c1', '--c2', '--c3', '--c4', '--c5', '--c6', '--c7'].map(V);
+  const tyItems = (sm?.changes || []).map((x, i) => ({l:plain(x.label), v:+x.count || 0, c:pal[i % pal.length]}));
+  const ch1 = chartHTML('status', stItems, c.total), ch2 = chartHTML('type', tyItems);
+  const lab = {issue:['issue', 'ยังไม่แก้'], fixed:['fixed', 'แก้แล้ว รอตรวจ'], pass:['pass', 'ผ่าน']};
+  const chkRows = c.fl.slice().sort((a, b) => (S.pages.map[a] === 'issue' ? 0 : 1) - (S.pages.map[b] === 'issue' ? 0 : 1) || a - b).slice(0, 6);
+  const canOpen = !!DESK.api && isLocal();
+  el.innerHTML = `
+  <div class="card hero"><div class="grow" style="min-width:0">
+      <h2>${done ? esc(sm?.headline || 'เสร็จแล้ว') : S.status === 'idle' ? 'ยังไม่มีงาน' : 'ทีมฮารุกำลังทำงาน'}</h2>
+      <p>${done ? esc(sm?.sub || '') : S.status === 'idle' ? 'ลากไฟล์ .docx มาวาง หรือกดปุ่ม "งานใหม่" ด้านบน' : `ตอนนี้: ${esc(ph.name)}${ph.sub ? ' · ' + esc(ph.sub) : ''}`}</p>
+      ${!done && S.status !== 'idle' ? `<div class="bar2"><i style="width:${pctOf(S)}%"></i></div>` : ''}
+    </div>${done ? `<div class="stamp"><div><b>${esc(sm?.verdict || 'ผ่าน')}</b><small>TRAINED BY HARU</small></div></div>` : ''}</div>
+  <div class="kpis">
+    <button class="kpi" data-goto="pages"><span class="k">หน้าทั้งหมด</span><span class="v num">${c.total.toLocaleString() || '—'}</span><span class="d">อ่านแล้ว ${(c.total - c.st.none - c.st.reading).toLocaleString()} หน้า</span></button>
+    <button class="kpi ${c.open ? 'warn' : 'good'}" data-goto="check"><span class="k">ควรเปิดดู (ยังไม่แก้)</span><span class="v num">${c.open}</span><span class="d">${c.open ? 'ให้คนตัดสินด้วยตา' : done ? 'ไม่มีหน้าที่ค้าง' : 'ยังไม่เจอ'}</span></button>
+    <button class="kpi fix" data-goto="check"><span class="k">ทีมแก้ให้แล้ว</span><span class="v num">${c.fixed}</span><span class="d">หน้า · ดูภาพก่อน/หลังได้</span></button>
+    <button class="kpi" data-goto="change"><span class="k">ปรับให้อัตโนมัติ</span><span class="v num">${c.changes.toLocaleString()}</span><span class="d">จุด · เนื้อหาเหมือนเดิมทุกคำ</span></button>
+  </div>
+  <div class="two">
+    <div class="card"><div class="card-hd"><h3>สถานะทุกหน้า</h3>${ch1.seg}</div>${ch1.body}</div>
+    <div class="card"><div class="card-hd"><h3>ปรับอะไรไปบ้าง (สัดส่วน)</h3>${ch2.seg}</div>${ch2.body}</div>
+  </div>
+  <div class="two">
+    <div class="card"><div class="card-hd"><h3>หน้าที่ควรเปิดดู</h3><span class="sub">${c.open} ยังไม่แก้ · ${c.fixed} แก้แล้ว</span><span class="grow"></span>${c.fl.length ? `<button class="lnk" data-goto="check">ดูทั้งหมด ›</button>` : ''}</div>
+      ${chkRows.length ? `<div class="tbw"><table class="tb"><thead><tr><th>หน้า</th><th>ที่พบ</th><th>สถานะ</th></tr></thead><tbody>${chkRows.map(n => { const s = lab[S.pages.map[n]] || lab.issue; return `<tr><td><button class="pg" data-go="${n}">${n}</button></td><td>${esc(issueOf(n))}</td><td><span class="pill ${s[0]}">${s[1]}</span></td></tr>`; }).join('')}</tbody></table></div>` : `<div class="empty"><b>${done ? 'ไม่มี ✓' : 'ยังไม่มี'}</b>${done ? 'อ่านครบทุกหน้า ไม่เจอจุดผิดปกติ' : 'เจอหน้าไหนจะขึ้นที่นี่ทันที'}</div>`}</div>
+    <div class="card"><div class="card-hd"><h3>แก้อะไรไป</h3><span class="sub">${(sm?.changes || []).length} หมวด</span><span class="grow"></span>${sm?.changes?.length ? `<button class="lnk" data-goto="change">ดูตัวอย่าง ›</button>` : ''}</div>
+      ${sm?.changes?.length ? `<div class="tbw"><table class="tb"><thead><tr><th>หมวด</th><th class="r">จุด</th></tr></thead><tbody>${sm.changes.map((x, i) => `<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${pal[i % pal.length]};margin-right:8px"></span>${esc(plain(x.label))}</td><td class="r">${(+x.count).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>` : `<div class="empty"><b>รอผู้สรุป</b>จะขึ้นเมื่อเทียบกับต้นฉบับเสร็จ</div>`}</div>
+  </div>
+  <div class="two">
+    <div class="card"><div class="card-hd"><h3>ทุกหน้า</h3><span class="sub">กดหน้าไหนก็ได้เพื่อดูภาพ</span><span class="grow"></span><button class="lnk" data-goto="pages">ขยาย ›</button></div><div class="pmap" id="ovMap"></div></div>
+    <div class="card"><div class="card-hd"><h3>ขั้นตอนล่าสุด</h3><span class="sub">${S.steps.filter(s => s.status === 'done').length}/${S.steps.length} ขั้น</span><span class="grow"></span><button class="lnk" data-goto="steps">ทั้งหมด ›</button></div>
+      <ul class="steps">${S.steps.slice(-6).map(s => `<li class="${s.status}"><span class="ic">${s.status === 'done' ? '✓' : ''}</span><span>${esc(s.name)}</span><span class="tm num">${esc(s.t || '')}</span></li>`).join('') || '<div class="empty"><b>ยังไม่เริ่ม</b></div>'}</ul></div>
+  </div>
+  ${sm?.files ? `<div class="card"><div class="card-hd"><h3>ไฟล์ผลลัพธ์</h3><span class="grow"></span>${canOpen ? `<button class="btn sm" id="openDir">เปิดโฟลเดอร์</button><button class="btn sm" id="closeJob" ${S.closed ? 'disabled' : ''}>${S.closed ? 'จบงานแล้ว · ลบภาพแคปแล้ว' : 'จบงาน · ลบภาพที่แคปไว้'}</button>` : ''}</div>
+    <div class="files">${sm.files.map((f, i) => `<div class="file"><span class="ext ${esc(f.ext)}">${esc(String(f.ext).toUpperCase())}</span><span class="n">${esc(f.name)}</span>${canOpen ? `<button class="btn sm" data-open="${i}">เปิด</button>` : ''}</div>`).join('')}${canOpen ? '' : '<span class="sub" style="font-size:12.5px;color:var(--mute)">เปิดไฟล์ได้จากแอปฮารุ</span>'}</div></div>` : ''}`;
+  renderPages($('#ovMap'), false, true);
+}
+// ── ควรเปิดดู ──
+let chkFilter = 'ทั้งหมด', chkShown = 60;
+function renderCheck(){
+  const c = counts(), types = {}; c.fl.forEach(n => issueOf(n).replace(/^ยังไม่หาย: /, '').split(' · ').filter(Boolean).forEach(t => types[t] = (types[t] || 0) + 1));
+  const F = [['ทั้งหมด', c.fl.length], ['ยังไม่แก้', c.open], ['แก้แล้ว', c.fixed], ...Object.entries(types)];
+  $('#chkFilters').innerHTML = F.filter(([, n], i) => i < 3 || n).map(([k, n]) => `<button class="fchip ${k === chkFilter ? 'on' : ''}" data-f="${esc(k)}">${esc(k)}<span class="n">${n}</span></button>`).join('');
+  const rows = c.fl.filter(n => chkFilter === 'ทั้งหมด' || (chkFilter === 'ยังไม่แก้' ? S.pages.map[n] === 'issue' : chkFilter === 'แก้แล้ว' ? S.pages.map[n] !== 'issue' : issueOf(n).includes(chkFilter)));
+  const lab = {issue:['issue', 'ยังไม่แก้'], fixed:['fixed', 'แก้แล้ว รอตรวจซ้ำ'], pass:['pass', 'ตรวจซ้ำผ่าน']};
+  $('#chkList').innerHTML = rows.length ? rows.slice(0, chkShown).map(n => { const s = lab[S.pages.map[n]] || lab.issue; const fx = S.shots?.[n]?.fix; return `<div class="rowi"><button class="pg" data-go="${n}">หน้า ${n}</button><span class="why">${esc(issueOf(n))}${fx ? `<span class="fx">แก้: ${esc(fx)}</span>` : ''}</span><span class="pill ${s[0]}">${s[1]}</span><button class="btn sm" data-go="${n}">ดูภาพ / แจ้งแก้</button></div>`; }).join('') + (rows.length > chkShown ? `<button class="btn more" id="chkMore">แสดงเพิ่มอีก ${Math.min(60, rows.length - chkShown)} หน้า (เหลือ ${rows.length - chkShown})</button>` : '')
+    : `<div class="empty"><b>${c.fl.length ? 'ไม่มีหน้าในกลุ่มนี้' : S.status === 'done' ? 'ไม่มีหน้าที่ต้องเปิดดู ✓' : 'ยังไม่มี'}</b>${c.fl.length ? 'ลองเลือกตัวกรองอื่น' : S.status === 'done' ? 'ผู้ตรวจอ่านครบทุกหน้าแล้ว' : 'ผู้ตรวจเจอหน้าไหนจะขึ้นที่นี่ทันที'}</div>`;
+  $('#loopBtn').hidden = !(DESK.ready && isLocal() && S.status === 'done' && c.open);
+}
+$('#chkFilters').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; chkFilter = b.dataset.f; chkShown = 60; renderCheck(); });
+$('#chkList').addEventListener('click', e => { if (e.target.id === 'chkMore') { chkShown += 60; renderCheck(); } });
+// ── แก้อะไรไป ──
+function renderChange(){
+  const ch = S.summary?.changes || [], el = $('#chgList'), key = JSON.stringify(ch).length; if (el.dataset.k == key && el.children.length) return; el.dataset.k = key;
+  const max = Math.max(1, ...ch.map(c => +c.count || 0));
+  el.innerHTML = ch.length ? `<div class="chg">${ch.map((c, i) => `<details ${i === 0 ? 'open' : ''}><summary><span><span class="c">${esc(plain(c.label))}</span><div class="mini"><i style="width:${100 * c.count / max}%"></i></div></span><span class="num">${(+c.count).toLocaleString()} จุด</span><span class="ar">›</span></summary>
+    <div class="ex">${(c.ex || []).map(e => `<div>${e.p ? `<button class="pg" data-go="${+e.p}">หน้า ${+e.p}</button>` : '<span></span>'}<span><s>${esc(e.b)}</s> → <em>${esc(e.a)}</em></span></div>`).join('')}</div></details>`).join('')}</div>`
+    : `<div class="empty"><b>${S.status === 'done' ? 'ไม่มีการเปลี่ยนแปลง' : 'รอผู้สรุป'}</b>${S.status === 'done' ? '' : 'รายการจะขึ้นเมื่อเทียบกับต้นฉบับเสร็จ'}</div>`;
+}
+// ── ทุกหน้า: ≤200 หน้าเป็นปุ่ม เกินนั้นวาดบนผืนเดียว ──
+const SCOL = {none:'--line', reading:'--read', ok:'--ok', issue:'--warn', fixed:'--fix', pass:'--ok'};
+function renderPages(box, only, compact){
+  if (!box) return; const total = S.pages.total || 0;
+  if (!compact) { let n = 0; for (let i = 1; i <= total; i++) if (['ok', 'pass'].includes(S.pages.map[i])) n++; $('#pageCount').textContent = total ? `${total} หน้า · ปกติ ${n}` : 'ยังไม่มีหน้า';
+    $('#legend').innerHTML = [['--bg-2', 'ยังไม่อ่าน'], ['--read-soft', 'กำลังอ่าน'], ['ok', 'ปกติ'], ['--warn', 'ควรเปิดดู'], ['--fix', 'แก้แล้ว รอตรวจซ้ำ'], ['--ok', 'ตรวจซ้ำผ่าน']].map(([c, l]) => `<span><i style="background:${c === 'ok' ? 'color-mix(in srgb,var(--ok) 28%,var(--panel))' : `var(${c})`}"></i>${l}</span>`).join(''); }
+  if (!total) { box.innerHTML = '<div class="empty"><b>ยังไม่มีหน้า</b></div>'; return; }
+  if (only) { const fl = flagged(); box.innerHTML = fl.length ? `<div class="pages">${fl.map(n => `<button class="pc" data-n="${n}" data-s="${S.pages.map[n]}" aria-label="หน้า ${n}" style="aspect-ratio:auto;padding:4px 0;font:600 11px var(--f-num);color:#fff">${n}</button>`).join('')}</div>` : '<div class="empty"><b>ไม่มีหน้าที่ต้องดู</b></div>'; box.dataset.mode = ''; return; }
+  if (total <= 200 && !compact) {
+    if (box.dataset.mode !== 'grid' || box.querySelectorAll('.pc').length !== total) { box.dataset.mode = 'grid'; box.innerHTML = `<div class="pages">${Array.from({length:total}, (_, i) => `<button class="pc" data-n="${i + 1}" data-s="none" aria-label="หน้า ${i + 1}"></button>`).join('')}</div>`; }
+    box.querySelectorAll('.pc').forEach(c => { const s = S.pages.map[c.dataset.n] || 'none'; if (c.dataset.s !== s) c.dataset.s = s; }); return;
+  }
+  if (box.dataset.mode !== 'cv') { box.dataset.mode = 'cv'; box.innerHTML = '<canvas class="pcv" role="img" aria-label="แผนที่หน้าเล่ม"></canvas>'; }
+  const cvs = box.querySelector('canvas'), W = Math.max(200, box.clientWidth - 36), cell = compact ? (total > 400 ? 6 : total > 150 ? 9 : 12) : (total > 600 ? 9 : 12), gap = 2, ch = cell * 1.3, cols = Math.max(10, Math.floor((W + gap) / (cell + gap))), rows = Math.ceil(total / cols), dpr = devicePixelRatio || 1, Hh = rows * (ch + gap);
+  cvs.width = W * dpr; cvs.height = Hh * dpr; cvs.style.height = Hh + 'px';
+  const g = cvs.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); const css = getComputedStyle(document.documentElement);
+  for (let i = 0; i < total; i++) { const s = S.pages.map[i + 1] || 'none'; g.fillStyle = css.getPropertyValue(SCOL[s]).trim() + (s === 'ok' ? '66' : ''); g.fillRect((i % cols) * (cell + gap), Math.floor(i / cols) * (ch + gap), cell, ch); }
+  Object.assign(cvs.dataset, {cols, cell, gap});
+}
+$('#onlyFlag').onchange = () => { $('#pmap').dataset.mode = ''; renderPages($('#pmap'), $('#onlyFlag').checked); };
+const pageAt = (cvs, e) => { const r = cvs.getBoundingClientRect(), cols = +cvs.dataset.cols, cell = +cvs.dataset.cell, gap = +cvs.dataset.gap, ch = cell * 1.3; const c = Math.floor((e.clientX - r.left) / (cell + gap)), w = Math.floor((e.clientY - r.top) / (ch + gap)); const n = w * cols + c + 1; return c < cols && n >= 1 && n <= (S.pages.total || 0) ? n : 0; };
+document.addEventListener('click', e => { const c = e.target.closest('canvas.pcv'); if (!c) return; const n = pageAt(c, e); if (n) openShot(n); });
+document.addEventListener('mousemove', e => { const c = e.target.closest?.('canvas.pcv'), t = $('#tip'); if (!c) { if (!e.target.closest?.('.pc')) t.style.opacity = 0; return; } const n = pageAt(c, e); if (!n) { t.style.opacity = 0; return; } const note = issueOf(n); t.innerHTML = `<b>หน้า ${n}</b>${note ? '<br>' + esc(note) : ''}`; t.style.left = Math.min(innerWidth - 270, e.clientX + 12) + 'px'; t.style.top = (e.clientY + 14) + 'px'; t.style.opacity = 1; });
+document.addEventListener('mouseover', e => { const c = e.target.closest('.pc'); if (!c) return; const t = $('#tip'), note = issueOf(c.dataset.n); t.innerHTML = `<b>หน้า ${+c.dataset.n}</b>${note ? '<br>' + esc(note) : ''}`; const r = c.getBoundingClientRect(); t.style.left = Math.min(innerWidth - 270, r.left) + 'px'; t.style.top = (r.bottom + 6) + 'px'; t.style.opacity = 1; });
+function renderSteps(){
+  $('#stepCount').textContent = `${S.steps.filter(s => s.status === 'done').length}/${S.steps.length} ขั้น`;
+  $('#steps').innerHTML = S.steps.map(s => `<li class="${s.status}"><span class="ic">${s.status === 'done' ? '✓' : ''}</span><span>${esc(s.name)}${s.detail ? `<span class="d">${esc(s.detail)}</span>` : ''}</span><span class="tm num">${esc(s.t || '')}</span></li>`).join('') || '<div class="empty"><b>ยังไม่เริ่ม</b></div>';
+}
+function toast(text, act, fn){ document.querySelector('.toast')?.remove(); const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = `<span>${esc(text)}</span>${act ? `<button>${esc(act)}</button>` : ''}`; if (act) t.querySelector('button').onclick = () => { fn(); t.remove(); }; document.body.appendChild(t); setTimeout(() => t.remove(), 6000); }
+setInterval(() => { if (!S) return; const end = S.ended || Date.now(); const s = Math.max(0, Math.floor((end - (S.realStart || Date.now())) / 1000)); $('#clock').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 500);
+
+/* ═══════════════════════ ภาพหน้า + แจ้งแก้บนภาพ ═══════════════════════ */
+let lbPage = 0, lbView = 'before', lastFocus = null, annot = false, draft = {page:0, pins:[], note:''}; const imgCache = {};
+const REQ = [];   // คำขอแก้ที่เก็บไว้ส่งพร้อมกัน
+const shotList = () => Object.keys(S?.shots || {}).map(Number).sort((a, b) => a - b);
+async function srcOf(path){ if (!path) return ''; if (/^(data|file|https):|^\/_blob\//.test(path)) return path; if (imgCache[path]) return imgCache[path]; if (!DESK.api) return ''; try { const b = await DESK.api.fs.readFile(path, 'base64'); return imgCache[path] = 'data:image/png;base64,' + b; } catch { return ''; } }
+function shotFor(n){ const sh = S?.shots?.[n]; if (sh) return sh; return null; }
+function openShot(n){
+  const sh = shotFor(n);
+  if (!sh) { toast(S.closed ? `หน้า ${n}: จบงานแล้ว ภาพที่แคปไว้ถูกลบไปแล้ว` : `หน้า ${n}: ${['ok', 'pass'].includes(S.pages.map[n]) ? 'ปกติ ไม่มีจุดที่ต้องดู' : 'ยังไม่ได้อ่าน'} · เปิดดูเต็มได้ในไฟล์ PDF`); return; }
+  lbPage = n; lbView = sh.after && S.pages.map[n] !== 'issue' ? 'after' : 'before'; lastFocus = document.activeElement;
+  const q = REQ.find(r => r.page === n); draft = q ? {page:n, pins:q.pins.map(p => ({...p})), note:q.note} : {page:n, pins:[], note:''}; annot = false;
+  $('#lb').hidden = false; drawShot(); $('#lbClose').focus();
+}
+async function drawShot(){
+  const n = lbPage, sh = shotFor(n) || {}, st = S.pages.map[n] || 'none';
+  $('#lbTitle').textContent = `หน้า ${n}`;
+  const lab = {issue:['issue', 'ยังไม่แก้'], fixed:['fixed', 'แก้แล้ว รอตรวจซ้ำ'], pass:['pass', 'ตรวจซ้ำผ่าน'], ok:['pass', 'ปกติ'], reading:['fixed', 'กำลังอ่าน']}[st] || ['', 'ยังไม่อ่าน'];
+  $('#lbState').className = 'pill ' + lab[0]; $('#lbState').textContent = lab[1];
+  const [tb, ta] = $('#lbTabs').children; tb.classList.toggle('on', lbView === 'before'); ta.classList.toggle('on', lbView === 'after'); ta.disabled = !sh.after; $('#lbTabs').style.display = sh.after || sh.issue ? '' : 'none';
+  $('#lbImg').alt = `ภาพหน้า ${n}`; $('#lbImg').src = await srcOf((lbView === 'after' && sh.after) || sh.before);
+  $('#lbNote').innerHTML = (sh.issue ? `<div><span class="k">ผู้ตรวจเจอ</span>${esc(sh.issue)}</div>` : '') + (sh.fix ? `<div><span class="k">ผู้แก้แก้ว่า</span>${esc(sh.fix)}</div>` : '') || `<div><span class="k">สถานะ</span>${lab[1]}</div>`;
+  const L = shotList(); $('#lbPrev').disabled = !L.some(p => p < n); $('#lbNext').disabled = !L.some(p => p > n);
+  drawPins(); drawReq();
+}
+function drawPins(){ $('#shot').classList.toggle('annot', annot); $('#annotBtn').classList.toggle('primary', annot); $('#annotBtn').textContent = annot ? '✓ กดบนภาพเพื่อปักหมุด' : '✎ แจ้งแก้บนภาพ'; $('#shot').querySelectorAll('.pin').forEach(p => p.remove()); draft.pins.forEach((p, i) => $('#shot').insertAdjacentHTML('beforeend', `<div class="pin" style="left:${p.x}%;top:${p.y}%" data-pin="${i}" title="${esc(p.text)}"><span></span><b>${i + 1}</b></div>`)); }
+function drawReq(){
+  const n = draft.pins.length;
+  $('#req').innerHTML = `<h4>แจ้งแก้หน้านี้</h4>${!n && !annot ? `<div class="hint">ดูภาพแล้วอยากให้ปรับตรงไหน กด "✎ แจ้งแก้บนภาพ" แล้วกดตรงจุดนั้นเพื่อปักหมุด จะปักกี่จุดก็ได้</div>` : ''}${annot && !n ? `<div class="hint">กดบนภาพตรงจุดที่อยากให้แก้</div>` : ''}
+    ${draft.pins.map((p, i) => `<div class="pi"><b>${i + 1}</b><input data-pt="${i}" value="${esc(p.text)}" placeholder="ตรงนี้อยากให้ปรับอย่างไร"><button data-del="${i}" aria-label="ลบหมุด ${i + 1}">✕</button></div>`).join('')}
+    <textarea id="reqNote" rows="2" placeholder="หรือพิมพ์บอกทั้งหน้า เช่น ตารางนี้แคบไป ขยายให้เต็มหน้า">${esc(draft.note)}</textarea>`;
+  const has = n || draft.note.trim(); $('#reqSend').disabled = !has; $('#reqQueue').disabled = !has;
+  $('#reqQueue').textContent = REQ.some(r => r.page === lbPage) ? 'อัปเดตในรายการรอส่ง' : 'เก็บไว้ ส่งพร้อมกัน';
+}
+$('#shot').addEventListener('click', e => {
+  const pin = e.target.closest('.pin'); if (pin) { $(`[data-pt="${pin.dataset.pin}"]`)?.focus(); return; }
+  if (!annot || e.target.id !== 'lbImg') return; const r = e.target.getBoundingClientRect();
+  draft.pins.push({x:+(100 * (e.clientX - r.left) / r.width).toFixed(1), y:+(100 * (e.clientY - r.top) / r.height).toFixed(1), text:'', view:lbView}); drawPins(); drawReq(); $(`[data-pt="${draft.pins.length - 1}"]`)?.focus();
+});
+$('#req').addEventListener('input', e => { if (e.target.dataset.pt !== undefined) { draft.pins[+e.target.dataset.pt].text = e.target.value; } if (e.target.id === 'reqNote') draft.note = e.target.value; const has = draft.pins.length || draft.note.trim(); $('#reqSend').disabled = !has; $('#reqQueue').disabled = !has; });
+$('#req').addEventListener('click', e => { const d = e.target.closest('[data-del]'); if (!d) return; draft.pins.splice(+d.dataset.del, 1); drawPins(); drawReq(); });
+$('#annotBtn').onclick = () => { annot = !annot; drawPins(); drawReq(); };
+function reqText(r){ if (!r.page) return 'ข้อความจากเพื่อนที่ดูอยู่: ' + r.note.trim(); const parts = r.pins.map((p, i) => `จุดที่ ${i + 1} (ภาพ${p.view === 'after' ? 'หลังแก้' : 'ก่อนแก้'} ตำแหน่ง ซ้าย ${p.x}% บน ${p.y}%): ${p.text || '(ดูตรงนี้)'}`); if (r.note.trim()) parts.push('ทั้งหน้า: ' + r.note.trim()); return `หน้า ${r.page}${r.by !== undefined ? ' (เพื่อนแจ้ง)' : ''} — ` + parts.join(' · '); }
+$('#reqQueue').onclick = () => { const i = REQ.findIndex(r => r.page === draft.page); const r = {page:draft.page, pins:draft.pins.map(p => ({...p})), note:draft.note}; if (i >= 0) REQ[i] = r; else REQ.push(r); drawTray(); toast(`เก็บคำขอแก้หน้า ${draft.page} ไว้แล้ว · รอส่งพร้อมกัน ${REQ.length} หน้า`); closeShot(); };
+$('#reqSend').onclick = () => { const r = {page:draft.page, pins:draft.pins.map(p => ({...p})), note:draft.note}; const i = REQ.findIndex(x => x.page === r.page); if (i >= 0) REQ.splice(i, 1); drawTray(); closeShot(); sendChat('ขอแก้ ' + reqText(r), [r]); };
+function drawTray(){ const t = $('#tray'); t.hidden = !REQ.length; if (!REQ.length) return; t.innerHTML = `<div class="h">คำขอแก้ที่รอส่ง <span class="chip num">${REQ.length} ${REQ.every(r => r.page) ? 'หน้า' : 'รายการ'}</span><span class="grow"></span><button class="btn sm" id="trayClear">ล้าง</button><button class="btn sm primary" id="traySend">ส่งทั้งหมด</button></div><div class="items">${REQ.map((r, i) => { const by = r.by !== undefined ? ` · ${esc(SH.names[r.by] || 'เพื่อน')}` : ''; return r.page ? `<span class="it"><button class="pg" data-go="${r.page}">หน้า ${r.page}</button>${r.pins.length ? r.pins.length + ' จุด' : 'ทั้งหน้า'}${by}<button data-unq="${i}" aria-label="เอาหน้า ${r.page} ออก">✕</button></span>` : `<span class="it" title="${esc(r.note)}">💬 ${esc(r.note.slice(0, 28))}${r.note.length > 28 ? '…' : ''}${by}<button data-unq="${i}" aria-label="เอาข้อความออก">✕</button></span>`; }).join('')}</div>`; }
+$('#tray').addEventListener('click', e => { if (e.target.id === 'trayClear') { REQ.splice(0); drawTray(); } else if (e.target.id === 'traySend') { const all = REQ.splice(0); drawTray(); const np = all.filter(r => r.page).length; sendChat((np ? 'ขอแก้ ' + np + ' หน้า' : 'คำขอจากเพื่อน') + ':\n' + all.map(reqText).join('\n'), all.filter(r => r.page)); } else { const u = e.target.closest('[data-unq]'); if (u) { REQ.splice(+u.dataset.unq, 1); drawTray(); } } });
+function stepShot(d){ const L = shotList(), n = lbPage; const t = d > 0 ? L.find(p => p > n) : [...L].reverse().find(p => p < n); if (t) { if (draft.pins.length || draft.note.trim()) $('#reqQueue').click(), $('#lb').hidden = false; openShot(t); } }
+const closeShot = () => { $('#lb').hidden = true; annot = false; lastFocus?.focus?.(); };
+$('#lbClose').onclick = closeShot; $('#lb').addEventListener('click', e => { if (e.target.id === 'lb') closeShot(); });
+$('#lbPrev').onclick = () => stepShot(-1); $('#lbNext').onclick = () => stepShot(1);
+$('#lbTabs').onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; lbView = b.dataset.v; drawShot(); };
+document.addEventListener('keydown', e => { if (!$('#lb').hidden) { if (e.target.matches('input,textarea')) return; if (e.key === 'Escape') closeShot(); if (e.key === 'ArrowRight') stepShot(1); if (e.key === 'ArrowLeft') stepShot(-1); } else if (!$('#newModal').hidden && e.key === 'Escape') $('#newModal').hidden = true; });
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go],.pc'); if (g && !e.target.closest('#lb')) { openShot(+(g.dataset.go || g.dataset.n)); return; }
+  const o = e.target.closest('[data-open]'); if (o && DESK.api) { const f = S.summary.files[+o.dataset.open]; DESK.api.shell.openPath(f.path).catch(err => toast('เปิดไฟล์ไม่ได้: ' + err.message)); return; }
+  if (e.target.id === 'openDir' && DESK.api) { DESK.api.shell.showItemInFolder(S.files?.docx || JOB).catch(() => {}); return; }
+  if (e.target.id === 'closeJob' && DESK.api) closeJob();
+});
+function mockPage(n, mark, note){
+  let s = n * 7919 % 2147483647; const r = () => (s = s * 48271 % 2147483647) / 2147483647;
+  const W = 595, H = 842, L = 70, R2 = 545; let y = 112, out = `<rect width="${W}" height="${H}" fill="#fff"/><rect x="${L}" y="30" width="54" height="16" rx="3" fill="#E8EEF6"/><rect x="${L}" y="54" width="${R2 - L}" height="1" fill="#C9CDD5"/>`;
+  const lines = k => { for (let i = 0; i < k; i++) { const w = i === k - 1 ? 120 + r() * 200 : R2 - L - (i ? 0 : 24); out += `<rect x="${L + (i ? 0 : 24)}" y="${y}" width="${w}" height="7" rx="3.5" fill="#D3D8E0"/>`; y += 17; } y += 8; };
+  out += `<text x="${L}" y="92" font-size="17" font-weight="700" fill="#1A2130" font-family="sans-serif">${3 + n % 4}.${1 + n % 6} TC-${String(n).padStart(3, '0')}</text>`; const hy = 74; lines(3);
+  const ty = y, rows = 5 + n % 3; out += `<rect x="${L}" y="${ty}" width="${R2 - L}" height="26" fill="#0070C0"/>`;
+  for (let i = 0; i < rows; i++) { const yy = ty + 26 + i * 34; out += `<rect x="${L}" y="${yy}" width="${R2 - L}" height="34" fill="none" stroke="#9AA1AE" stroke-width=".8"/><rect x="${L + 8}" y="${yy + 9}" width="${60 + r() * 80}" height="6" rx="3" fill="#DCE0E7"/><rect x="${L + 170}" y="${yy + 9}" width="${120 + r() * 140}" height="6" rx="3" fill="#DCE0E7"/>`; }
+  y = ty + 26 + rows * 34 + 22; const iy = y; out += `<rect x="${L + 60}" y="${iy}" width="${R2 - L - 120}" height="190" rx="4" fill="#EEF3FA" stroke="#C9D3E3"/>`; y = iy + 220; if (y < H - 120) lines(3);
+  out += `<text x="${R2}" y="${H - 34}" font-size="12" text-anchor="end" fill="#1A2130" font-family="monospace">${n}</text>`;
+  if (mark) { const bx = n % 3 === 0 ? [L - 10, hy, R2 - L + 20, 30] : n % 3 === 1 ? [L - 10, ty - 6, R2 - L + 20, 26 + rows * 34 + 12] : [L + 50, iy - 6, R2 - L - 100, 202]; const col = mark === 'issue' ? '#E0861A' : '#2E9E5F'; const lab = (mark === 'issue' ? 'ควรเช็ค' : 'แก้แล้ว ✓') + (note ? ' · ' + note : '');
+    out += `<rect x="${bx[0]}" y="${bx[1]}" width="${bx[2]}" height="${bx[3]}" rx="6" fill="${col}14" stroke="${col}" stroke-width="3" ${mark === 'issue' ? 'stroke-dasharray="10 6"' : ''}/><rect x="${bx[0]}" y="${bx[1] - 24}" width="${Math.min(bx[2], 26 + lab.length * 7.2)}" height="22" rx="6" fill="${col}"/><text x="${bx[0] + 10}" y="${bx[1] - 9}" font-size="11.5" font-weight="700" fill="#fff" font-family="sans-serif">${esc(lab)}</text>`; }
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${out}</svg>`);
+}
+
+/* ═══════════════════════ เชื่อมเครื่อง (แอปเดสก์ท็อป) ═══════════════════════ */
+const DESK = {api:null, home:'', base:'', skill:'', running:{}, ready:false};
+const J = (...p) => p.join('\\').replace(/\\+/g, '\\');
+function banner(text, btn, fn){ $('#banner').hidden = !text; $('#bannerText').innerHTML = text || ''; const b = $('#bannerBtn'); b.hidden = !btn; if (btn) { b.textContent = btn; b.onclick = fn; } }
+function needAppText(){ return !window.claude?.use ? 'ยังสั่งงานจากหน้านี้ไม่ได้ · เปิดแอปฮารุในแอป Claude บนเดสก์ท็อป แล้วกด "ติดตั้งเป็นแอป" ก่อน' : !DESK.ready ? 'ยังสั่งงานไม่ได้ · ติดตั้งเป็นแอป แล้วกด "อนุญาต" ให้ฮารุเปิดไฟล์ในเครื่อง' : 'ยังไม่มีงาน · ลากไฟล์ .docx มาวาง หรือกด "งานใหม่"'; }
+async function initDesktop(){
+  const use = window.claude?.use; if (!use) { banner('เปิดลิงก์นี้ในแอป <b>Claude บนเดสก์ท็อป</b> แล้วกด "ติดตั้งเป็นแอป" เพื่อจัดเล่มในเครื่อง'); return; }
+  const d = await use('desktop').catch(() => null);
+  if (!d?.fs) {
+    const st = await d?.install?.state?.().catch(() => 'unavailable');
+    if (st === 'available') banner('ติดตั้งเป็นแอปก่อน แล้วโยนไฟล์ สั่งงาน และดูผลได้ในที่เดียว', 'ติดตั้งเป็นแอป', () => d.install.request().catch(() => {}));
+    else if (st === 'installed') banner('ติดตั้งแอปฮารุแล้ว · เปิดจากไอคอน <b>ฮารุ ห้องจัดเล่ม</b> เพื่อใช้งานจริง');
+    else banner('เปิดในแอป <b>Claude บนเดสก์ท็อป</b> เพื่อติดตั้งเป็นแอป');
+    if (SH.list.length) onShareList();
+    return;
+  }
+  DESK.api = d; d.app.dock.setIcon(drawIcon()).catch(() => {});
+  const perm = await d.permissions.state('full-access').catch(() => 'unavailable');
+  if (perm === 'granted') return bootDesktop();
+  if (perm === 'denied') { banner('ฮารุยังไม่ได้รับอนุญาตให้เปิดไฟล์และรันสคริปต์ในเครื่อง', 'ตั้งค่าสิทธิ์', () => d.permissions.manage().catch(() => {})); return; }
+  if (perm === 'unavailable') { banner('ตอนนี้ยังใช้สิทธิ์เปิดไฟล์ในเครื่องไม่ได้ (ต้องเป็นแอปขององค์กรเดียวกันและลงชื่อเข้าใช้แล้ว) · ลองเปิดแอปใหม่'); return; }
+  banner('ให้ฮารุเปิดไฟล์ Word และรันสคริปต์จัดเล่มในเครื่องนี้ได้ไหม (งานเก็บใน เอกสาร\\Haru งานจัดเล่ม)', 'อนุญาต', async () => { const r = await d.permissions.request(['full-access', 'notifications']).catch(() => ({})); if (r['full-access'] === 'granted') bootDesktop(); else banner('ยังไม่ได้รับอนุญาต · ฮารุจะเปิดไฟล์และจัดเล่มไม่ได้', 'ตั้งค่าสิทธิ์', () => d.permissions.manage().catch(() => {})); });
+}
+async function bootDesktop(){
+  const d = DESK.api; banner('');
+  try {
+    DESK.home = await d.os.homedir(); DESK.base = J(DESK.home, 'Documents', 'Haru งานจัดเล่ม'); DESK.skill = J(DESK.home, '.claude', 'skills', 'report-formatter');
+    await d.fs.mkdir(DESK.base, {recursive:true});
+    if (!await d.fs.exists(J(DESK.skill, 'scripts', 'v2', 'auto.ps1'))) { banner('ยังไม่พบสกิลฮารุในเครื่องนี้ · ติดตั้งจาก git ก่อน: รัน <b>install.ps1</b> แล้วเปิดแอปใหม่'); return; }
+    DESK.ready = true;
+    const jobs = await listJobs(); if (jobs.length) openJob(jobs[0].dir); else { stopDemo(); S = null; JOB = null; load(emptyState(), {fresh:true}); }
+  } catch (e) { banner('เปิดโฟลเดอร์งานไม่ได้: ' + esc(e.message)); }
+}
+function emptyState(){ return {title:'ยังไม่มีงาน', kind:'', status:'idle', realStart:Date.now(), ended:Date.now(), round:0, phases:[{name:'จัดเล่มอัตโนมัติ', status:''}, {name:'ตรวจ + แก้ไปพร้อมกัน', status:''}, {name:'สรุปผล', status:''}], agents:{prep:{state:'รองาน', task:'ลากไฟล์ .docx มาวาง หรือกด "งานใหม่"'}, rev:{lanes:[]}, fix:{state:'รอคำสั่ง'}, sum:{}}, feed:[{from:'prep', text:'สวัสดี! ส่งเล่มมาได้เลย ลากไฟล์ .docx มาวาง หรือกดปุ่มงานใหม่', ts:1, t:''}], steps:[], pages:{total:0, map:{}, notes:{}}, shots:{}, summary:null}; }
+async function listJobs(){
+  const d = DESK.api; const out = [];
+  const dirs = (await d.fs.readdir(DESK.base).catch(() => [])).filter(e => e.isDirectory).map(e => J(DESK.base, e.name));
+  try { (await d.fs.readFile(J(DESK.base, '_jobs.txt'), 'utf8')).replace(/^﻿/, '').split(/\r?\n/).map(s => s.trim()).filter(Boolean).forEach(x => { if (!dirs.includes(x)) dirs.push(x); }); } catch {}
+  for (const dir of dirs) {
+    try { const st = JSON.parse(await d.fs.readFile(J(dir, '_haru', 'state.json'), 'utf8')); const stale = st.status === 'running' && !DESK.running[dir] && (Date.now() - (await d.fs.stat(J(dir, '_haru', 'state.json'))).mtimeMs > 180000); out.push({dir, title:st.title, status:stale ? 'stale' : st.status, start:st.realStart || 0, verdict:st.summary?.verdict}); } catch {}
+  }
+  return out.sort((a, b) => b.start - a.start);
+}
+let pollT = 0;
+async function openJob(dir){
+  closeView(); stopDemo(); JOB = dir; setTimeout(() => resumeShare(dir), 0); CHAT = {session:'', msgs:[]};
+  try { CHAT = JSON.parse(await DESK.api.fs.readFile(J(dir, '_haru', 'chat.json'), 'utf8')); } catch {}
+  await refreshJob(true); clearInterval(pollT); pollT = setInterval(() => refreshJob(false), 1200);
+}
+let lastRaw = '';
+async function refreshJob(fresh){
+  if (!JOB || !DESK.api) return;
+  try {
+    const raw = await DESK.api.fs.readFile(J(JOB, '_haru', 'state.json'), 'utf8'); if (!fresh && raw === lastRaw && S?.status !== 'running') return; lastRaw = raw;
+    const st = JSON.parse(raw);
+    if (st.status === 'running' && !DESK.running[JOB]) { const m = (await DESK.api.fs.stat(J(JOB, '_haru', 'state.json'))).mtimeMs; if (Date.now() - m > 180000) st.status = 'stale'; }
+    load(st, {fresh});
+  } catch {}
+}
+let pending = null;
+function pickFile(f){ if (!f) return; if (!/\.docx$/i.test(f.name)) { toast('รับเฉพาะไฟล์ .docx'); return; } pending = f; $('#nmName').textContent = f.name; $('#nmIntro').checked = false; $('#newModal').hidden = false; $('#nmGo').focus(); }
+$('#newBtn').onclick = () => $('#fileIn').click(); $('#attachBtn').onclick = () => $('#fileIn').click();
+$('#fileIn').onchange = e => { pickFile(e.target.files[0]); e.target.value = ''; };
+$('#nmCancel').onclick = () => { $('#newModal').hidden = true; pending = null; };
+$('#nmGo').onclick = () => { $('#newModal').hidden = true; const f = pending; pending = null; if (!f) return; if (!DESK.ready) { toast(needAppText()); return; } startJob(f, $('#nmIntro').checked); };
+let dragN = 0;
+addEventListener('dragenter', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) { dragN++; $('#drop').hidden = false; } });
+addEventListener('dragleave', () => { dragN = Math.max(0, dragN - 1); if (!dragN) $('#drop').hidden = true; });
+addEventListener('dragover', e => e.preventDefault());
+addEventListener('drop', e => { e.preventDefault(); dragN = 0; $('#drop').hidden = true; pickFile(e.dataTransfer?.files?.[0]); });
+async function startJob(file, removeIntro){
+  const d = DESK.api; const now = new Date(), pad = n => String(n).padStart(2, '0');
+  const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
+  const safe = file.name.replace(/[\\/:*?"<>|]/g, '_'), dir = J(DESK.base, stamp + ' ' + safe.replace(/\.docx$/i, '')), docx = J(dir, safe), stDir = J(dir, '_haru');
+  try {
+    await d.fs.mkdir(stDir, {recursive:true}); await d.fs.writeFile(docx, new Uint8Array(await file.arrayBuffer()));
+    const st0 = {...emptyState(), title:safe, job:dir, status:'running', realStart:Date.now(), ended:null, feed:[{from:'sys', text:'รับไฟล์ ' + safe + ' · กำลังเปิด Word', ts:Date.now(), t:hhmm()}]}; st0.phases[0].status = 'active'; st0.agents.prep = {on:true, state:'กำลังเริ่ม', task:'เปิดไฟล์และดูชนิดเล่ม'};
+    await d.fs.writeFile(J(stDir, 'state.json'), JSON.stringify(st0), 'utf8');
+    const args = ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', J(DESK.skill, 'scripts', 'v2', 'auto.ps1'), '-In', docx, '-State', stDir, '-Loop']; if (removeIntro) args.push('-RemoveIntro');
+    const p = d.childProcess.spawn('powershell.exe', args, {cwd:dir}); const run = DESK.running[dir] = {p, log:''};
+    p.stdout.on('data', c => { run.log += c; }); p.stderr.on('data', c => { run.log += c; });
+    p.on('error', err => { toast('เริ่มสคริปต์ไม่ได้: ' + err.message); delete DESK.running[dir]; });
+    p.on('exit', async code => { delete DESK.running[dir]; await d.fs.writeFile(J(stDir, 'run.log'), run.log, 'utf8').catch(() => {}); if (JOB === dir) await refreshJob(false); notify(code === 0 ? `จัดเล่มเสร็จ: ${safe}` + (S?.summary ? ' · ' + S.summary.verdict : '') : `จัดเล่มไม่สำเร็จ: ${safe} (ดู run.log ในโฟลเดอร์งาน)`); });
+    await openJob(dir); tab('over');
+  } catch (e) { toast('เริ่มงานไม่ได้: ' + e.message); }
+}
+function notify(body){ if (document.hasFocus()) { toast(body); return; } DESK.api?.notification?.show({body:body.slice(0, 300)}).catch(() => toast(body)); }
+async function closeJob(){
+  const d = DESK.api, dir = JOB; if (!isLocal() || !S) return;
+  if (SH.on?.dir === dir) await stopShare();
+  try { await d.fs.rm(J(dir, '_haru', 'shots'), {recursive:true, force:true}); const st = JSON.parse(await d.fs.readFile(J(dir, '_haru', 'state.json'), 'utf8')); st.closed = true; st.shots = {}; await d.fs.writeFile(J(dir, '_haru', 'state.json'), JSON.stringify(st), 'utf8'); toast('จบงานแล้ว · ลบภาพที่แคปไว้เรียบร้อย'); await refreshJob(true); } catch (e) { toast('ลบภาพไม่ได้: ' + e.message); }
+}
+$('#loopBtn').onclick = () => { if (!DESK.ready || !isLocal()) return; const p = DESK.api.childProcess.spawn('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', J(DESK.skill, 'scripts', 'v2', 'review_loop.ps1'), '-State', J(JOB, '_haru')], {cwd:JOB}); const dir = JOB; DESK.running[dir] = {p, log:''}; p.on('exit', () => { delete DESK.running[dir]; refreshJob(false); notify('ทีมแก้รอบใหม่เสร็จแล้ว'); }); toast('เริ่มวงตรวจ-แก้อีกรอบ'); tab('room'); };
+$('#jobsBtn').onclick = async () => {
+  const m = $('#jobsMenu'); if (!m.hidden) { m.hidden = true; return; }
+  const jobs = DESK.ready ? await listJobs() : [], lab = {running:'กำลังทำ', done:'เสร็จ', stale:'หยุดกลางคัน', idle:''};
+  m.innerHTML = (DESK.ready ? `<div class="sep">งานในเครื่อง (${jobs.length})</div>` + (jobs.map(j => `<button role="menuitem" data-job="${esc(j.dir)}" class="${j.dir === JOB ? 'on' : ''}"><span class="d ${j.status}"></span><span class="t">${esc(j.title)}</span><span class="w">${esc(j.verdict || lab[j.status] || '')}</span></button>`).join('') || '<div class="sep">ยังไม่มีงาน · ลากไฟล์มาวางได้เลย</div>') : '') + sharedMenuHTML();
+  const r = $('#jobsBtn').getBoundingClientRect(); m.style.left = Math.max(16, r.left) + 'px'; m.style.top = (r.bottom + 6 + scrollY) + 'px'; m.hidden = false; $('#jobsBtn').setAttribute('aria-expanded', 'true');
+};
+$('#jobsMenu').onclick = e => { const b = e.target.closest('[data-job]'); if (!b) return; $('#jobsMenu').hidden = true; $('#jobsBtn').setAttribute('aria-expanded', 'false'); if (b.dataset.job.startsWith('share:')) openShared(b.dataset.job.slice(6)); else openJob(b.dataset.job); };
+document.addEventListener('click', e => { if (!e.target.closest('#jobsMenu,#jobsBtn')) { $('#jobsMenu').hidden = true; $('#jobsBtn').setAttribute('aria-expanded', 'false'); } });
+
+/* ── แชท → Claude Code (Opus) ในเครื่อง ด้วยบัญชีที่ล็อกอินไว้ ── */
+const chatIn = $('#chatIn');
+chatIn.addEventListener('input', () => { chatIn.style.height = 'auto'; chatIn.style.height = Math.min(140, chatIn.scrollHeight) + 'px'; });
+chatIn.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); const t = chatIn.value.trim(); if (t) { chatIn.value = ''; chatIn.style.height = ''; sendChat(t); } } });
+$('#sendBtn').onclick = () => { const t = chatIn.value.trim(); if (t) { chatIn.value = ''; chatIn.style.height = ''; sendChat(t); } };
+async function saveChat(){ if (isLocal() && DESK.api) await DESK.api.fs.writeFile(J(JOB, '_haru', 'chat.json'), JSON.stringify(CHAT), 'utf8').catch(() => {}); }
+let chatBusy = false;
+async function sendChat(text, reqs = []){
+  if (SH.view) return sendRemote(text, reqs);
+  if (chatBusy) { toast('ผู้แก้ยังทำงานก่อนหน้าอยู่ · รอสักครู่'); return; }
+  CHAT.msgs.push({from:'me', text, ts:Date.now(), t:hhmm()}); render();
+  if (!JOB || !DESK.ready) { CHAT.msgs.push({from:'prep', text:needAppText(), ts:Date.now() + 1, t:hhmm()}); render(); return; }
+  chatBusy = true; $('#sendBtn').disabled = true; saveChat();
+  LIVE = {fix:{on:true, state:'กำลังทำตามสั่ง', task:text.slice(0, 120)}, typing:'fix'}; render();
+  const shotsInfo = reqs.map(r => { const sh = S.shots?.[r.page] || {}; return `หน้า ${r.page}: ภาพก่อนแก้ "${sh.before || '-'}" ภาพหลังแก้ "${sh.after || '-'}" (ตำแหน่งหมุดเป็น % ของภาพนั้น)`; }).join('\n');
+  const ctx = !CHAT.session ? `คุณคือทีมฮารุ (สกิล report-formatter ที่ ${DESK.skill}) งานนี้อยู่ในโฟลเดอร์ปัจจุบัน: ต้นฉบับ "${S.title}", ไฟล์ที่จัดแล้ว "${S.files?.docx || ''}" และ .pdf, สรุป "${S.files?.summary || ''}", สถานะ _haru/state.json
+กติกา: ตอบภาษาไทยสั้นๆ บอกว่าแก้อะไรหน้าไหน · ห้ามใส่เครดิตในไฟล์รายงาน · ห้ามแตะต้นฉบับ แก้เฉพาะ (จัดเล่ม).docx
+แก้แล้ว: ส่งออก PDF ใหม่ (scripts/v2/export_check.ps1) และอัปเดต _haru/state.json — pages.map["n"]="fixed", แคปหน้าใหม่ (scripts/windows/pdf-to-png.ps1 -From n -To n -Width 1100) ไว้ _haru/shots/after แล้วใส่ shots["n"].after และ shots["n"].fix, เพิ่ม feed {"from":"fix","to":"prep","text":"...","tag":"fixed","pages":[n],"ts":<ms>}
+` : '';
+  const prompt = ctx + (shotsInfo ? 'ภาพประกอบคำขอ (ดูภาพก่อนแก้ไข):\n' + shotsInfo + '\n' : '') + 'คำขอของผู้ใช้: ' + text;
+  const args = ['-p', '--model', 'opus', '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits', '--allowedTools', 'Read,Glob,Grep,Edit,Write,Skill,Bash,PowerShell']; if (CHAT.session) args.push('--resume', CHAT.session);
+  const reply = {from:'prep', text:'', ts:Date.now() + 1, t:hhmm()}; let el = null, buf = '';
+  const show = () => { reply.text = reply.text.trim(); if (!reply.text) return; if (!el) { CHAT.msgs.push(reply); seenKeys.add(keyOf(reply)); el = appendMsg(reply); Scene.bubble('haru', reply.text.slice(0, 44), 3000); } else el.querySelector('.tx').textContent = reply.text; $('#feed').scrollTop = 1e9; };
+  try {
+    const p = DESK.api.childProcess.spawn('claude', args, {cwd:JOB, shell:true});
+    p.stdout.on('data', chunk => { buf += chunk; let i; while ((i = buf.indexOf('\n')) >= 0) { const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1); if (!line) continue; let ev; try { ev = JSON.parse(line); } catch { continue; }
+      if (ev.session_id) CHAT.session = ev.session_id;
+      if (ev.type === 'assistant') for (const c of ev.message?.content || []) { if (c.type === 'text' && c.text) { reply.text += (reply.text ? '\n' : '') + c.text; show(); } else if (c.type === 'tool_use') { const inp = c.input || {}; const what = inp.file_path || inp.path || inp.pattern || inp.command || inp.skill || ''; LIVE.fix.task = `${{Read:'อ่าน', Edit:'แก้', Write:'เขียน', Bash:'รัน', PowerShell:'รัน', Glob:'หาไฟล์', Grep:'ค้นหา', Skill:'ใช้สกิล'}[c.name] || c.name} ${String(what).split(/[\\/]/).pop().slice(0, 60)}`; render(); } }
+      if (ev.type === 'result' && ev.is_error && !reply.text) { reply.text = 'ทำไม่สำเร็จ: ' + String(ev.result || '').slice(0, 300); show(); }
+    } });
+    p.stderr.on('data', c => { if (/not recognized|ENOENT|ไม่รู้จัก/i.test(c)) { reply.text = 'ไม่พบ Claude Code ในเครื่อง · ติดตั้งด้วย npm i -g @anthropic-ai/claude-code แล้วล็อกอินครั้งแรกด้วยคำสั่ง claude'; show(); } });
+    p.on('error', e => { reply.text = 'เรียก Claude Code ไม่ได้: ' + e.message; show(); });
+    await p.stdin.write(prompt); await p.stdin.end();
+    await new Promise(res => p.on('exit', res));
+  } catch (e) { reply.text = 'เรียก Claude Code ไม่ได้: ' + e.message; show(); }
+  if (!reply.text) { reply.text = '(ไม่มีคำตอบ)'; show(); }
+  LIVE = {fix:null}; chatBusy = false; $('#sendBtn').disabled = false; await saveChat(); await refreshJob(false); render();
+  notify('ฮารุตอบแล้ว: ' + reply.text.slice(0, 120));
+}
+function drawIcon(){ const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 256, 256); gr.addColorStop(0, '#22385C'); gr.addColorStop(1, '#3A5A8C'); g.fillStyle = gr; g.beginPath(); g.roundRect(0, 0, 256, 256, 56); g.fill(); g.translate(128, 128); g.fillStyle = '#F07AA0'; for (let i = 0; i < 5; i++) { g.rotate(Math.PI * 2 / 5); g.beginPath(); g.moveTo(0, -14); g.bezierCurveTo(-34, -40, -40, -88, 0, -100); g.bezierCurveTo(40, -88, 34, -40, 0, -14); g.fill(); } g.fillStyle = '#FFE1EA'; g.beginPath(); g.arc(0, 0, 16, 0, 7); g.fill(); return c.toDataURL('image/png'); }
+function stopDemo(){}
+
+/* ── เปิดจากไฟล์ในเครื่อง (สกิลเปิดให้ตอนสั่งจากแชท): อ่าน state.js ข้างไฟล์นี้ ── */
+function bootFileMode(){
+  stopDemo(); JOB = 'file'; let got = false;
+  window.HARU_STATE = st => { got = true; for (const sh of Object.values(st.shots || {})) for (const k of ['before', 'after']) if (sh[k] && /^[A-Za-z]:\\/.test(sh[k])) sh[k] = 'file:///' + encodeURI(sh[k].replace(/\\/g, '/')); if (!S || S.status !== 'done' || st.status !== 'done' || JSON.stringify(st).length !== JSON.stringify(S).length) load(st); };
+  const poll = () => { const sc = document.createElement('script'); sc.src = 'state.js?' + Date.now(); sc.onload = sc.onerror = () => sc.remove(); document.body.appendChild(sc); };
+  poll(); setInterval(() => { if (!S || S.status !== 'done') poll(); }, 1200);
+  $('#chatIn').disabled = true; $('#sendBtn').disabled = true; $('#attachBtn').disabled = true; $('#chatIn').placeholder = 'สั่งงานต่อได้ในแชท Claude ที่เปิดงานนี้';
+  $('#chatHint').textContent = 'หน้านี้เปิดจากสกิลในแชท · พิมพ์สั่งแก้ต่อได้ในแชท Claude หรือใช้แอปฮารุเพื่อสั่งจากหน้านี้';
+  banner('หน้าติดตามงานจากแชท · อัปเดตเองทุกวินาที');
+  setTimeout(() => { if (!got) { banner('ยังไม่พบข้อมูลงานข้างไฟล์นี้ (state.js) · รอสคริปต์เริ่มงาน หรือเปิดแอปฮารุ'); } }, 2500);
+}
+
+/* ═══════════════════════ แชร์งานสดให้เพื่อนดู ═══════════════════════
+   เจ้าของ: ส่งสถานะ (ตัดที่อยู่ไฟล์ในเครื่องออก) + ภาพหน้าที่ต้องเช็ค ขึ้นที่เก็บของแอป
+   เพื่อน: เปิดลิงก์แอปเดียวกัน ดูสด แล้วปักหมุด/พิมพ์แจ้งแก้ → ไปรอในรายการรอส่งของเจ้าของ
+   ทีมแก้ในเครื่องเจ้าของจะเริ่มก็ต่อเมื่อเจ้าของกดส่งเองเท่านั้น
+   ข้อมูล: live/<id> (หัวงาน), live/<id>/data/state (สถานะเป็น JSON), live/<id>/reqs/* (คำขอจากเพื่อน) */
+const APP_URL = 'https://claude.ai/artifact/37dYPN4yVBG64kGx3V2ChK';
+const SH = {db:null, assets:null, user:null, me:null, on:null, list:[], view:null, names:{}, shownBanner:''};
+function isLocal(){ return !!JOB && JOB !== 'file' && !String(JOB).startsWith('share:'); }
+const shareIdOf = (dir, st) => 'j' + [...dir].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261).toString(36) + '-' + (st?.realStart || 0).toString(36);
+async function initShare(){
+  const use = window.claude?.use; if (!use) return;
+  const [db, user, assets] = await Promise.all(['db', 'user', 'assets'].map(n => use(n).catch(() => null)));
+  if (!db) return; SH.db = db; SH.user = user; SH.assets = assets;
+  SH.me = (await user?.id?.().catch(() => null)) ?? null;
+  db.collection('live').where('active', '==', true).onSnapshot(snap => { SH.list = snap.docs.map(d => ({id:d.id, ...d.data()})).sort((a, b) => (b.started || 0) - (a.started || 0)); onShareList(); }, () => {});
+  updateShareBtn();
+}
+async function resolveNames(ids){
+  ids = [...new Set(ids.filter(Boolean))]; if (!ids.length || !SH.user?.profiles) return;
+  try { const ps = await SH.user.profiles(ids); for (const id of ids) SH.names[id] = ps[id]?.name || ''; } catch {}
+}
+async function onShareList(){
+  await resolveNames(SH.list.map(j => j.owner));
+  if (SH.view && !SH.list.some(j => j.id === SH.view.id)) { banner('เจ้าของหยุดแชร์งานนี้แล้ว · ภาพที่แชร์ถูกลบไปแล้ว ข้อมูลที่เห็นคือครั้งสุดท้าย'); return; }
+  const others = SH.list.filter(j => j.id !== SH.on?.id);
+  if (!DESK.ready && !SH.view && others.length) {
+    const j = others[0]; const who = SH.names[j.owner] || 'เพื่อน';
+    banner(`มีงานที่แชร์ให้ดูสด <b>${others.length} งาน</b> · ล่าสุด: ${esc(j.title || '')} (ของ ${esc(who)})`, 'ดูสด', () => openShared(j.id));
+  }
+  if (!$('#jobsMenu').hidden) {} // เมนูจะอ่านรายการใหม่ตอนเปิดครั้งถัดไป
+}
+function sharedMenuHTML(){
+  const L = SH.list.filter(j => j.id !== SH.on?.id); if (!L.length) return '';
+  const lab = {running:'กำลังทำ', done:'เสร็จ', stale:'หยุดกลางคัน'};
+  return `<div class="sep">งานที่แชร์ให้ดูสด (${L.length})</div>` + L.map(j => `<button role="menuitem" data-job="share:${esc(j.id)}" class="${SH.view?.id === j.id ? 'on' : ''}"><span class="d ${esc(j.status || '')}"></span><span class="t">${esc(j.title || '')}</span><span class="w">${esc(j.owner && j.owner === SH.me ? 'ของคุณ' : SH.names[j.owner] || 'เพื่อน')} · ${esc(lab[j.status] || '')}${j.pct != null && j.status === 'running' ? ' ' + j.pct + '%' : ''}</span></button>`).join('');
+}
+/* ── ฝั่งเพื่อน: ดูสด ── */
+function setViewerUI(on){
+  $('#chatIn').disabled = false; $('#sendBtn').disabled = false; $('#attachBtn').disabled = on;
+  $('#chatIn').placeholder = on ? 'พิมพ์ถึงเจ้าของงาน เช่น หน้า 30 ตารางแคบไป' : 'สั่งงานได้เลย เช่น หน้า 30 ตารางแคบไป ขยายหน่อย';
+  $('#chatHint').textContent = on ? 'ข้อความและหมุดที่แจ้งจะไปรอในเครื่องของเจ้าของงาน ทีมแก้เริ่มเมื่อเจ้าของกดส่ง' : 'Enter ส่ง · Shift+Enter ขึ้นบรรทัดใหม่ · ลากไฟล์ .docx มาวางเพื่อเริ่มงานใหม่';
+  $('#reqSend').textContent = on ? 'ส่งให้เจ้าของงานเลย' : 'ส่งให้ผู้แก้เลย';
+}
+function closeView(){ if (!SH.view) return; SH.view.unsub?.(); clearTimeout(SH.view.timer); SH.view = null; setViewerUI(false); banner(''); }
+function openShared(id){
+  if (!SH.db) return; closeView(); stopDemo(); clearInterval(pollT);
+  const meta = SH.list.find(j => j.id === id) || {};
+  JOB = 'share:' + id; CHAT = {session:'', msgs:[]}; LIVE = {fix:null};
+  const view = SH.view = {id, owner:meta.owner || '', first:true, timer:0, unsub:null};
+  setViewerUI(true); banner('กำลังดึงงานที่แชร์…');
+  view.timer = setTimeout(() => { if (SH.view === view && view.first) banner('ยังดึงงานที่แชร์ไม่ได้ · ตรวจอินเทอร์เน็ตแล้วเปิดใหม่อีกครั้ง'); }, 10000);
+  view.unsub = SH.db.doc(`live/${id}/data/state`).onSnapshot(snap => {
+    if (SH.view !== view) return;
+    if (!snap.exists) { if (!snap.metadata.fromCache) { clearTimeout(view.timer); banner('งานนี้ไม่ได้แชร์อยู่แล้ว'); } return; }
+    let st; try { st = JSON.parse(snap.data().json); } catch { return; }
+    if (!snap.metadata.fromCache) clearTimeout(view.timer);
+    CHAT = {session:'', msgs:st.chat || []}; delete st.chat;
+    resolveNames([view.owner, ...CHAT.msgs.map(m => m.by)]).then(() => { if (SH.view === view) render(); });
+    const fresh = view.first; view.first = false;
+    load(st, {fresh});
+    if (fresh) { banner(`กำลังดูสดจากเครื่องของ ${esc(SH.names[view.owner] || 'เจ้าของงาน')} · กดเลขหน้าเพื่อดูภาพ แล้ว "✎ แจ้งแก้บนภาพ" ได้เลย`); tab('over'); }
+  }, () => { if (SH.view === view) banner('ดูงานที่แชร์ไม่ได้แล้ว (สิทธิ์ถูกเปลี่ยนหรือหยุดแชร์)'); });
+}
+async function sendRemote(text, reqs){
+  const v = SH.view; if (!v) return;
+  const clean = reqs.map(r => ({page:+r.page, note:String(r.note || '').slice(0, 1000), pins:r.pins.slice(0, 30).map(p => ({x:+p.x, y:+p.y, view:p.view === 'after' ? 'after' : 'before', text:String(p.text || '').slice(0, 300)}))}));
+  try {
+    await SH.db.collection(`live/${v.id}/reqs`).add({by:SH.me || '', text:String(text).slice(0, 4000), reqs:clean, ts:Date.now()});
+    toast(reqs.length ? `ส่งคำขอแก้ ${reqs.length} หน้าถึงเจ้าของงานแล้ว` : 'ส่งข้อความถึงเจ้าของงานแล้ว');
+  } catch (e) { toast(e?.code === 'quota_exceeded' ? 'ที่เก็บข้อมูลของแอปเต็ม ส่งไม่ได้' : 'ส่งไม่ได้ · ถ้าลิงก์ให้สิทธิ์แค่ดู ขอให้เจ้าของเปลี่ยนเป็นสิทธิ์ใช้งาน (Contributor)'); }
+}
+/* ── ฝั่งเจ้าของ: แชร์ ── */
+function updateShareBtn(){
+  const b = $('#shareBtn'); if (!b) return;
+  const can = !!SH.db && ((DESK.ready && isLocal()) || (SH.on && SH.on.dir === 'demo' && !JOB));
+  b.hidden = !can; if (!can) return;
+  const on = !!SH.on && SH.on.dir === (JOB ?? 'demo');
+  b.classList.toggle('sharing', on); b.querySelector('span').textContent = on ? 'กำลังแชร์ดูสด' : 'แชร์ดูสด';
+  const dot = b.querySelector('.dot'); if (on && !dot) b.insertAdjacentHTML('afterbegin', '<i class="dot"></i>'); else if (!on && dot) dot.remove();
+}
+function openShareModal(){
+  const on = !!SH.on && SH.on.dir === (JOB ?? 'demo'), other = SH.on && !on;
+  $('#smTitle').textContent = on ? 'กำลังแชร์งานนี้ให้เพื่อนดูสด' : 'แชร์งานนี้ให้เพื่อนดูสด';
+  $('#smText').textContent = on ? 'เพื่อนเปิดลิงก์แอปแล้วกด "ดูสด" หรือเลือกจากเมนูชื่องาน คำขอของเพื่อนจะมารอในรายการรอส่งข้างแชท' : other ? 'ตอนนี้แชร์งานอื่นอยู่ ถ้าเริ่มแชร์งานนี้ งานเดิมจะหยุดแชร์และภาพที่อัปไว้จะถูกลบ' : 'เพื่อนจะเห็นความคืบหน้า ภาพหน้าที่ควรเช็ค และแชทของงานนี้แบบสด แล้วปักหมุดแจ้งแก้กลับมาได้';
+  const li = (n, t) => `<li><b>${n}</b><span>${t}</span></li>`;
+  $('#smList').innerHTML = on ? li(1, 'ส่งลิงก์แอปด้านล่างให้เพื่อน (ต้องแชร์ให้เพื่อนจากเมนู Share ของแอปบน claude.ai ก่อน)') + li(2, 'คำขอจากเพื่อนไม่สั่งทีมแก้เอง คุณต้องกด "ส่งทั้งหมด" ในรายการรอส่ง') + li(3, 'หยุดแชร์หรือกดจบงาน ภาพที่อัปขึ้นไปจะถูกลบทันที')
+    : li(1, 'ภาพหน้าที่ต้องเช็คจะอัปขึ้นที่เก็บของแอปบน claude.ai เห็นเฉพาะคนที่คุณแชร์ลิงก์แอปให้ (คนในองค์กรเดียวกัน) · ที่อยู่ไฟล์ในเครื่องจะไม่ถูกส่งไป') + li(2, 'แชร์แอปให้เพื่อนจากเมนู Share บน claude.ai ให้สิทธิ์ <b style="all:unset;font-weight:600">Contributor</b> ขึ้นไป เพื่อนจึงแจ้งแก้ได้ (Viewer ดูได้อย่างเดียว)') + li(3, 'คำขอของเพื่อนมารอในเครื่องคุณ ทีมแก้เริ่มเมื่อคุณกดส่งเท่านั้น · หยุดแชร์หรือจบงาน ภาพจะถูกลบ');
+  $('#smUrl').textContent = APP_URL;
+  $('#smGo').textContent = on ? 'หยุดแชร์' : 'เริ่มแชร์'; $('#smGo').className = on ? 'btn danger' : 'btn primary'; $('#smCancel').textContent = on ? 'ปิด' : 'ยกเลิก';
+  $('#shareModal').hidden = false; $('#smGo').focus();
+}
+$('#shareBtn').onclick = openShareModal;
+$('#smCancel').onclick = () => { $('#shareModal').hidden = true; };
+$('#shareModal').addEventListener('click', e => { if (e.target.id === 'shareModal') $('#shareModal').hidden = true; });
+$('#smCopy').onclick = () => navigator.clipboard?.writeText(APP_URL).then(() => toast('คัดลอกลิงก์แอปแล้ว'), () => toast('คัดลอกไม่ได้ · เลือกลิงก์แล้วคัดลอกเอง'));
+$('#smGo').onclick = async () => { $('#shareModal').hidden = true; const on = !!SH.on && SH.on.dir === (JOB ?? 'demo'); if (on) await stopShare(); else { if (SH.on) await stopShare(); await startShare(); } };
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#shareModal').hidden) $('#shareModal').hidden = true; });
+async function saveShareFile(){ const on = SH.on; if (on && on.dir !== 'demo' && DESK.api) await DESK.api.fs.writeFile(J(on.dir, '_haru', 'share.json'), JSON.stringify({id:on.id, up:on.up}), 'utf8').catch(() => {}); }
+async function startShare(resume){
+  if (!SH.db || !S) return;
+  const dir = JOB ?? 'demo'; if (dir !== 'demo' && !isLocal()) return;
+  const id = resume?.id || shareIdOf(dir, S);
+  const on = SH.on = {id, dir, up:resume?.up || {}, last:'', meta:'', busy:false, full:false, seen:new Set(), unsub:null, timer:0};
+  try { await SH.db.doc('live/' + id).set({active:true, owner:SH.me || '', title:S.title || '', status:S.status || '', pct:S.status === 'done' ? 100 : pctOf(S), started:Date.now()}); }
+  catch (e) { SH.on = null; updateShareBtn(); toast(e?.code === 'quota_exceeded' ? 'ที่เก็บข้อมูลของแอปเต็ม แชร์ไม่ได้' : 'แชร์ไม่ได้ · ต้องเปิดแอปด้วยบัญชีเจ้าของ (สิทธิ์ Contributor ขึ้นไป)'); return; }
+  await saveShareFile();
+  on.unsub = SH.db.collection(`live/${id}/reqs`).onSnapshot(snap => { for (const ch of snap.docChanges()) if (ch.type === 'added') takeReq(on, ch.doc); }, () => {});
+  on.timer = setInterval(() => pushShare(on), 3000); pushShare(on);
+  updateShareBtn(); if (!resume) toast('เริ่มแชร์แล้ว · ส่งลิงก์แอปให้เพื่อนได้เลย', 'คัดลอกลิงก์', () => $('#smCopy').click());
+}
+async function resumeShare(dir){
+  if (!SH.db || !DESK.api || SH.on) return;
+  try { const sv = JSON.parse(await DESK.api.fs.readFile(J(dir, '_haru', 'share.json'), 'utf8')); if (sv?.id && JOB === dir) await startShare(sv); } catch {}
+}
+async function stopShare(){
+  const on = SH.on; if (!on) return; SH.on = null; clearInterval(on.timer); on.unsub?.();
+  try { await SH.db.doc(`live/${on.id}/data/state`).delete(); } catch {}
+  try { await SH.db.doc('live/' + on.id).delete(); } catch {}
+  let n = 0; for (const u of Object.values(on.up)) { if (await SH.assets?.delete(u.id).then(() => true, () => false)) n++; }
+  if (on.dir !== 'demo') await DESK.api?.fs.rm(J(on.dir, '_haru', 'share.json'), {force:true}).catch(() => {});
+  updateShareBtn(); toast(`หยุดแชร์แล้ว${n ? ` · ลบภาพที่อัปไว้ ${n} ภาพ` : ''}`);
+}
+async function takeReq(on, doc){
+  if (on.seen.has(doc.id)) return; on.seen.add(doc.id);
+  const d = doc.data() || {}; doc = SH.db.doc(`live/${on.id}/reqs/${doc.id}`);
+  const by = typeof d.by === 'string' ? d.by : ''; await resolveNames([by]);
+  const reqs = Array.isArray(d.reqs) ? d.reqs.slice(0, 50) : [];
+  const ok = reqs.map(r => ({page:Math.max(0, Math.floor(+r.page || 0)), note:String(r.note || '').slice(0, 1000), by, pins:(Array.isArray(r.pins) ? r.pins : []).slice(0, 30).map(p => ({x:+(+p.x || 0).toFixed(1), y:+(+p.y || 0).toFixed(1), view:p.view === 'after' ? 'after' : 'before', text:String(p.text || '').slice(0, 300)}))})).filter(r => r.page > 0 && (r.pins.length || r.note.trim()));
+  const text = String(d.text || '').slice(0, 4000).trim();
+  if (ok.length) for (const r of ok) { const i = REQ.findIndex(x => x.page === r.page); if (i >= 0) REQ[i] = r; else REQ.push(r); }
+  else if (text) REQ.push({page:0, pins:[], note:text, by});
+  if (ok.length || text) {
+    const msg = {from:'guest', by, text:ok.length ? `แจ้งแก้ ${ok.length} หน้า: ${ok.map(r => r.page).join(', ')} · รอคุณกดส่งให้ทีมแก้` : text, ts:Date.now(), t:hhmm()};
+    const dir = on.dir;
+    if ((JOB ?? 'demo') === dir) { CHAT.msgs.push(msg); saveChat(); drawTray(); render(); }
+    else if (DESK.api && dir !== 'demo') { try { const c = JSON.parse(await DESK.api.fs.readFile(J(dir, '_haru', 'chat.json'), 'utf8')); c.msgs.push(msg); await DESK.api.fs.writeFile(J(dir, '_haru', 'chat.json'), JSON.stringify(c), 'utf8'); } catch { await DESK.api.fs.writeFile(J(dir, '_haru', 'chat.json'), JSON.stringify({session:'', msgs:[msg]}), 'utf8').catch(() => {}); } }
+    notify(`${SH.names[by] || 'เพื่อน'} ${ok.length ? `แจ้งแก้ ${ok.length} หน้า` : 'ส่งข้อความมา'} · ดูในรายการรอส่งข้างแชท`);
+  }
+  doc.delete().catch(() => {});
+}
+function trimForShare(st, chat, id){
+  const o = JSON.parse(JSON.stringify(st)); delete o.files; o.job = id; delete o.demo;
+  if (o.summary?.files) o.summary.files = o.summary.files.map(f => ({ext:f.ext, name:f.name}));
+  o.feed = (o.feed || []).slice(-150).map(m => ({...m, _walk:undefined}));
+  o.chat = (chat || []).slice(-40).map(m => ({from:m.from, by:m.by, text:String(m.text || '').slice(0, 2000), ts:m.ts, t:m.t}));
+  for (const s of o.steps || []) if (s.detail) s.detail = String(s.detail).replace(/[A-Za-z]:\\[^\s"']+/g, m => m.split('\\').pop());
+  return o;
+}
+async function blobOf(p){
+  if (p.startsWith('data:')) return await (await fetch(p)).blob();
+  const b = atob(await DESK.api.fs.readFile(p, 'base64')); const u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i);
+  return new Blob([u], {type:'image/png'});
+}
+async function pushShare(on){
+  if (SH.on !== on || on.busy) return; on.busy = true;
+  try {
+    const here = (JOB ?? 'demo') === on.dir; let st = here ? S : null, chat = here ? CHAT.msgs : [];
+    if (!here) { if (!DESK.api) return; st = JSON.parse(await DESK.api.fs.readFile(J(on.dir, '_haru', 'state.json'), 'utf8')); try { chat = JSON.parse(await DESK.api.fs.readFile(J(on.dir, '_haru', 'chat.json'), 'utf8')).msgs || []; } catch {} }
+    if (!st) return;
+    const out = trimForShare(st, chat, on.id); let budget = 6;
+    for (const [n, sh] of Object.entries(st.shots || {})) {
+      out.shots[n] = {issue:sh.issue || '', fix:sh.fix || ''};
+      for (const k of ['before', 'after']) { const p = sh[k]; if (!p) continue;
+        if (on.up[p]) { out.shots[n][k] = on.up[p].url; continue; }
+        if (budget > 0 && SH.assets && !on.full) { budget--; try { const r = await SH.assets.upload(await blobOf(p)); if (SH.on !== on) { SH.assets.delete(r.id).catch(() => {}); return; } on.up[p] = {id:r.id, url:r.url}; out.shots[n][k] = r.url; saveShareFile(); } catch (e) { if (e?.code && /quota|too_large|limit/i.test(e.code)) { on.full = true; toast('ที่เก็บภาพของแอปเต็ม · หน้าที่เหลือเพื่อนจะเห็นแค่ข้อความ'); } } }
+      }
+      if (!out.shots[n].before && !out.shots[n].after) { delete out.shots[n].before; }
+    }
+    let json = JSON.stringify(out);
+    if (json.length > 240000) { out.feed = out.feed.slice(-40); out.chat = out.chat.slice(-15); json = JSON.stringify(out); }
+    if (json.length > 250000) { out.feed = []; out.steps = out.steps.map(s => ({name:s.name, status:s.status})); json = JSON.stringify(out); }
+    if (json !== on.last && SH.on === on) { await SH.db.doc(`live/${on.id}/data/state`).set({json, ts:Date.now()}); on.last = json; }
+    const meta = JSON.stringify([st.title, st.status, st.status === 'done' ? 100 : pctOf(st)]);
+    if (meta !== on.meta && SH.on === on) { await SH.db.doc('live/' + on.id).update({title:st.title || '', status:st.status || '', pct:st.status === 'done' ? 100 : pctOf(st)}); on.meta = meta; }
+  } catch (e) { if (e?.code === 'quota_exceeded' && !on.warned) { on.warned = true; toast('ที่เก็บข้อมูลของแอปเต็ม · การแชร์อาจไม่อัปเดต'); } }
+  finally { on.busy = false; }
+}
+
+/* ── เริ่ม ── */
+Scene.init();
+window.__haru = {tab, get S(){ return S; }, shareDemo:() => { if (!JOB) return startShare(); }, stopShare, openShared, get SH(){ return SH; }};
+(function themeUI(){
+  const MOON = '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/>';
+  const SUN = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
+  const AUTO = '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>';
+  const L = {dark:['โหมดมืด', MOON], light:['โหมดสว่าง', SUN], auto:['สีตามเครื่อง', AUTO]}, NEXT = {dark:'light', light:'auto', auto:'dark'};
+  const btn = document.getElementById('themeBtn'); if (!btn) return;
+  let cur = 'dark'; try { cur = localStorage.getItem('haru-theme') || 'dark'; } catch (e) {}
+  function apply(t){
+    cur = t; if (t === 'auto') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
+    try { localStorage.setItem('haru-theme', t); } catch (e) {}
+    document.getElementById('themeLbl').textContent = L[t][0]; document.getElementById('themeIco').innerHTML = L[t][1];
+    btn.title = 'กดเพื่อเปลี่ยนเป็น' + L[NEXT[t]][0];
+    try { if (typeof render === 'function') render(); } catch (e) {}
+  }
+  btn.addEventListener('click', () => apply(NEXT[cur]));
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (cur === 'auto') apply('auto'); });
+  apply(cur);
+})();
+if (FILEMODE) bootFileMode(); else { load(emptyState(), {fresh:true}); initDesktop(); initShare(); }
+</script>
