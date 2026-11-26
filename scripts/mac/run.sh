@@ -1,5 +1,6 @@
 #!/bin/bash
 # run.sh — ทำครบทุกขั้นบน Mac: รวมตาราง -> จัดรูปแบบ -> PDF -> ภาพทุกหน้า
+export PATH="$HOME/.local/node/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
 # ใช้: bash run.sh <ต้นฉบับ.docx> <ผล.docx> [replacements.tsv] [config.json]
 set -e
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
