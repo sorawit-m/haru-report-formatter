@@ -1,5 +1,6 @@
 #!/bin/bash
 # export-pdf.sh — ส่งออก PDF บน Mac (ใช้ Word for Mac ถ้ามี ไม่งั้นใช้ LibreOffice) แล้วแปลงหน้าเป็นภาพไว้ตรวจด้วยตา
+export PATH="$HOME/.local/node/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
 # ใช้: bash export-pdf.sh <in.docx> <out.pdf> [png-folder]
 set -e
 IN="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"; OUT="$2"; PNG="$3"
