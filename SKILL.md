@@ -73,11 +73,20 @@ description: (Haru · ฮารุ — Trained by Haru) ตรวจ แก้�
 ## ขั้นตอน
 
 ### 0. เตรียม
-**ถ้าเครื่องยังไม่มี Node.js:** ถามผู้ใช้ครั้งเดียวว่า "เครื่องนี้ยังไม่มี Node.js ให้ติดตั้งให้เลยไหม" ถ้าตกลงให้ติดตั้งเอง
-- Windows: `winget install --id OpenJS.NodeJS.LTS -e --accept-source-agreements --accept-package-agreements`
-- Mac: `brew install node` (ถ้าไม่มี Homebrew ให้แนะนำดาวน์โหลดจาก nodejs.org)
-- ติดตั้งเสร็จต้องเปิดเทอร์มินัลใหม่ ถ้า `node` ยังไม่เจอ ให้ใช้ path เต็ม `C:\Program Files\nodejs\node.exe`
-- ถ้าไม่มี Microsoft Word บน Windows → ติดตั้งให้ไม่ได้ (ต้องมีไลเซนส์) ให้แจ้งผู้ใช้ หรือใช้โหมด Mac/LibreOffice แทน
+**เครื่องมือที่ขาด → ติดตั้งให้เองเสมอ ไม่ต้องถาม (ผู้ใช้สั่ง 26-11-2026)**
+ตรวจก่อนเริ่มทุกครั้ง ขาดอะไรติดตั้งทันที แล้วบอกผู้ใช้หนึ่งบรรทัดว่าติดตั้งอะไรไปที่ไหน ดาวน์โหลดจากแหล่งทางการเท่านั้น
+- **Node.js (LTS)**
+  - Windows: `winget install --id OpenJS.NodeJS.LTS -e --accept-source-agreements --accept-package-agreements`
+    ติดตั้งเสร็จถ้า `node` ยังไม่เจอ ใช้ path เต็ม `C:\Program Files\nodejs\node.exe`
+  - Mac ที่มี Homebrew: `brew install node`
+  - Mac ไม่มี Homebrew (ไม่ต้องใช้รหัสผ่าน): ดูเวอร์ชัน LTS ล่าสุดจาก `https://nodejs.org/dist/index.json`,
+    ดาวน์โหลด `node-<ver>-darwin-<x64|arm64>.tar.gz` (`uname -m`: x86_64→x64, arm64→arm64) + `SHASUMS256.txt` จาก `https://nodejs.org/dist/<ver>/`
+    ไปโฟลเดอร์ชั่วคราว → ตรวจ `shasum -a 256 -c` ต้องได้ OK (ไม่ OK ห้ามติดตั้ง) → แตกไป `~/.local/` → `ln -sfn ~/.local/node-<ver>-darwin-<arch> ~/.local/node`
+    → เพิ่ม `export PATH="$HOME/.local/node/bin:$PATH"` ใน `~/.zprofile` (ถ้ายังไม่มี)
+  - Mac: shell ของ Claude อาจไม่อ่าน `~/.zprofile` → ใส่ `export PATH="$HOME/.local/node/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"` หน้าคำสั่ง node ทุกครั้ง (`scripts/mac/*.sh` ทำให้แล้ว)
+- **poppler** (`pdftoppm`, Mac): มี Homebrew → `brew install poppler` ; ไม่มี → ข้ามได้ ใช้ `swift` + PDFKit render หน้า PDF แทน
+- **LibreOffice** (Mac ที่ไม่มี Word): มี Homebrew → `brew install --cask libreoffice` ; ไม่มี → ดาวน์โหลด .dmg ทางการจาก libreoffice.org ตรวจ checksum แล้วคัดลอกไป `~/Applications`
+- **ติดตั้งเองไม่ได้ → แจ้งผู้ใช้ทันทีพร้อมวิธีทำ:** Microsoft Word (ต้องมีไลเซนส์), สิ่งที่ต้องใช้รหัสผ่าน admin/sudo, ฟอนต์ TH SarabunPSK (ไม่มีแหล่งทางการที่ตรวจได้)
 
 1. ตรวจเครื่อง:
    - **Windows:** มี Word และ `node --version` ได้ → ใช้ `scripts/windows/run.ps1`
