@@ -20,10 +20,9 @@
 1. ดาวน์โหลด repo นี้ไปที่โฟลเดอร์ชั่วคราว (`git clone`)
 2. **Windows:** รัน `powershell -ExecutionPolicy Bypass -File <repo>\install.ps1`
    ตัวติดตั้งคัดลอกสกิลไป `~/.claude/skills/report-formatter` + เอเจนต์ `dist/agents` + workflow `dist/workflows` แล้วตรวจเครื่องมือ
-   **Mac:** ถ้ายังไม่มี `install.sh` ให้คัดลอกเองแบบเดียวกัน (repo → `~/.claude/skills/report-formatter` ยกเว้น `.git` `dist`,
-   `dist/agents/*` → `~/.claude/agents/`, `dist/workflows/*` → `~/.claude/workflows/`) และบอกผู้ใช้ว่าบน Mac ตอนนี้ใช้ได้ชุดเก่า
-   (`scripts/mac/run.sh`) จนกว่างานใน `MAC_PORT.md` จะเสร็จ
-3. ถ้าขาดเครื่องมือ ให้**ขออนุญาตผู้ใช้ก่อน**แล้วติดตั้ง:
+   **Mac:** รัน `bash <repo>/install.sh` — คัดลอกสกิล + เอเจนต์ + workflow ลง `~/.claude/` แล้วติดตั้งเครื่องมือที่ขาดให้เอง
+   (Node.js, Claude Code, Xcode Command Line Tools) — Microsoft Word ติดตั้งให้ไม่ได้ (ต้องมีไลเซนส์)
+3. ถ้าขาดเครื่องมือ ติดตั้งให้เองเลย (ตัวติดตั้งทำให้แล้ว) — ดาวน์โหลดจากแหล่งทางการเท่านั้น:
    - Node.js — Windows: `winget install --id OpenJS.NodeJS.LTS -e` · Mac: `brew install node`
    - Microsoft Word (Windows) — ติดตั้งให้ไม่ได้ (ต้องมีไลเซนส์) ให้แจ้งผู้ใช้ ; Mac ใช้ LibreOffice แทนได้ (`brew install --cask libreoffice`)
    - ฟอนต์ TH SarabunPSK — แจ้งผู้ใช้ให้ติดตั้งถ้ายังไม่มี
@@ -34,7 +33,7 @@
 | เครื่อง | ต้องมี | ความสามารถ |
 | --- | --- | --- |
 | Windows | Word, Node.js, ฟอนต์ TH SarabunPSK | ครบทุกขั้น + วงตรวจ-แก้ + แอปฮารุ |
-| Mac | Node.js, Word for Mac หรือ LibreOffice | ชุดเก่า ~90% (กำลังทำให้ครบ ดู `MAC_PORT.md`) |
+| Mac | Node.js, Word for Mac, Xcode Command Line Tools (Swift) | ครบทุกขั้นเท่า Windows (`scripts/v2/auto.mjs`) + วงตรวจ-แก้ + แอปฮารุ ; ไม่มี Word ใช้ชุดเก่ากับ LibreOffice |
 
 รายละเอียดการใช้งาน: [`README-ติดตั้งและวิธีใช้.md`](README-ติดตั้งและวิธีใช้.md) · กฎการจัดเล่มทั้งหมด: [`SKILL.md`](SKILL.md)
 

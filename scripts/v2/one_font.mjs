@@ -1,5 +1,6 @@
 // ฟอนต์เดียวทั้งเล่ม (ยกเว้นปก และ Symbol ของหัวข้อย่อย) + โค้ดที่เล็กกว่า 14pt ขยายเป็น 14pt + เลขหน้าชิดขวา
 import { loadDocx, saveDocx } from '../lib/docx.mjs';
+import { coverEnd } from '../lib/wordxml.mjs';
 const [f, FONT = 'TH SarabunPSK', MINCODE = '28'] = process.argv.slice(2);
 const d = loadDocx(f); const R = `<w:rFonts w:ascii="${FONT}" w:eastAsia="${FONT}" w:hAnsi="${FONT}" w:cs="${FONT}"/>`;
 const CODE = /w:ascii="(?:Consolas|Courier New|Courier|Menlo|Monaco|Lucida Console|Source Code Pro)"/;
@@ -13,7 +14,7 @@ const bumpCode = s => s.replace(/<w:r(?: [^>]*)?>[\s\S]*?<\/w:r>/g, r => {
 for (const e of d.entries) {
   const n = e.name;
   if (n === 'word/document.xml') {
-    let x = d.get(n); const b = x.indexOf('<w:body>'); const ce = x.indexOf('</w:p>', x.indexOf('<w:sectPr', b)) + 6;
+    let x = d.get(n); const b = x.indexOf('<w:body>'); const ce = coverEnd(x);
     d.set(n, x.slice(0, ce) + fixFonts(bumpCode(x.slice(ce))));
   } else if (/^word\/(styles|numbering|header\d*|footer\d*|footnotes|endnotes)\.xml$/.test(n)) {
     let x = d.get(n);

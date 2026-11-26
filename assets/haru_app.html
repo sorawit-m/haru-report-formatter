@@ -1125,8 +1125,9 @@ function mockPage(n, mark, note){
 }
 
 /* ═══════════════════════ เชื่อมเครื่อง (แอปเดสก์ท็อป) ═══════════════════════ */
-const DESK = {api:null, home:'', base:'', skill:'', running:{}, ready:false};
-const J = (...p) => p.join('\\').replace(/\\+/g, '\\');
+const DESK = {api:null, home:'', base:'', skill:'', running:{}, ready:false, mac:false, node:'node', claude:'claude'};
+// Windows ใช้ \\ ; Mac/Linux ใช้ / (รู้จากโฟลเดอร์บ้านตอนเปิดแอป)
+const J = (...p) => DESK.mac ? p.join('/').replace(/\/+/g, '/') : p.join('\\').replace(/\\+/g, '\\');
 function banner(text, btn, fn){ $('#banner').hidden = !text; $('#bannerText').innerHTML = text || ''; const b = $('#bannerBtn'); b.hidden = !btn; if (btn) { b.textContent = btn; b.onclick = fn; } }
 function needAppText(){ return !window.claude?.use ? 'ยังสั่งงานจากหน้านี้ไม่ได้ · เปิดแอปฮารุในแอป Claude บนเดสก์ท็อป แล้วกด "ติดตั้งเป็นแอป" ก่อน' : !DESK.ready ? 'ยังสั่งงานไม่ได้ · ติดตั้งเป็นแอป แล้วกด "อนุญาต" ให้ฮารุเปิดไฟล์ในเครื่อง' : 'ยังไม่มีงาน · ลากไฟล์ .docx มาวาง หรือกด "งานใหม่"'; }
 async function initDesktop(){
@@ -1150,9 +1151,13 @@ async function initDesktop(){
 async function bootDesktop(){
   const d = DESK.api; banner('');
   try {
-    DESK.home = await d.os.homedir(); DESK.base = J(DESK.home, 'Documents', 'Haru งานจัดเล่ม'); DESK.skill = J(DESK.home, '.claude', 'skills', 'report-formatter');
+    DESK.home = await d.os.homedir(); DESK.mac = DESK.home.startsWith('/'); DESK.base = J(DESK.home, 'Documents', 'Haru งานจัดเล่ม'); DESK.skill = J(DESK.home, '.claude', 'skills', 'report-formatter');
     await d.fs.mkdir(DESK.base, {recursive:true});
-    if (!await d.fs.exists(J(DESK.skill, 'scripts', 'v2', 'auto.ps1'))) { banner('ยังไม่พบสกิลฮารุในเครื่องนี้ · ติดตั้งจาก git ก่อน: รัน <b>install.ps1</b> แล้วเปิดแอปใหม่'); return; }
+    if (!await d.fs.exists(J(DESK.skill, 'scripts', 'v2', DESK.mac ? 'auto.mjs' : 'auto.ps1'))) { banner('ยังไม่พบสกิลฮารุในเครื่องนี้ · ติดตั้งจาก git ก่อน: รัน <b>' + (DESK.mac ? 'install.sh' : 'install.ps1') + '</b> แล้วเปิดแอปใหม่'); return; }
+    if (DESK.mac) { // แอปเปิดโปรแกรมโดยไม่มี PATH ของ shell -> หา node / claude จากที่ติดตั้งบ่อย
+      for (const c of [J(DESK.home, '.local', 'node', 'bin', 'node'), '/opt/homebrew/bin/node', '/usr/local/bin/node']) if (await d.fs.exists(c).catch(() => false)) { DESK.node = c; break; }
+      for (const c of [J(DESK.home, '.local', 'bin', 'claude'), J(DESK.home, '.claude', 'local', 'claude'), '/opt/homebrew/bin/claude', '/usr/local/bin/claude']) if (await d.fs.exists(c).catch(() => false)) { DESK.claude = c; break; }
+    }
     DESK.ready = true;
     const jobs = await listJobs(); if (jobs.length) openJob(jobs[0].dir); else { stopDemo(); S = null; JOB = null; load(emptyState(), {fresh:true}); }
   } catch (e) { banner('เปิดโฟลเดอร์งานไม่ได้: ' + esc(e.message)); }
@@ -1202,8 +1207,8 @@ async function startJob(file, removeIntro){
     await d.fs.mkdir(stDir, {recursive:true}); await d.fs.writeFile(docx, new Uint8Array(await file.arrayBuffer()));
     const st0 = {...emptyState(), title:safe, job:dir, status:'running', realStart:Date.now(), ended:null, feed:[{from:'sys', text:'รับไฟล์ ' + safe + ' · กำลังเปิด Word', ts:Date.now(), t:hhmm()}]}; st0.phases[0].status = 'active'; st0.agents.prep = {on:true, state:'กำลังเริ่ม', task:'เปิดไฟล์และดูชนิดเล่ม'};
     await d.fs.writeFile(J(stDir, 'state.json'), JSON.stringify(st0), 'utf8');
-    const args = ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', J(DESK.skill, 'scripts', 'v2', 'auto.ps1'), '-In', docx, '-State', stDir, '-Loop']; if (removeIntro) args.push('-RemoveIntro');
-    const p = d.childProcess.spawn('powershell.exe', args, {cwd:dir}); const run = DESK.running[dir] = {p, log:''};
+    const args = DESK.mac ? [J(DESK.skill, 'scripts', 'v2', 'auto.mjs'), '--in', docx, '--state', stDir, '--loop'] : ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', J(DESK.skill, 'scripts', 'v2', 'auto.ps1'), '-In', docx, '-State', stDir, '-Loop']; if (removeIntro) args.push(DESK.mac ? '--remove-intro' : '-RemoveIntro');
+    const p = d.childProcess.spawn(DESK.mac ? DESK.node : 'powershell.exe', args, {cwd:dir}); const run = DESK.running[dir] = {p, log:''};
     p.stdout.on('data', c => { run.log += c; }); p.stderr.on('data', c => { run.log += c; });
     p.on('error', err => { toast('เริ่มสคริปต์ไม่ได้: ' + err.message); delete DESK.running[dir]; });
     p.on('exit', async code => { delete DESK.running[dir]; await d.fs.writeFile(J(stDir, 'run.log'), run.log, 'utf8').catch(() => {}); if (JOB === dir) await refreshJob(false); notify(code === 0 ? `จัดเล่มเสร็จ: ${safe}` + (S?.summary ? ' · ' + S.summary.verdict : '') : `จัดเล่มไม่สำเร็จ: ${safe} (ดู run.log ในโฟลเดอร์งาน)`); });
@@ -1216,7 +1221,7 @@ async function closeJob(){
   if (SH.on?.dir === dir) await stopShare();
   try { await d.fs.rm(J(dir, '_haru', 'shots'), {recursive:true, force:true}); const st = JSON.parse(await d.fs.readFile(J(dir, '_haru', 'state.json'), 'utf8')); st.closed = true; st.shots = {}; await d.fs.writeFile(J(dir, '_haru', 'state.json'), JSON.stringify(st), 'utf8'); toast('จบงานแล้ว · ลบภาพที่แคปไว้เรียบร้อย'); await refreshJob(true); } catch (e) { toast('ลบภาพไม่ได้: ' + e.message); }
 }
-$('#loopBtn').onclick = () => { if (!DESK.ready || !isLocal()) return; const p = DESK.api.childProcess.spawn('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', J(DESK.skill, 'scripts', 'v2', 'review_loop.ps1'), '-State', J(JOB, '_haru')], {cwd:JOB}); const dir = JOB; DESK.running[dir] = {p, log:''}; p.on('exit', () => { delete DESK.running[dir]; refreshJob(false); notify('ทีมแก้รอบใหม่เสร็จแล้ว'); }); toast('เริ่มวงตรวจ-แก้อีกรอบ'); tab('room'); };
+$('#loopBtn').onclick = () => { if (!DESK.ready || !isLocal()) return; const p = DESK.mac ? DESK.api.childProcess.spawn(DESK.node, [J(DESK.skill, 'scripts', 'v2', 'review_loop.mjs'), '--state', J(JOB, '_haru')], {cwd:JOB}) : DESK.api.childProcess.spawn('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', J(DESK.skill, 'scripts', 'v2', 'review_loop.ps1'), '-State', J(JOB, '_haru')], {cwd:JOB}); const dir = JOB; DESK.running[dir] = {p, log:''}; p.on('exit', () => { delete DESK.running[dir]; refreshJob(false); notify('ทีมแก้รอบใหม่เสร็จแล้ว'); }); toast('เริ่มวงตรวจ-แก้อีกรอบ'); tab('room'); };
 $('#jobsBtn').onclick = async () => {
   const m = $('#jobsMenu'); if (!m.hidden) { m.hidden = true; return; }
   const jobs = DESK.ready ? await listJobs() : [], lab = {running:'กำลังทำ', done:'เสร็จ', stale:'หยุดกลางคัน', idle:''};
@@ -1243,14 +1248,14 @@ async function sendChat(text, reqs = []){
   const shotsInfo = reqs.map(r => { const sh = S.shots?.[r.page] || {}; return `หน้า ${r.page}: ภาพก่อนแก้ "${sh.before || '-'}" ภาพหลังแก้ "${sh.after || '-'}" (ตำแหน่งหมุดเป็น % ของภาพนั้น)`; }).join('\n');
   const ctx = !CHAT.session ? `คุณคือทีมฮารุ (สกิล report-formatter ที่ ${DESK.skill}) งานนี้อยู่ในโฟลเดอร์ปัจจุบัน: ต้นฉบับ "${S.title}", ไฟล์ที่จัดแล้ว "${S.files?.docx || ''}" และ .pdf, สรุป "${S.files?.summary || ''}", สถานะ _haru/state.json
 กติกา: ตอบภาษาไทยสั้นๆ บอกว่าแก้อะไรหน้าไหน · ห้ามใส่เครดิตในไฟล์รายงาน · ห้ามแตะต้นฉบับ แก้เฉพาะ (จัดเล่ม).docx
-แก้แล้ว: ส่งออก PDF ใหม่ (scripts/v2/export_check.ps1) และอัปเดต _haru/state.json — pages.map["n"]="fixed", แคปหน้าใหม่ (scripts/windows/pdf-to-png.ps1 -From n -To n -Width 1100) ไว้ _haru/shots/after แล้วใส่ shots["n"].after และ shots["n"].fix, เพิ่ม feed {"from":"fix","to":"prep","text":"...","tag":"fixed","pages":[n],"ts":<ms>}
+แก้แล้ว: ส่งออก PDF ใหม่ (${DESK.mac ? 'bash scripts/mac/word.sh <ไฟล์.docx> <ไฟล์.pdf>' : 'scripts/v2/export_check.ps1'}) และอัปเดต _haru/state.json — pages.map["n"]="fixed", แคปหน้าใหม่ (${DESK.mac ? 'bash scripts/mac/pdftool.sh png <ไฟล์.pdf> _haru/shots/after 1100 n n' : 'scripts/windows/pdf-to-png.ps1 -From n -To n -Width 1100'}) ไว้ _haru/shots/after แล้วใส่ shots["n"].after และ shots["n"].fix, เพิ่ม feed {"from":"fix","to":"prep","text":"...","tag":"fixed","pages":[n],"ts":<ms>}
 ` : '';
   const prompt = ctx + (shotsInfo ? 'ภาพประกอบคำขอ (ดูภาพก่อนแก้ไข):\n' + shotsInfo + '\n' : '') + 'คำขอของผู้ใช้: ' + text;
-  const args = ['-p', '--model', 'opus', '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits', '--allowedTools', 'Read,Glob,Grep,Edit,Write,Skill,Bash,PowerShell']; if (CHAT.session) args.push('--resume', CHAT.session);
+  const args = ['-p', '--model', 'opus', '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits', '--allowedTools', DESK.mac ? 'Read,Glob,Grep,Edit,Write,Skill,Bash' : 'Read,Glob,Grep,Edit,Write,Skill,Bash,PowerShell']; if (CHAT.session) args.push('--resume', CHAT.session);
   const reply = {from:'prep', text:'', ts:Date.now() + 1, t:hhmm()}; let el = null, buf = '';
   const show = () => { reply.text = reply.text.trim(); if (!reply.text) return; if (!el) { CHAT.msgs.push(reply); seenKeys.add(keyOf(reply)); el = appendMsg(reply); Scene.bubble('haru', reply.text.slice(0, 44), 3000); } else el.querySelector('.tx').textContent = reply.text; $('#feed').scrollTop = 1e9; };
   try {
-    const p = DESK.api.childProcess.spawn('claude', args, {cwd:JOB, shell:true});
+    const p = DESK.mac ? DESK.api.childProcess.spawn(DESK.claude, args, {cwd:JOB}) : DESK.api.childProcess.spawn('claude', args, {cwd:JOB, shell:true});
     p.stdout.on('data', chunk => { buf += chunk; let i; while ((i = buf.indexOf('\n')) >= 0) { const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1); if (!line) continue; let ev; try { ev = JSON.parse(line); } catch { continue; }
       if (ev.session_id) CHAT.session = ev.session_id;
       if (ev.type === 'assistant') for (const c of ev.message?.content || []) { if (c.type === 'text' && c.text) { reply.text += (reply.text ? '\n' : '') + c.text; show(); } else if (c.type === 'tool_use') { const inp = c.input || {}; const what = inp.file_path || inp.path || inp.pattern || inp.command || inp.skill || ''; LIVE.fix.task = `${{Read:'อ่าน', Edit:'แก้', Write:'เขียน', Bash:'รัน', PowerShell:'รัน', Glob:'หาไฟล์', Grep:'ค้นหา', Skill:'ใช้สกิล'}[c.name] || c.name} ${String(what).split(/[\\/]/).pop().slice(0, 60)}`; render(); } }
@@ -1271,7 +1276,7 @@ function stopDemo(){}
 /* ── เปิดจากไฟล์ในเครื่อง (สกิลเปิดให้ตอนสั่งจากแชท): อ่าน state.js ข้างไฟล์นี้ ── */
 function bootFileMode(){
   stopDemo(); JOB = 'file'; let got = false;
-  window.HARU_STATE = st => { got = true; for (const sh of Object.values(st.shots || {})) for (const k of ['before', 'after']) if (sh[k] && /^[A-Za-z]:\\/.test(sh[k])) sh[k] = 'file:///' + encodeURI(sh[k].replace(/\\/g, '/')); if (!S || S.status !== 'done' || st.status !== 'done' || JSON.stringify(st).length !== JSON.stringify(S).length) load(st); };
+  window.HARU_STATE = st => { got = true; for (const sh of Object.values(st.shots || {})) for (const k of ['before', 'after']) if (sh[k] && /^[A-Za-z]:\\/.test(sh[k])) sh[k] = 'file:///' + encodeURI(sh[k].replace(/\\/g, '/')); else if (sh[k] && sh[k].startsWith('/')) sh[k] = 'file://' + encodeURI(sh[k]); if (!S || S.status !== 'done' || st.status !== 'done' || JSON.stringify(st).length !== JSON.stringify(S).length) load(st); };
   const poll = () => { const sc = document.createElement('script'); sc.src = 'state.js?' + Date.now(); sc.onload = sc.onerror = () => sc.remove(); document.body.appendChild(sc); };
   poll(); setInterval(() => { if (!S || S.status !== 'done') poll(); }, 1200);
   $('#chatIn').disabled = true; $('#sendBtn').disabled = true; $('#attachBtn').disabled = true; $('#chatIn').placeholder = 'สั่งงานต่อได้ในแชท Claude ที่เปิดงานนี้';
@@ -1425,7 +1430,7 @@ function trimForShare(st, chat, id){
   if (o.summary?.files) o.summary.files = o.summary.files.map(f => ({ext:f.ext, name:f.name}));
   o.feed = (o.feed || []).slice(-150).map(m => ({...m, _walk:undefined}));
   o.chat = (chat || []).slice(-40).map(m => ({from:m.from, by:m.by, text:String(m.text || '').slice(0, 2000), ts:m.ts, t:m.t}));
-  for (const s of o.steps || []) if (s.detail) s.detail = String(s.detail).replace(/[A-Za-z]:\\[^\s"']+/g, m => m.split('\\').pop());
+  for (const s of o.steps || []) if (s.detail) s.detail = String(s.detail).replace(/[A-Za-z]:\\[^\s"']+/g, m => m.split('\\').pop()).replace(/\/(?:Users|home|private|tmp|var|Volumes)\/[^\s"']+/g, m => m.split('/').pop());
   return o;
 }
 async function blobOf(p){

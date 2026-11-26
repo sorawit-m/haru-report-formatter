@@ -3,6 +3,7 @@
 // 1) รวมบรรทัดที่ขาดในช่องตาราง (ช่องที่ไม่ใช่โค้ด/ลำดับเลข)  2) จุดตัดคำไทย  3) จุดตัดในคำอังกฤษยาว/URL  4) จุดตัดหลัง / ที่ติดคำไทย
 // 5) ทุกย่อหน้าเนื้อหา = thaiDistribute (ยกเว้นหัวข้อ ฟิลด์ รูป โค้ด ย่อหน้ากลาง/ขวา แถวหัวตารางพื้นสี)
 import { loadDocx, saveDocx } from '../lib/docx.mjs';
+import { coverEnd } from '../lib/wordxml.mjs';
 const f = process.argv[2]; const d = loadDocx(f); let x = d.get('word/document.xml'); const st = d.get('word/styles.xml');
 const CODEFONT = /w:ascii="(?:Consolas|Courier New|Courier|Menlo|Monaco|Lucida Console|Source Code Pro)"/;
 const cnt = { codeBoxes: 0, merged: 0, thaiBreaks: 0, latinBreaks: 0, slashBreaks: 0, justified: 0, skip: {} };
@@ -12,7 +13,7 @@ const sty = {}; for (const m of st.matchAll(/<w:style\b[^>]*w:styleId="([^"]+)"[
 const isHead = id => { let s = id, n = 0; while (s && sty[s] && n++ < 8) { if (sty[s].ol || /heading|toc|caption|title|หัวเรื่อง|หัวข้อ/i.test(sty[s].name)) return true; s = sty[s].based; } return false; };
 const styJc = id => { let s = id, n = 0; while (s && sty[s] && n++ < 8) { if (sty[s].jc) return sty[s].jc; s = sty[s].based; } return null; };
 // split off cover
-const b = x.indexOf('<w:body>'); const ce = x.indexOf('</w:p>', x.indexOf('<w:sectPr', b)) + 6;
+const b = x.indexOf('<w:body>'); const ce = coverEnd(x);
 let body = x.slice(ce);
 // protect code boxes (1-column tables)
 const saved = [];

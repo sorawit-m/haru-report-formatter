@@ -6,11 +6,18 @@ description: (Haru · ฮารุ — Trained by Haru) ตรวจ แก้�
 # จัดเล่มรายงาน (report-formatter) · Trained by Haru
 
 > คำเรียกใช้สั้นๆ: **ฮารุ** / **haru** / **Haru** — หรือ ช่วยจัดไฟล์ · จัดไฟล์ · ช่วยจัดเล่ม · จัดเล่ม แล้วแนบไฟล์ .docx
-> ทางลัดทำครบทั้งเล่ม (ใช้เสมอเมื่อสั่งจากแชท): `powershell -File scripts/v2/auto.ps1 -In <ไฟล์.docx> -State "<โฟลเดอร์ของไฟล์>\_haru" -Open -Loop` (รันเบื้องหลัง)
+> ทางลัดทำครบทั้งเล่ม (ใช้เสมอเมื่อสั่งจากแชท, รันเบื้องหลัง):
+>   - **Windows:** `powershell -File scripts/v2/auto.ps1 -In <ไฟล์.docx> -State "<โฟลเดอร์ของไฟล์>\_haru" -Open -Loop`
+>   - **Mac (ครบเท่า Windows):** `node scripts/v2/auto.mjs --in <ไฟล์.docx> --state "<โฟลเดอร์ของไฟล์>/_haru" --open --loop`
+>     (ใส่ `export PATH="$HOME/.local/node/bin:$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"` หน้าคำสั่ง) — ใช้ได้บน Windows ด้วย
 > - `-Open` เปิดหน้าติดตามงานในเบราว์เซอร์เอง: ห้องทำงาน 3D, ภาพรวม, หน้าที่ควรเปิดดู (ภาพก่อน/หลังแก้), แก้อะไรไป — ผู้ใช้เห็นงานเดินทันที
-> - `-Loop` เจอปัญหาแล้วให้ผู้แก้ (Claude Opus ผ่าน `claude -p`) แก้ทันที ส่งออก PDF ใหม่ ผู้ตรวจอ่านซ้ำ วนจนไม่เจอ (สูงสุด 3 รอบ, `scripts/v2/review_loop.ps1`)
+> - `-Loop` / `--loop` เจอปัญหาแล้วให้ผู้แก้ (Claude Opus ผ่าน `claude -p`) แก้ทันที ส่งออก PDF ใหม่ ผู้ตรวจอ่านซ้ำ วนจนไม่เจอ (สูงสุด 3 รอบ, `scripts/v2/review_loop.ps1` / `review_loop.mjs`)
 > - งานถูกลงทะเบียนใน `เอกสาร\Haru งานจัดเล่ม\_jobs.txt` จึงขึ้นในแอปฮารุด้วย ถ้าเครื่องนั้นติดตั้งแอปไว้
-> - ค่าเริ่มต้นเก็บบทนำไว้ เอาบทนำออกเฉพาะเมื่อผู้ใช้สั่ง — ใส่ `-RemoveIntro`
+> - ค่าเริ่มต้นเก็บบทนำไว้ เอาบทนำออกเฉพาะเมื่อผู้ใช้สั่ง — ใส่ `-RemoveIntro` / `--remove-intro`
+> - **Mac:** ขั้นที่ Windows ใช้ Word COM ทำเป็น Node แก้ XML ตรง (`word_finish.mjs`, `add_pagenum.mjs`, `fit_images.mjs`, `remove_intro.mjs`, `box_strand_fix.mjs`, `locate_pages.mjs`)
+>   ส่งออก PDF + อัปเดตสารบัญด้วย `bash scripts/mac/word.sh <ไฟล์.docx> <ไฟล์.pdf>` ; ตรวจ/ดูภาพหน้าด้วย `bash scripts/mac/pdftool.sh check|png|sheet|text …`
+>   (`sheet <pdf> <ชื่อไฟล์ผล> 28 7` = ภาพรวมหลายหน้าในภาพเดียว ไว้ไล่ดูทั้งเล่ม)
+>   Word for Mac ปิดเอกสารผ่าน AppleScript ไม่ได้ → word.sh ปิด Word เฉพาะเมื่อเอกสารที่เปิดทั้งหมดเป็นของฮารุ ไม่งั้นปล่อยเอกสาร `haru_…` ไว้ แล้วบอกผู้ใช้ให้ปิดเอง
 > - แอปฮารุ (โยนไฟล์ + แชท + ห้อง 3D ในหน้าต่างเดียว): https://claude.ai/artifact/37dYPN4yVBG64kGx3V2ChK → เปิดในแอป Claude บนเดสก์ท็อป แล้วกด "ติดตั้งเป็นแอป"
 
 ## คำสั่งลัด
@@ -86,11 +93,13 @@ description: (Haru · ฮารุ — Trained by Haru) ตรวจ แก้�
   - Mac: shell ของ Claude อาจไม่อ่าน `~/.zprofile` → ใส่ `export PATH="$HOME/.local/node/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"` หน้าคำสั่ง node ทุกครั้ง (`scripts/mac/*.sh` ทำให้แล้ว)
 - **poppler** (`pdftoppm`, Mac): มี Homebrew → `brew install poppler` ; ไม่มี → ข้ามได้ ใช้ `swift` + PDFKit render หน้า PDF แทน
 - **LibreOffice** (Mac ที่ไม่มี Word): มี Homebrew → `brew install --cask libreoffice` ; ไม่มี → ดาวน์โหลด .dmg ทางการจาก libreoffice.org ตรวจ checksum แล้วคัดลอกไป `~/Applications`
+- **Swift** (Mac, ใช้ตรวจภาพหน้า PDF): ไม่มี `swiftc` → `xcode-select --install` (ผู้ใช้กด "ติดตั้ง" ในหน้าต่างที่ขึ้นมา)
+- **Claude Code** (`claude`, ใช้ในวงตรวจ-แก้ `--loop` และแชทในแอปฮารุ): ไม่มี → `curl -fsSL https://claude.ai/install.sh | bash` (ตัวติดตั้งทางการ ลงที่ `~/.local/bin/claude`) ครั้งแรกผู้ใช้ต้องพิมพ์ `claude` เพื่อล็อกอินเอง
 - **ติดตั้งเองไม่ได้ → แจ้งผู้ใช้ทันทีพร้อมวิธีทำ:** Microsoft Word (ต้องมีไลเซนส์), สิ่งที่ต้องใช้รหัสผ่าน admin/sudo, ฟอนต์ TH SarabunPSK (ไม่มีแหล่งทางการที่ตรวจได้)
 
 1. ตรวจเครื่อง:
    - **Windows:** มี Word และ `node --version` ได้ → ใช้ `scripts/windows/run.ps1`
-   - **Mac:** มี `node` และมี Word for Mac หรือ LibreOffice → ใช้ `scripts/mac/run.sh`
+   - **Mac:** มี `node`, `swiftc` (Xcode Command Line Tools) และ Word for Mac → ใช้ `scripts/v2/auto.mjs` (ทางลัดด้านบน) ; ไม่มี Word ใช้ชุดเก่า `scripts/mac/run.sh` กับ LibreOffice
 2. ตรวจว่าไฟล์ไม่ได้เปิดใน Word (มี `~$…docx` = เปิดอยู่ → บอกผู้ใช้ให้ปิด)
 3. สำรองต้นฉบับ แล้วคัดลอกต้นฉบับไปโฟลเดอร์ชั่วคราว ทุกรอบที่ต้องแก้ใหม่ให้เริ่มจากต้นฉบับสำรองเสมอ
 
@@ -117,13 +126,13 @@ description: (Haru · ฮารุ — Trained by Haru) ตรวจ แก้�
   3. fix-numbering.ps1: เอาเลขหัวข้ออัตโนมัติที่งอกขึ้นมาออก
   4. restore-styles.mjs: เลขซ้ำบนหัวข้อที่พิมพ์เลขเอง, ย่อหน้าหลุดเข้าสารบัญ, แถวที่ผูกกับรูป
   5. remove-blank-pages.ps1: ลบหน้าว่าง, สร้างสารบัญใหม่, ส่งออก PDF
-- **Mac:** `bash scripts/mac/run.sh <ต้นฉบับ> <ผล.docx> replacements.tsv`
-  หน้าว่างและตารางที่สูงเกินหน้าทำอัตโนมัติไม่ได้ ต้องดูภาพแล้วแจ้งผู้ใช้
+- **Mac:** `node scripts/v2/auto.mjs --in <ต้นฉบับ> --state <โฟลเดอร์>/_haru --loop` (ลำดับขั้นเหมือน auto.ps1 ทุกขั้น)
+  ไม่มี Word for Mac: ชุดเก่า `bash scripts/mac/run.sh <ต้นฉบับ> <ผล.docx> replacements.tsv` (LibreOffice ตัดหน้าต่างจาก Word เล็กน้อย)
 
 ### 3. ตรวจผล (วนจนผ่าน สูงสุด 3 รอบ)
 - **ดูภาพทุกหน้า:**
   - Windows: `scripts/windows/pdf-to-png.ps1 -Pdf ผล.pdf -OutDir pages -Width 280` แล้วต่อเป็นแผ่นรวมด้วย ffmpeg `tile=10x4` ถ้ามี
-  - Mac: ใช้โฟลเดอร์ `_pages`
+  - Mac: `bash scripts/mac/pdftool.sh sheet ผล.pdf pages/sheet 28 7` (ภาพรวม) ; หน้าเดียวแบบซูม `bash scripts/mac/pdftool.sh png ผล.pdf pages 1100 N N`
 - **ซูมดู:** หน้าปก, หน้าสารบัญ, และหน้าที่มีตารางยาว
 - **ต้องผ่านทุกข้อ:**
   - ข้อความไม่หาย (ดู _textcheck.txt และค้นคำติดกัน เช่น "ไม่มีToken")

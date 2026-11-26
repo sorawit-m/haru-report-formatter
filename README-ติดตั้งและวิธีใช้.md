@@ -16,7 +16,7 @@
 | เครื่อง | ต้องมี | ได้ผล |
 |---|---|---|
 | **Windows** (แนะนำ) | Microsoft Word, Node.js (ฟรี: nodejs.org), ฟอนต์ TH SarabunPSK | ครบทุกข้อ |
-| **Mac** | Node.js, Word for Mac หรือ LibreOffice (ฟรี), ฟอนต์ TH SarabunPSK | ~90% (หน้าว่าง/ตารางสูงเกินหน้าต้องดูเอง) |
+| **Mac** | Word for Mac, Node.js, Xcode Command Line Tools (`bash install.sh` ติดตั้งให้เอง), ฟอนต์ TH SarabunPSK (มากับ Word) | ครบทุกข้อเท่า Windows ; ไม่มี Word ใช้ LibreOffice ได้ ~90% |
 
 ต้องใช้ผ่าน **แอป Claude แท็บ Code** (หรือ Claude Code) ที่เปิดไฟล์ในเครื่องได้ ใช้ในแชตบนเว็บธรรมดาไม่ได้ เพราะต้องสั่ง Word ในเครื่อง
 

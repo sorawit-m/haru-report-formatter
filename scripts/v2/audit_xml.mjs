@@ -33,7 +33,7 @@ for (const f of process.argv.slice(2)) {
   R['intro chapter (บทนำ heading)'] = /<w:pStyle w:val="[^"]+"\/>(?:(?!<\/w:p>)[\s\S])*?>บทนำ</.test(body) ? 'present' : 0;
   // headings / TOC
   R['TOC field'] = /TOC \\/.test(x) ? 'yes' : 'NO';
-  R['TOC italic style'] = /<w:name w:val="toc \d"\/>[\s\S]*?<w:i\/>[\s\S]*?<\/w:style>/.test(st) ? 'check' : 0;
+  R['TOC italic style'] = [...st.matchAll(/<w:style\b[^>]*>[\s\S]*?<\/w:style>/g)].some(m => /<w:name w:val="toc \d"\/>/.test(m[0]) && /<w:i\/>/.test(m[0])) ? 'check' : 0;
   // header (page header) logo size / text
   const hdrs = d.entries.filter(e => /header\d*\.xml$/.test(e.name)).map(e => d.get(e.name)).filter(h => /โครงการ/.test(h));
   R['page header variants'] = [...new Set(hdrs.map(h => (h.match(/<wp:extent cx="(\d+)"/) || [])[1]))].map(v => v ? (v / 360000).toFixed(1) + 'cm logo' : 'no logo').join(', ');

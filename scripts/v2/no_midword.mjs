@@ -1,11 +1,12 @@
 // ไม่ให้ Word ตัดกลางคำไทย: เอาจุดตัดคำประสมออก (ครุ|ภัณฑ์ -> ครุภัณฑ์) และใส่ U+2060 (word joiner) ระหว่างตัวอักษรภายในคำ
 // ตัดบรรทัดได้เฉพาะระหว่างคำ (U+200B / เว้นวรรค) — ไม่แตะกล่องโค้ด ฟิลด์ ปก
 import { loadDocx, saveDocx } from '../lib/docx.mjs';
+import { coverEnd } from '../lib/wordxml.mjs';
 const [f, scope = 'all'] = process.argv.slice(2);
 const d = loadDocx(f); let x = d.get('word/document.xml'); const cnt = { words: 0, joined: 0 };
 const seg = new Intl.Segmenter('th', { granularity: 'word' });
 const TH = /[฀-๿]/;
-const b = x.indexOf('<w:body>'); const ce = x.indexOf('</w:p>', x.indexOf('<w:sectPr', b)) + 6;
+const b = x.indexOf('<w:body>'); const ce = coverEnd(x);
 let body = x.slice(ce); const saved = [];
 body = body.replace(/<w:tbl>[\s\S]*?<\/w:tbl>/g, t => { const g = ((t.match(/<w:tblGrid>[\s\S]*?<\/w:tblGrid>/) || [''])[0].match(/<w:gridCol\b/g) || []).length; if (g === 1 || (scope === 'dense' && g < 7)) { saved.push(t); return `\u0000C${saved.length - 1}\u0000`; } return t; });
 const fix = s => {
