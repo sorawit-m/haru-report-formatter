@@ -95,6 +95,7 @@ if ($kind.kind -like 'test*') { Step 'ข้อความไทยในตา
 # ---- 5) การตัดหน้า
 Step 'บรรทัดว่างหลังตาราง / ตัวคั่นระหว่างตาราง' { node "$S\drop_after_table.mjs" $f; node "$S\thin_separators.mjs" $f }
 Step 'หัวข้อ/หัวตารางติดกับแถวแรก' { node "$S\keep_heads.mjs" $f }
+Step 'ตารางสั้นอยู่หน้าเดียว (ไม่รวมตารางสารบัญ)' { node "$S\keep_short_tables.mjs" $f }
 Step 'หัวตารางซ้ำเมื่อข้ามหน้า' { node "$S\repeat_headers.mjs" $f }
 if ($kind.kind -eq 'testlist') { Step 'ป้ายกับรูปอยู่หน้าเดียวกัน, ไม่ซ้ำหัวตารางเหนือรูป' { node "$S\pic_rows.mjs" $f; node "$S\no_repeat_wide.mjs" $f } }
 if ($kind.kind -eq 'testresult') { Step 'ผลที่พบติดกับรูป' { node "$S\case_layout6.mjs" $f } }
@@ -151,6 +152,13 @@ if ($ST) {
     Say 'rev' 'prep' $why @{ tag = 'issue'; pages = @($n); lane = $lane }
   }
   foreach ($l in $ST.agents.rev.lanes) { $l.p = 100; $l.Remove('at') }
+  # ภาพย่อทุกหน้า (หน้าปกติก็เปิดดูได้ในหน้าเว็บ) — เล่มเกิน 400 หน้าข้ามไว้ เพราะไฟล์ภาพเยอะเกิน
+  $ST.thumbs = [ordered]@{}
+  if ($total -le 400) {
+    $thumbDir = Join-Path $shotDir 'all'; New-Item -ItemType Directory -Force $thumbDir | Out-Null
+    powershell -NoProfile -ExecutionPolicy Bypass -File $W -Pdf ([IO.Path]::ChangeExtension($f, '.pdf')) -OutDir $thumbDir -Width 700 | Out-Null
+    for ($i = 1; $i -le $total; $i++) { $tp = Join-Path $thumbDir ('p{0:D3}.png' -f $i); if (Test-Path $tp) { $ST.thumbs["$i"] = $tp } }
+  }
   $nf = $flag.Count
   $ST.agents.rev = [ordered]@{ on = $false; state = 'ส่งผลแล้ว'; task = $(if ($nf) { "อ่านครบ $total หน้า มี $nf หน้าที่ควรเปิดดู" } else { "อ่านครบ $total หน้า ไม่พบจุดผิดปกติ" }); lanes = $ST.agents.rev.lanes }
   $ST.phases[1].status = 'done'; $ST.phases[1].sub = $(if ($nf) { "ควรดู $nf หน้า" } else { 'ไม่พบปัญหา' }); $ST.phases[2].status = 'active'; $ST.phases[2].sub = 'กำลังเขียน'
@@ -174,6 +182,7 @@ foreach ($e in $log) {
 if ($skipped) { [void]$sum.AppendLine(''); [void]$sum.AppendLine('ตรวจแล้วไม่ต้องแก้: ' + ($skipped -join ' / ')) }
 [void]$sum.AppendLine(''); [void]$sum.AppendLine('ผลตรวจทุกหน้า:'); [void]$sum.AppendLine($(if ($kind.kind -eq 'testresult') { ($pc -split "\r?\n" | Where-Object { $_ -notmatch '^big white gap' }) -join "
 " } else { $pc.Trim() })); [void]$sum.AppendLine(''); [void]$sum.AppendLine('ผลตรวจในไฟล์:'); [void]$sum.AppendLine($aud.Trim())
+$cc = (& node "$S\check_consistency.mjs" $f 2>&1 | Out-String).Trim(); [void]$sum.AppendLine(''); [void]$sum.AppendLine('ควรเช็คเนื้อหา (ฮารุรายงานอย่างเดียว ไม่แก้เอง):'); [void]$sum.AppendLine($cc)
 $sf = Join-Path $OutDir ($name + ' (จัดเล่ม) - สรุปการปรับ.txt'); [IO.File]::WriteAllText($sf, $sum.ToString(), (New-Object Text.UTF8Encoding $true))
 Write-Output ''; Write-Output $sum.ToString()
 
@@ -197,6 +206,7 @@ if ($ST) {
     verdict = $(if ($nf) { "ดู $nf หน้า" } else { 'ผ่าน' })
     stats = @([ordered]@{ v = "$($ST.pages.total)"; l = 'หน้า' }, [ordered]@{ v = "$nf"; l = 'หน้าที่ควรเปิดดู' }, [ordered]@{ v = "$($ST.steps.Count)"; l = 'ขั้นตอนที่ทำ' }, [ordered]@{ v = "$auto"; l = 'จุดที่ปรับอัตโนมัติ' }, [ordered]@{ v = "$mins นาที"; l = 'เวลาที่ใช้' })
     changes = $changes; checks = $checks
+    content = @(($cc -split "\r?\n") | Where-Object { $_ -match ' · ' })
     files = @([ordered]@{ ext = 'docx'; name = (Split-Path $f -Leaf); path = $f }, [ordered]@{ ext = 'pdf'; name = (Split-Path ([IO.Path]::ChangeExtension($f, '.pdf')) -Leaf); path = [IO.Path]::ChangeExtension($f, '.pdf') }, [ordered]@{ ext = 'txt'; name = (Split-Path $sf -Leaf); path = $sf })
   }
   foreach ($ph in $ST.phases) { $ph.status = 'done' }; $ST.phases[2].sub = $(if ($nf) { "ดู $nf หน้า" } else { 'พร้อมส่ง' })

@@ -862,7 +862,7 @@ const Scene = (() => {
 
 /* ═══════════════════════ สถานะ + หน้าจอ ═══════════════════════ */
 let S = null, JOB = null, seenKeys = new Set(), CHAT = {session:'', msgs:[]}, LIVE = {fix:null}, demoRun = 0, celebrated = false, curTab = 'over';
-const FILEMODE = location.protocol === 'file:';
+const FILEMODE = location.protocol === 'file:' || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname); // เปิดจากไฟล์ หรือจากเซิร์ฟเวอร์ในเครื่อง
 const keyOf = m => (m.ts || 0) + '|' + m.from + '|' + String(m.text).slice(0, 24) + '|' + (m.pages || []).join(',');
 const pctOf = st => { const w = st.phases.reduce((a, p) => a + (p.status === 'done' ? 1 : p.status === 'active' ? (p.frac || 0) : 0), 0); return Math.round(100 * w / st.phases.length); };
 window.pctOf = pctOf;
@@ -954,10 +954,18 @@ document.addEventListener('click', e => { const b = e.target.closest('[data-char
 
 /* ── ภาพรวม: รวมทุกแท็บไว้ในหน้าเดียว จัดเป็นส่วนๆ ── */
 let ovKey = '';
+/* ควรเช็คเนื้อหา (check_consistency.mjs): ช่องว่างคู่ · ตัวคั่นไม่เหมือนกัน · อ้างข้อ TOR หลายแบบ — ฮารุรายงานอย่างเดียว ไม่แก้เอง */
+function contentCard(sm){
+  const rows = (sm?.content || []).map(x => typeof x === 'string' ? x.split(' · ') : [x.kind, x.where, x.text, x.why]);
+  if (!sm || S.status !== 'done') return '';
+  return `<div class="card"><div class="card-hd"><h3>ควรเช็คเนื้อหา</h3><span class="sub">${rows.length ? rows.length + ' จุด · ฮารุไม่แก้เอง ให้คนเลือกแบบเดียวทั้งเล่ม' : 'ไม่พบ'}</span></div>
+    ${rows.length ? `<div class="tbw"><table class="tb"><thead><tr><th>เรื่อง</th><th>อยู่ที่</th><th>ข้อความ</th><th>ทำไม</th></tr></thead><tbody>${rows.map(r => `<tr><td>${esc(r[0] || '')}</td><td>${esc(r[1] || '')}</td><td>${esc(r[2] || '').replace(/ {2,}/g, m => `<mark title="ช่องว่าง ${m.length} ตัว" style="background:var(--c5,#f0b45a);color:#000;border-radius:3px;padding:0 2px">${'␣'.repeat(m.length)}</mark>`)}</td><td>${esc(r[3] || '')}</td></tr>`).join('')}</tbody></table></div>`
+      : `<div class="empty"><b>ไม่มี ✓</b>ไม่พบช่องว่างคู่ ตัวคั่นที่ใช้ไม่เหมือนกัน หรือการอ้างข้อ TOR หลายแบบ</div>`}</div>`;
+}
 function renderOver(){
   const el = $('#p-over'), sm = S.summary, c = counts();
   const mins = Math.max(1, Math.round(((S.ended || Date.now()) - (S.realStart || Date.now())) / 60000));
-  const key = JSON.stringify([S.status, c.open, c.fixed, c.st, c.changes, mins, S.closed, sm?.headline, S.steps.length, S.steps.filter(s => s.status === 'done').length, S.phases.map(p => p.sub), chartMode, !!DESK.api]);
+  const key = JSON.stringify([S.status, c.open, c.fixed, c.st, c.changes, mins, S.closed, sm?.headline, (sm?.content || []).length, S.steps.length, S.steps.filter(s => s.status === 'done').length, S.phases.map(p => p.sub), chartMode, !!DESK.api]);
   if (key === ovKey) return; ovKey = key;
   const ph = S.phases.find(p => p.status === 'active') || S.phases[0], done = S.status === 'done';
   const css = getComputedStyle(document.documentElement), V = n => css.getPropertyValue(n).trim();
@@ -990,6 +998,7 @@ function renderOver(){
     <div class="card"><div class="card-hd"><h3>แก้อะไรไป</h3><span class="sub">${(sm?.changes || []).length} หมวด</span><span class="grow"></span>${sm?.changes?.length ? `<button class="lnk" data-goto="change">ดูตัวอย่าง ›</button>` : ''}</div>
       ${sm?.changes?.length ? `<div class="tbw"><table class="tb"><thead><tr><th>หมวด</th><th class="r">จุด</th></tr></thead><tbody>${sm.changes.map((x, i) => `<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${pal[i % pal.length]};margin-right:8px"></span>${esc(plain(x.label))}</td><td class="r">${(+x.count).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>` : `<div class="empty"><b>รอผู้สรุป</b>จะขึ้นเมื่อเทียบกับต้นฉบับเสร็จ</div>`}</div>
   </div>
+  ${contentCard(sm)}
   <div class="two">
     <div class="card"><div class="card-hd"><h3>ทุกหน้า</h3><span class="sub">กดหน้าไหนก็ได้เพื่อดูภาพ</span><span class="grow"></span><button class="lnk" data-goto="pages">ขยาย ›</button></div><div class="pmap" id="ovMap"></div></div>
     <div class="card"><div class="card-hd"><h3>ขั้นตอนล่าสุด</h3><span class="sub">${S.steps.filter(s => s.status === 'done').length}/${S.steps.length} ขั้น</span><span class="grow"></span><button class="lnk" data-goto="steps">ทั้งหมด ›</button></div>
@@ -1056,8 +1065,8 @@ setInterval(() => { if (!S) return; const end = S.ended || Date.now(); const s =
 let lbPage = 0, lbView = 'before', lastFocus = null, annot = false, draft = {page:0, pins:[], note:''}; const imgCache = {};
 const REQ = [];   // คำขอแก้ที่เก็บไว้ส่งพร้อมกัน
 const shotList = () => Object.keys(S?.shots || {}).map(Number).sort((a, b) => a - b);
-async function srcOf(path){ if (!path) return ''; if (/^(data|file|https):|^\/_blob\//.test(path)) return path; if (imgCache[path]) return imgCache[path]; if (!DESK.api) return ''; try { const b = await DESK.api.fs.readFile(path, 'base64'); return imgCache[path] = 'data:image/png;base64,' + b; } catch { return ''; } }
-function shotFor(n){ const sh = S?.shots?.[n]; if (sh) return sh; return null; }
+async function srcOf(path){ if (!path) return ''; if (/^(data|file|https?):|^\/_blob\//.test(path)) return path; if (FILEMODE && !/^[A-Za-z]:[\\/]|^\//.test(path)) return path; /* ทางลัดสัมพัทธ์ เช่น shots/p003.png ข้างหน้านี้ */ if (imgCache[path]) return imgCache[path]; if (!DESK.api) return ''; try { const b = await DESK.api.fs.readFile(path, 'base64'); return imgCache[path] = 'data:image/png;base64,' + b; } catch { return ''; } }
+function shotFor(n){ const sh = S?.shots?.[n]; if (sh) return sh; const th = S?.thumbs?.[n]; if (th) return {before:th, issue:''}; /* หน้าปกติ: ภาพย่อทุกหน้า */ return null; }
 function openShot(n){
   const sh = shotFor(n);
   if (!sh) { toast(S.closed ? `หน้า ${n}: จบงานแล้ว ภาพที่แคปไว้ถูกลบไปแล้ว` : `หน้า ${n}: ${['ok', 'pass'].includes(S.pages.map[n]) ? 'ปกติ ไม่มีจุดที่ต้องดู' : 'ยังไม่ได้อ่าน'} · เปิดดูเต็มได้ในไฟล์ PDF`); return; }
@@ -1276,7 +1285,9 @@ function stopDemo(){}
 /* ── เปิดจากไฟล์ในเครื่อง (สกิลเปิดให้ตอนสั่งจากแชท): อ่าน state.js ข้างไฟล์นี้ ── */
 function bootFileMode(){
   stopDemo(); JOB = 'file'; let got = false;
-  window.HARU_STATE = st => { got = true; for (const sh of Object.values(st.shots || {})) for (const k of ['before', 'after']) if (sh[k] && /^[A-Za-z]:\\/.test(sh[k])) sh[k] = 'file:///' + encodeURI(sh[k].replace(/\\/g, '/')); else if (sh[k] && sh[k].startsWith('/')) sh[k] = 'file://' + encodeURI(sh[k]); if (!S || S.status !== 'done' || st.status !== 'done' || JSON.stringify(st).length !== JSON.stringify(S).length) load(st); };
+  // ภาพอยู่ใน _haru ข้างหน้านี้ → ทางลัดสัมพัทธ์ (ได้ทั้ง Windows/Mac และเปิดแบบ file: หรือเซิร์ฟเวอร์ในเครื่อง)
+  const fixPath = v => { if (!v) return v; const rel = v.replace(/\\/g, '/').match(/\/_haru\/(.+)$/); if (rel) return rel[1]; if (/^[A-Za-z]:\\/.test(v)) return 'file:///' + encodeURI(v.replace(/\\/g, '/')); if (v.startsWith('/')) return 'file://' + encodeURI(v); return v; };
+  window.HARU_STATE = st => { got = true; for (const sh of Object.values(st.shots || {})) for (const k of ['before', 'after']) if (sh[k]) sh[k] = fixPath(sh[k]); for (const n in (st.thumbs || {})) st.thumbs[n] = fixPath(st.thumbs[n]); if (!S || S.status !== 'done' || st.status !== 'done' || JSON.stringify(st).length !== JSON.stringify(S).length) load(st); };
   const poll = () => { const sc = document.createElement('script'); sc.src = 'state.js?' + Date.now(); sc.onload = sc.onerror = () => sc.remove(); document.body.appendChild(sc); };
   poll(); setInterval(() => { if (!S || S.status !== 'done') poll(); }, 1200);
   $('#chatIn').disabled = true; $('#sendBtn').disabled = true; $('#attachBtn').disabled = true; $('#chatIn').placeholder = 'สั่งงานต่อได้ในแชท Claude ที่เปิดงานนี้';

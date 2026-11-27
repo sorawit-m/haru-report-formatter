@@ -112,6 +112,7 @@ if (isTest) Step('ข้อความไทยในตารางทดส�
 // ---- 5) การตัดหน้า
 Step('บรรทัดว่างหลังตาราง / ตัวคั่นระหว่างตาราง', () => [node('drop_after_table.mjs', f), node('thin_separators.mjs', f)]);
 Step('หัวข้อ/หัวตารางติดกับแถวแรก', () => node('keep_heads.mjs', f));
+Step('ตารางสั้นอยู่หน้าเดียว (ไม่รวมตารางสารบัญ)', () => node('keep_short_tables.mjs', f));
 Step('หัวตารางซ้ำเมื่อข้ามหน้า', () => node('repeat_headers.mjs', f));
 if (kind.kind === 'testlist') Step('ป้ายกับรูปอยู่หน้าเดียวกัน, ไม่ซ้ำหัวตารางเหนือรูป', () => [node('pic_rows.mjs', f), node('no_repeat_wide.mjs', f)]);
 if (kind.kind === 'testresult') Step('ผลที่พบติดกับรูป', () => node('case_layout6.mjs', f));
@@ -143,7 +144,7 @@ if (ST) { Object.assign(ST.phases[1], { sub: 'ตรวจในไฟล์ Wor
 const aud = node('audit_xml.mjs', f);
 if (ST) { Object.assign(ST.phases[1], { sub: 'อ่านภาพทุกหน้า', frac: 0.55 }); ST.agents.rev.lanes.forEach(l => l.p = 60); SaveState(); }
 const pc = WIN ? ps1('pdf_check.ps1', '-Pdf', pdfOf(f), '-Out', chk) : mac('pdftool.sh', 'check', pdfOf(f), chk);
-const pngPage = (pdf, dir, n) => WIN ? run('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(S, '..', 'windows', 'pdf-to-png.ps1'), '-Pdf', pdf, '-OutDir', dir, '-Width', '1100', '-From', String(n), '-To', String(n)]) : mac('pdftool.sh', 'png', pdf, dir, 1100, n, n);
+const pngPage = (pdf, dir, n, n2 = n, w = 1100) => WIN ? run('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(S, '..', 'windows', 'pdf-to-png.ps1'), '-Pdf', pdf, '-OutDir', dir, '-Width', String(w), '-From', String(n), '-To', String(n2)]) : mac('pdftool.sh', 'png', pdf, dir, w, n, n2);
 if (ST) {
   // หน้าที่ต้องเช็ค + ภาพแคป (ภาพอยู่ใน <State>/shots — แอปลบเมื่อกด "จบงาน")
   const total = +((pc.match(/pages:\s*(\d+)/) || [])[1] || 0);
@@ -167,6 +168,13 @@ if (ST) {
     Say('rev', 'prep', why, { tag: 'issue', pages: [n], lane });
   }
   ST.agents.rev.lanes.forEach(l => { l.p = 100; delete l.at; });
+  // ภาพย่อทุกหน้า (หน้าปกติก็เปิดดูได้ในหน้าเว็บ) — เล่มเกิน 400 หน้าข้ามไว้ เพราะไฟล์ภาพเยอะเกิน
+  ST.thumbs = {};
+  if (total && total <= 400) {
+    const thumbDir = path.join(shotDir, 'all'); fs.mkdirSync(thumbDir, { recursive: true });
+    pngPage(pdfOf(f), thumbDir, 1, total, 700);
+    for (let i = 1; i <= total; i++) { const tp = path.join(thumbDir, `p${String(i).padStart(3, '0')}.png`); if (fs.existsSync(tp)) ST.thumbs[String(i)] = tp; }
+  }
   const nf = flag.size;
   ST.agents.rev = { on: false, state: 'ส่งผลแล้ว', task: nf ? `อ่านครบ ${total} หน้า มี ${nf} หน้าที่ควรเปิดดู` : `อ่านครบ ${total} หน้า ไม่พบจุดผิดปกติ`, lanes: ST.agents.rev.lanes };
   Object.assign(ST.phases[1], { status: 'done', sub: nf ? `ควรดู ${nf} หน้า` : 'ไม่พบปัญหา' }); Object.assign(ST.phases[2], { status: 'active', sub: 'กำลังเขียน' });
@@ -188,6 +196,7 @@ for (const e of log) {
 if (skipped.length) sum.push('', 'ตรวจแล้วไม่ต้องแก้: ' + skipped.join(' / '));
 sum.push('', 'ผลตรวจทุกหน้า:', kind.kind === 'testresult' ? pc.split(/\r?\n/).filter(l => !/^big white gap/.test(l)).join('\n') : pc.trim(), '', 'ผลตรวจในไฟล์:', aud.trim());
 if (wordNote) sum.push('', wordNote.replace(/^note: /, 'หมายเหตุ: '));
+let cc = ''; try { cc = String(node('check_consistency.mjs', f) ?? '').trim(); sum.push('', 'ควรเช็คเนื้อหา (ฮารุรายงานอย่างเดียว ไม่แก้เอง):', cc); } catch (e) { sum.push('', 'ควรเช็คเนื้อหา: ตรวจไม่ได้ (' + e.message + ')'); }
 const sf = path.join(OutDir, name + ' (จัดเล่ม) - สรุปการปรับ.txt'); fs.writeFileSync(sf, '﻿' + sum.join(os.EOL) + os.EOL, 'utf8');
 console.log(''); console.log(sum.join('\n'));
 
@@ -197,7 +206,7 @@ if (ST) {
   node('change_report.mjs', src, f, cj);
   Object.assign(ST.agents.sum, { task: 'หาเลขหน้าของแต่ละจุดที่เปลี่ยน', p: 70 }); SaveState();
   if (WIN) ps1('locate_pages.ps1', '-File', f, '-Json', cj); else node('locate_pages.mjs', pdfOf(f), cj);
-  let cats = []; try { cats = JSON.parse(fs.readFileSync(cj, 'utf8').replace(/^﻿/, '')); } catch {}
+  let cats = []; try { cats = [].concat(JSON.parse(fs.readFileSync(cj, 'utf8').replace(/^﻿/, '')) ?? []); /* PowerShell เขียนรายการ 1 หมวดเป็นวัตถุเดี่ยว ไม่ใช่ array */ } catch {}
   let auto = 0; const changes = [];
   for (const c of [...cats].sort((a, b) => b.count - a.count)) {
     auto += +c.count;
@@ -211,6 +220,7 @@ if (ST) {
     verdict: nf ? `ดู ${nf} หน้า` : 'ผ่าน',
     stats: [{ v: `${ST.pages.total}`, l: 'หน้า' }, { v: `${nf}`, l: 'หน้าที่ควรเปิดดู' }, { v: `${ST.steps.length}`, l: 'ขั้นตอนที่ทำ' }, { v: `${auto}`, l: 'จุดที่ปรับอัตโนมัติ' }, { v: `${mins} นาที`, l: 'เวลาที่ใช้' }],
     changes, checks,
+    content: cc.split(/\r?\n/).filter(l => l.includes(' · ')),
     files: [{ ext: 'docx', name: path.basename(f), path: f }, { ext: 'pdf', name: path.basename(pdfOf(f)), path: pdfOf(f) }, { ext: 'txt', name: path.basename(sf), path: sf }],
   };
   ST.phases.forEach(ph => ph.status = 'done'); ST.phases[2].sub = nf ? `ดู ${nf} หน้า` : 'พร้อมส่ง';

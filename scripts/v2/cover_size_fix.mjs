@@ -9,7 +9,22 @@ const putSz = (inner, v) => { inner = inner.replace(/<w:sz w:val="\d+"\/>|<w:szC
 const fixRun = (r, v) => r.includes('<w:rPr>') ? r.replace(/<w:rPr>([\s\S]*?)<\/w:rPr>/, (_, i) => `<w:rPr>${putSz(i, v)}</w:rPr>`) : r.replace(/^(<w:r(?: [^>]*)?>)/, `$1<w:rPr>${putSz('', v)}</w:rPr>`);
 for (const f of process.argv.slice(2)) {
   const d = loadDocx(f); let x = d.get('word/document.xml');
-  const b = x.indexOf('<w:body>'); const e = coverEnd(x);
+  const b = x.indexOf('<w:body>'); let e = coverEnd(x);
+  // ปกคือหน้าแรกเท่านั้น: ถ้า section แรกมีหลายหน้า (ปก + ทะเบียนคุมเวอร์ชัน + ตาราง TOR) ให้หยุดที่ตัวขึ้นหน้าใหม่ตัวแรก
+  // (ผู้ใช้แก้เอง 27-11-2026: หัว 'ทะเบียนคุมเวอร์ชั่นเอกสาร' ถูกขยายเป็น 24 pt ผิด ต้องคง 16 pt)
+  {
+    const seg = x.slice(b, e);
+    const m = seg.search(/<w:br w:type="page"\/>|<w:pageBreakBefore\/>|<w:lastRenderedPageBreak\/>/);
+    if (m > 0) {
+      const pStart = Math.max(seg.lastIndexOf('<w:p ', m), seg.lastIndexOf('<w:p>', m));
+      const pEnd = seg.indexOf('</w:p>', m);
+      // pageBreakBefore = the paragraph itself starts page 2 -> cut before it; a break inside a paragraph -> keep that paragraph, cut after it
+      // the break belongs to the next page when nothing visible comes before it in its paragraph (page break / pageBreakBefore / lastRenderedPageBreak at the start)
+      const before = seg.slice(pStart, m);
+      const startsNextPage = before.includes('<w:pageBreakBefore') || seg.startsWith('<w:pageBreakBefore', m) || !/<w:t[ >][^<]*\S/.test(before);
+      e = b + (startsNextPage ? pStart : (pEnd > 0 ? pEnd + 6 : m));
+    }
+  }
   let n = 0;
   const cover = x.slice(b, e).replace(/<w:p[ >][\s\S]*?<\/w:p>/g, p => {
     const txt = [...p.matchAll(/<w:t[^>]*>([^<]*)<\/w:t>/g)].map(m => m[1]).join('');
