@@ -1251,6 +1251,15 @@ async function sendChat(text, reqs = []){
   if (SH.view) return sendRemote(text, reqs);
   if (chatBusy) { toast('ผู้แก้ยังทำงานก่อนหน้าอยู่ · รอสักครู่'); return; }
   CHAT.msgs.push({from:'me', text, ts:Date.now(), t:hhmm()}); render();
+  if (JOB === 'file') { // เปิดจากสกิลในแชท: ผู้แก้คือแชท Claude ที่สั่งงาน → คัดลอกคำสั่งให้ไปวางในแชทนั้น
+    const docx = S.files?.docx || S.title;
+    const pinTxt = r => r.pins?.length ? ` (ปักหมุด ${r.pins.length} จุดบนภาพ: ${r.pins.map((p, i) => `#${i + 1} x${Math.round(p.x)}% y${Math.round(p.y)}%${p.note ? ' ' + p.note : ''}`).join(', ')})` : '';
+    const lines = reqs.length ? reqs.map(r => `- หน้า ${r.page}: ${r.note || 'ดูตามหมุด'}${pinTxt(r)}`) : [`- ${text}`];
+    const cmd = `ฮารุ แก้เล่ม "${docx}" ตามที่แจ้งจากหน้าติดตามงาน:\n${lines.join('\n')}\nแก้แล้วส่งออก PDF ใหม่ ตรวจหน้านั้นซ้ำ และอัปเดต _haru/state.json`;
+    let ok = false; try { await navigator.clipboard.writeText(cmd); ok = true; } catch { try { const ta = document.createElement('textarea'); ta.value = cmd; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch {} }
+    CHAT.msgs.push({from:'prep', text:(ok ? 'คัดลอกคำสั่งแล้ว ✓ วางในแชท Claude ที่เปิดงานนี้ได้เลย (Ctrl+V / ⌘V) ผู้แก้คือแชทนั้น:\n\n' : 'คัดลอกให้อัตโนมัติไม่ได้ · ก็อปข้อความนี้ไปวางในแชท Claude ที่เปิดงานนี้:\n\n') + cmd, ts:Date.now() + 1, t:hhmm()});
+    REQ.length = 0; render(); return;
+  }
   if (!JOB || !DESK.ready) { CHAT.msgs.push({from:'prep', text:needAppText(), ts:Date.now() + 1, t:hhmm()}); render(); return; }
   chatBusy = true; $('#sendBtn').disabled = true; saveChat();
   LIVE = {fix:{on:true, state:'กำลังทำตามสั่ง', task:text.slice(0, 120)}, typing:'fix'}; render();
@@ -1290,8 +1299,8 @@ function bootFileMode(){
   window.HARU_STATE = st => { got = true; for (const sh of Object.values(st.shots || {})) for (const k of ['before', 'after']) if (sh[k]) sh[k] = fixPath(sh[k]); for (const n in (st.thumbs || {})) st.thumbs[n] = fixPath(st.thumbs[n]); if (!S || S.status !== 'done' || st.status !== 'done' || JSON.stringify(st).length !== JSON.stringify(S).length) load(st); };
   const poll = () => { const sc = document.createElement('script'); sc.src = 'state.js?' + Date.now(); sc.onload = sc.onerror = () => sc.remove(); document.body.appendChild(sc); };
   poll(); setInterval(() => { if (!S || S.status !== 'done') poll(); }, 1200);
-  $('#chatIn').disabled = true; $('#sendBtn').disabled = true; $('#attachBtn').disabled = true; $('#chatIn').placeholder = 'สั่งงานต่อได้ในแชท Claude ที่เปิดงานนี้';
-  $('#chatHint').textContent = 'หน้านี้เปิดจากสกิลในแชท · พิมพ์สั่งแก้ต่อได้ในแชท Claude หรือใช้แอปฮารุเพื่อสั่งจากหน้านี้';
+  $('#attachBtn').disabled = true; $('#chatIn').placeholder = 'พิมพ์สิ่งที่อยากแก้ แล้วกดส่ง → ฮารุคัดลอกคำสั่งให้ไปวางในแชท Claude';
+  $('#chatHint').textContent = 'หน้านี้เปิดจากสกิลในแชท · ผู้แก้คือแชท Claude ที่สั่งงาน: กดส่ง/ส่งให้ผู้แก้ แล้ววาง (Ctrl+V / ⌘V) ในแชทนั้น';
   banner('หน้าติดตามงานจากแชท · อัปเดตเองทุกวินาที');
   setTimeout(() => { if (!got) { banner('ยังไม่พบข้อมูลงานข้างไฟล์นี้ (state.js) · รอสคริปต์เริ่มงาน หรือเปิดแอปฮารุ'); } }, 2500);
 }
